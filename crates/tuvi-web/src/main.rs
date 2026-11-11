@@ -1,5 +1,4 @@
 mod app;
-mod components;
 mod db;
 mod features;
 

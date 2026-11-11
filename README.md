@@ -89,17 +89,17 @@ crates/
     src/app.rs                    root layout and home page (URL /)
     src/app/charts.rs             chart form, POST /charts
     src/app/charts/chart_id.rs    GET /charts/{id}
-    src/features/charts/          form checks, database queries, chart grid
-    src/components/               Topcoat UI components (edit them freely)
+    src/features/charts/          form checks, database queries, chart grid, accent
+    styles.css                    theme: tokens and utilities (see DESIGN.md)
     toasty/                       database migrations
   tuvi-cli/                       dev commands (cargo tuvi --help)
 data/                             data for later features (see data/README.md)
-docs/                             domain notes
+docs/                             domain notes and the design prototype
+DESIGN.md                         colors, fonts and layout rules
 ```
 
 `src/app/` holds pages only: the file path is the URL path. Pages call
-`src/features/` for data and rules. `src/components/` holds UI parts that no
-single feature owns.
+`src/features/` for data, rules and the UI parts of each feature.
 
 ## Tests
 
@@ -137,7 +137,12 @@ Commit the new files in `crates/tuvi-web/toasty/`. Run these commands from
 **Add a page:** add a file in `crates/tuvi-web/src/app/`. The file path is the
 URL path. Put data and rules in `crates/tuvi-web/src/features/`, not in the page.
 
-**Add a UI component:** from `crates/tuvi-web/`, run `topcoat ui add <name>`.
+**Change the look:** read [`DESIGN.md`](DESIGN.md) first. Use its token classes
+(`text-muted`, `glass`, `pill-primary`, ...), not color values.
+
+**Add a premade UI component:** from `crates/tuvi-web/`, run
+`topcoat ui add <name>`. It goes in `src/components/`. The Topcoat UI token
+names in `styles.css` already point to the design tokens.
 
 **Run without `topcoat dev`:** run `topcoat asset bundle` first. The binary
 reads its CSS and JS from `target/<profile>/assets/`. Without them, it does not start.
@@ -167,6 +172,8 @@ reads its CSS and JS from `target/<profile>/assets/`. Without them, it does not 
 
 ## Docs
 
+- [`DESIGN.md`](DESIGN.md): colors, fonts, accent and layout rules
+- [`docs/design/prototype.html`](docs/design/prototype.html): the full design prototype
 - [`docs/domain.md`](docs/domain.md): what a chart is and how its parts relate
 - [`docs/cach_cuc_rules.md`](docs/cach_cuc_rules.md): the rule language of `data/cach_cuc.yaml`
 - [`data/README.md`](data/README.md): the data files

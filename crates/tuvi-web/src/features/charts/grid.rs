@@ -25,12 +25,34 @@ const CUNG_CELL: [&str; 12] = [
     "row-start-4 col-start-4", // Hợi
 ];
 
-/// The whole chart. `name` is shown in the center panel.
+/// The whole chart: a summary, then the 12 cung around a center panel.
 #[topcoat::view::component]
 pub async fn chart_grid(cx: &Cx, name: &str, chart: &Chart) -> Result<impl View> {
     Ok(view! {
+        <section class="px-1 pb-4">
+            <p class="text-[10px] font-bold tracking-[0.26em] text-accent uppercase">
+                "Lá số gốc"
+            </p>
+            <h1 class="mt-1 text-3xl leading-tight font-semibold">(name)</h1>
+            <dl class="mt-4 grid grid-cols-3 border-y border-glass-line text-center">
+                fact(
+                    label: "Âm lịch",
+                    value: format!(
+                        "{}/{}/{}",
+                        chart.lunar_day,
+                        chart.lunar_month,
+                        chart.lunar_year,
+                    )
+                )
+                fact(
+                    label: "Năm",
+                    value: format!("{} {}", chart.nam_can, chart.nam_chi)
+                )
+                fact(label: "Cục", value: chart.cuc.to_owned())
+            </dl>
+        </section>
         <div
-            class="grid aspect-square grid-cols-4 grid-rows-4 gap-px overflow-hidden rounded-xl border border-border bg-border text-xs sm:text-sm"
+            class="grid grid-cols-4 grid-rows-[repeat(4,minmax(112px,auto))] overflow-hidden rounded-lg border border-glass-line bg-[rgba(14,8,32,0.34)] shadow-[0_18px_42px_rgba(8,4,20,0.28)] sm:grid-rows-[repeat(4,minmax(150px,auto))]"
         >
             for (cung, cell) in chart.cungs.iter().zip(CUNG_CELL) {
                 cung_box(cung: cung, cell: cell)
@@ -40,34 +62,75 @@ pub async fn chart_grid(cx: &Cx, name: &str, chart: &Chart) -> Result<impl View>
     })
 }
 
+/// One fact in the summary row.
+#[topcoat::view::component]
+async fn fact(cx: &Cx, label: &'static str, value: String) -> Result<impl View> {
+    Ok(view! {
+        <div class="min-w-0 px-1.5 py-3 [&+&]:border-l [&+&]:border-glass-line">
+            <dt class="text-[8px] text-muted uppercase sm:text-[10px]">(label)</dt>
+            <dd class="mt-1 text-[11px] font-semibold break-words sm:text-sm">
+                (value)
+            </dd>
+        </div>
+    })
+}
+
+/// One cung. Cung Mệnh is highlighted with the accent.
 #[topcoat::view::component]
 async fn cung_box(cx: &Cx, cung: &Cung, cell: &'static str) -> Result<impl View> {
+    let is_menh = cung.role == "Mệnh";
     Ok(view! {
         <section
-            class=(class!("flex min-w-0 flex-col gap-1 bg-card p-1.5 sm:p-2", cell))
+            class=(class!(
+                "relative min-w-0 overflow-hidden px-1.5 pt-2 pb-5 shadow-[inset_-1px_-1px_0_var(--color-glass-line)] sm:px-2.5 sm:pt-2.5",
+                cell,
+                "bg-white/[0.025]" if !is_menh,
+                "z-[2] bg-[color-mix(in_srgb,var(--accent)_11%,rgba(26,16,51,0.78))] shadow-[inset_0_0_0_1.5px_var(--accent),inset_0_0_24px_color-mix(in_srgb,var(--accent)_9%,transparent)]" if is_menh,
+            ))
         >
-            <header class="flex items-baseline justify-between gap-1">
-                <h2 class="truncate font-semibold uppercase">
+            <header class="flex min-h-6 items-start justify-between gap-1">
+                <h2
+                    class="font-sans text-[9px] leading-tight font-bold break-words uppercase sm:text-xs"
+                >
                     (cung.role)
-                    if cung.is_than {
-                        <span class="ml-1 text-primary">"(Thân)"</span>
-                    }
                 </h2>
-                <span class="shrink-0 text-muted-foreground">
-                    (cung.thien_can)
-                    " "
+                <span
+                    class="shrink-0 font-display text-xs leading-none text-muted sm:text-sm"
+                >
                     (cung.dia_chi)
                 </span>
             </header>
-            <ul class="font-medium text-primary">
+            <ul class="mt-0.5 flex min-h-7 flex-col gap-px">
                 for sao in &cung.chinh_tinh {
-                    <li class="truncate">(*sao)</li>
+                    <li
+                        class="font-display text-[11px] leading-tight font-semibold break-words text-accent sm:text-[15px]"
+                    >
+                        (*sao)
+                    </li>
+                }
+                if cung.chinh_tinh.is_empty() {
+                    <li class="text-[9px] font-medium text-muted italic sm:text-xs">
+                        "Vô chính diệu"
+                    </li>
                 }
             </ul>
+            if cung.is_than {
+                <p
+                    class="mt-1 text-[7px] font-bold text-coral uppercase sm:text-[10px]"
+                >
+                    "Thân"
+                </p>
+            }
+            <footer
+                class="absolute right-1.5 bottom-1.5 left-1.5 text-[7px] leading-none text-muted uppercase sm:text-[10px]"
+            >
+                (cung.thien_can)
+            </footer>
         </section>
     })
 }
 
+/// The center of the chart: name, birth data and gender.
 #[topcoat::view::component]
 async fn center_panel(cx: &Cx, name: &str, chart: &Chart) -> Result<impl View> {
     let input = chart.input;
@@ -77,42 +140,30 @@ async fn center_panel(cx: &Cx, name: &str, chart: &Chart) -> Result<impl View> {
     };
     Ok(view! {
         <section
-            class="col-span-2 col-start-2 row-span-2 row-start-2 flex flex-col items-center justify-center gap-2 bg-background p-3 text-center"
+            class="col-span-2 col-start-2 row-span-2 row-start-2 flex flex-col items-center justify-center bg-[radial-gradient(circle_at_50%_40%,color-mix(in_srgb,var(--accent)_14%,transparent),transparent_52%),rgba(26,16,51,0.76)] px-3 py-4 text-center shadow-[inset_-1px_-1px_0_var(--color-glass-line)]"
         >
-            <h1 class="text-base font-semibold sm:text-xl">(name)</h1>
-            <dl class="grid grid-cols-[auto_auto] gap-x-3 gap-y-1 text-left">
-                <dt class="text-muted-foreground">"Dương lịch"</dt>
-                <dd class="tabular-nums">
-                    (input.day)
-                    "/"
-                    (input.month)
-                    "/"
-                    (input.year)
-                    " · "
-                    (input.hour)
-                    "h"
-                </dd>
-                <dt class="text-muted-foreground">"Âm lịch"</dt>
-                <dd class="tabular-nums">
-                    (chart.lunar_day)
-                    "/"
-                    (chart.lunar_month)
-                    "/"
-                    (chart.lunar_year)
-                    " · giờ "
-                    (chart.hour_chi)
-                </dd>
-                <dt class="text-muted-foreground">"Năm"</dt>
-                <dd>
-                    (chart.nam_can)
-                    " "
-                    (chart.nam_chi)
-                </dd>
-                <dt class="text-muted-foreground">"Giới tính"</dt>
-                <dd>(gender)</dd>
-                <dt class="text-muted-foreground">"Cục"</dt>
-                <dd>(chart.cuc)</dd>
-            </dl>
+            <span
+                aria-hidden="true"
+                class="text-2xl text-accent drop-shadow-[0_0_8px_var(--accent-glow)]"
+            >
+                "✦"
+            </span>
+            <h2 class="mt-1 text-xl font-semibold sm:text-2xl">(name)</h2>
+            <p class="mt-2 text-[9px] leading-relaxed text-muted uppercase sm:text-xs">
+                (input.day)
+                "/"
+                (input.month)
+                "/"
+                (input.year)
+                " · "
+                (input.hour)
+                "h"
+                <br>
+                "Giờ "
+                (chart.hour_chi)
+                " · "
+                (gender)
+            </p>
         </section>
     })
 }
