@@ -4,7 +4,7 @@ use topcoat::{Result, context::Cx, router::error::not_found};
 use tuvi_core::{BirthInput, Chart, Gender};
 
 use super::ValidChart;
-use crate::db::db;
+use crate::{db::db, features::auth::require_user};
 
 /// One row: a name and the birth data. The chart is not stored.
 #[derive(Debug, toasty::Model)]
@@ -12,6 +12,11 @@ pub struct SavedChart {
     #[key]
     #[auto]
     pub id: u64,
+
+    /// The owner. `None` for charts saved before accounts existed: nobody
+    /// can open those until an owner is set in the database.
+    #[index]
+    pub user_id: Option<u64>,
 
     pub name: String,
 
@@ -40,14 +45,15 @@ impl SavedChart {
     }
 }
 
-/// Saves a checked form and returns the new id.
-pub async fn create(cx: &Cx, chart: ValidChart<'_>) -> Result<u64> {
+/// Saves a checked form for `user_id` and returns the new id.
+pub async fn create(cx: &Cx, user_id: u64, chart: ValidChart<'_>) -> Result<u64> {
     let birth = chart.birth;
     let gender = match birth.gender {
         Gender::Nam => "Nam",
         Gender::Nu => "Nu",
     };
     let saved = toasty::create!(SavedChart {
+        user_id: Some(user_id),
         name: chart.name,
         year: birth.year,
         month: i16::from(birth.month),
@@ -60,22 +66,28 @@ pub async fn create(cx: &Cx, chart: ValidChart<'_>) -> Result<u64> {
     Ok(saved.id)
 }
 
-/// The newest charts first.
-pub async fn recent(cx: &Cx, limit: usize) -> Result<Vec<SavedChart>> {
-    Ok(SavedChart::all()
+/// The newest charts of `user_id` first.
+pub async fn recent(cx: &Cx, user_id: u64, limit: usize) -> Result<Vec<SavedChart>> {
+    Ok(SavedChart::filter_by_user_id(Some(user_id))
         .order_by(SavedChart::fields().id().desc())
         .limit(limit)
         .exec(&mut db(cx))
         .await?)
 }
 
-/// Loads a saved chart and builds it again. A missing or unusable row is a 404;
-/// a database failure is a 500.
+/// Loads a chart of the current user and builds it again.
+///
+/// - Not logged in: a redirect to the login page.
+/// - Missing, unusable, or owned by someone else: a 404. Other users' charts
+///   look exactly like missing ones.
+/// - A database failure: a 500.
 pub async fn load(cx: &Cx, id: u64) -> Result<(SavedChart, Chart)> {
+    let user = require_user(cx).await?;
     let Some(saved) = SavedChart::filter_by_id(id)
         .first()
         .exec(&mut db(cx))
         .await?
+        .filter(|saved| saved.user_id == Some(user.id))
     else {
         return Err(not_found().into());
     };

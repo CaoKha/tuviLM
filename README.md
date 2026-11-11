@@ -83,6 +83,25 @@ cargo tuvi ask "Tử Vi là gì?" # checks the key: prints the answer as it stre
 - `.env.example` lists every setting. `cargo up` and `cargo tuvi` both read `.env`.
 - Without a key the app still runs. The chat page says what is missing.
 
+### Accounts
+
+Open the app and press **Tạo tài khoản** (`/register`). Every chart belongs to
+the account that saved it. Other accounts get "404 Not Found" for it.
+
+- `/register`, `/login`, `/ho-so` (profile and log out).
+- Passwords are hashed with Argon2id. The session token is in a `__Host-`
+  cookie (Secure, HttpOnly, SameSite=Lax). The database keeps only its SHA-256
+  hash (`user_sessions`). A session lasts 30 days.
+- The Secure cookie needs HTTPS. Browsers allow it on `localhost` and
+  `127.0.0.1`, so local development works without HTTPS.
+
+Charts saved before accounts existed have no owner, and nobody can open them.
+To give them to your account (find your id in the `users` table):
+
+```bash
+sudo docker compose exec postgres psql -U tuvi -c "UPDATE saved_charts SET user_id = 1 WHERE user_id IS NULL"
+```
+
 ### AI chat
 
 Open a chart and press **Hỏi Thiên Hạc**, or go to `/charts/{id}/hoi-ai`.
@@ -124,6 +143,8 @@ crates/
     src/app/charts/chart_id.rs    GET /charts/{id}
     src/features/charts/          form checks, database queries, chart grid, accent
     src/features/chat/            chat messages, system prompt, markdown, LLM service
+    src/features/auth/            users, sessions, Argon2 passwords, form checks
+    src/app/login.rs, register.rs, logout.rs, ho_so.rs   account pages
     src/app/charts/chart_id/hoi_ai.rs   GET and POST /charts/{id}/hoi-ai
     styles.css                    theme: tokens and utilities (see DESIGN.md)
     toasty/                       database migrations
@@ -200,7 +221,7 @@ reads its CSS and JS from `target/<profile>/assets/`. Without them, it does not 
 - Stars that move per period (lưu tinh, Tứ Hóa of a Đại hạn or a year),
   cách cục, câu phú
 - AI chat: tools, cách cục and the book Tử Vi Tân Biên (the chat sees only the chart)
-- Users and login
+- Accounts: Google login, password reset, email check, rate limit on login
 
 ## Known issues
 
@@ -219,6 +240,10 @@ reads its CSS and JS from `target/<profile>/assets/`. Without them, it does not 
   not in the usual order (Lộc, Quyền, Khoa, Kỵ).
 - Topcoat and Toasty are early-stage projects. Expect breaking changes when you
   update them.
+
+- `/register` says when an email already has an account. This lets someone
+  test which emails are registered. `/login` does not show this, and a wrong
+  email takes as long as a wrong password.
 
 ## Docs
 
