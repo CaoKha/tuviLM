@@ -80,10 +80,14 @@ The home page for a logged-in user. It casts a new chart
   ring picks an hour, a drag left or right winds the hand one hour per 22px,
   and arrow keys step one hour. The center shows the hour, the canh giờ and
   its range. The hand always turns the short way.
-- The preview (`.reward`) sleeps until the user picks an hour. Then it shows
-  the chính tinh of cung Mệnh and the caption "Chòm sao … đã thức", and the
-  page accent takes the color of the chart. Vô chính diệu keeps the neutral
-  accent.
+- The preview (`.reward`) sleeps until the user picks an hour: a scattered
+  sky in `muted`. Then the page accent takes the color of the chart, and the
+  caption says "Chòm sao … đã thức". Each chính tinh of cung Mệnh shows its
+  constellation (`.chom-*`): a faint ghost portrait (24% opacity, radial
+  mask) under a star pattern in the accent. A wave draws the lines every
+  4.2 s, and each star pulses on a 4.5 s cycle. Song tinh show two smaller
+  figures side by side. Vô chính diệu keeps the sky and the neutral accent.
+  Under reduced motion, the lines and stars stay still and lit.
 - The main button opens the confirm dialog (`.confirm-card`, a native
   `<dialog>`). "Không nhắc lại" skips it next time (in `localStorage`).
 - Then the casting loader covers the page for 2.6 s: orbit rings, the crane
