@@ -82,6 +82,11 @@ crates/
     src/cung.rs                   12 cung roles, Mệnh, Thân, Thiên Can of each cung
     src/cuc.rs                    Cục
     src/chinh_tinh.rs             the 14 main stars
+    src/phu_tinh.rs               the other natal stars, Tràng Sinh ring included
+    src/tu_hoa.rs                 Tứ Hóa of the birth year
+    src/tuan_triet.rs             Tuần and Triệt
+    src/ban_menh.rs               Bản mệnh of the birth year
+    scripts/gen_fixtures.py       makes the reference data from the old Python engine
     tests/parity.rs               compares 359 charts with saved reference data
     tests/bench.rs                speed test
   tuvi-web/                       web app
@@ -157,7 +162,9 @@ reads its CSS and JS from `target/<profile>/assets/`. Without them, it does not 
 
 ## Not done yet
 
-- Phụ tinh, Tứ Hóa, Tuần/Triệt, Đại hạn/Tiểu hạn, cách cục, câu phú
+- Đại hạn/Tiểu hạn, cách cục, câu phú
+- The web app does not show phụ tinh, Tứ Hóa, Tuần/Triệt or Bản mệnh yet.
+  `tuvi-core` computes them.
 - AI chat about the chart
 - Users and login
 
@@ -167,6 +174,12 @@ reads its CSS and JS from `target/<profile>/assets/`. Without them, it does not 
 - A date in a leap month gets the same month number as the regular month.
   The old engine did the same. Some schools of Tử Vi use the next month.
 - Supported dates are 1800-01-25 (Tết 1800) to 2199-12-31 22:59.
+- The engine copies the old Python rules, also where they differ from common
+  Tử Vi tables: Cô Thần for Hợi Tý Sửu years is in Mùi (not Dần), Quả Tú for
+  Thân Dậu Tuất years is in Dần (not Mùi), Lưu Hà for Tân years is in Thìn
+  (not Mão), and Thiên Quan and Thiên Phúc for Ất and Bính years differ.
+- A cung lists its Tứ Hóa in the old engine's id order (Khoa, Kỵ, Lộc, Quyền),
+  not in the usual order (Lộc, Quyền, Khoa, Kỵ).
 - Topcoat and Toasty are early-stage projects. Expect breaking changes when you
   update them.
 

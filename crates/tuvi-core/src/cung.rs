@@ -5,6 +5,7 @@
 //! `placement/rules/data/cung_roles.yaml` and `model/cung.py`.
 
 use crate::can_chi::{DiaChi, ThienCan};
+use crate::chart::Gender;
 
 /// The 12 cung roles, in the clockwise order of `cung_roles.yaml`
 /// (Mệnh first). Names come from `components/data/cung_role.json`.
@@ -96,4 +97,15 @@ const NGU_HO_DON: [ThienCan; 10] = [
 pub const fn cung_thien_can(year_can: ThienCan, cung: DiaChi) -> ThienCan {
     let distance_from_dan = (cung.index() + 12 - DiaChi::Dan.index()) % 12;
     NGU_HO_DON[year_can.index()].add(distance_from_dan as i32)
+}
+
+/// Direction of the "van" rings and periods: +1 (clockwise) for a Dương-year
+/// man or an Âm-year woman, else -1. A year is Dương when its Địa Chi index
+/// is even (`context/natal.py::van_direction`).
+pub const fn van_direction(gender: Gender, nam_chi: DiaChi) -> i32 {
+    let duong = nam_chi.index().is_multiple_of(2);
+    match (gender, duong) {
+        (Gender::Nam, true) | (Gender::Nu, false) => 1,
+        _ => -1,
+    }
 }
