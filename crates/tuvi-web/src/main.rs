@@ -10,7 +10,7 @@ async fn main() -> ExitCode {
     let db = match db::connect().await {
         Ok(db) => db,
         Err(error) => {
-            eprintln!("cannot connect to Postgres (is `docker compose up -d postgres` running?): {error:#}");
+            eprintln!("cannot connect to Postgres (start it with `cargo up`): {error:#}");
             return ExitCode::FAILURE;
         }
     };

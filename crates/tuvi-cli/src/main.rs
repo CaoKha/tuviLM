@@ -13,7 +13,10 @@ use clap::{Parser, Subcommand};
 
 /// Dev commands for the TuviLM workspace.
 #[derive(Parser)]
-#[command(bin_name = "cargo xtask", after_help = "Shortcuts: `cargo up`, `cargo down`.")]
+#[command(
+    bin_name = "cargo tuvi",
+    after_help = "Shortcuts: `cargo up`, `cargo down`."
+)]
 struct Cli {
     #[command(subcommand)]
     command: Task,
@@ -43,7 +46,7 @@ fn main() -> ExitCode {
 
 fn up() -> Result<(), String> {
     let root = workspace_root();
-    let web = root.join("web");
+    let web = root.join("crates/tuvi-web");
 
     if std::env::var_os("DATABASE_URL").is_some() {
         step("Using DATABASE_URL: not starting Postgres");
@@ -52,22 +55,38 @@ fn up() -> Result<(), String> {
     } else {
         step("Starting Postgres");
         // `--wait` returns when the health check in docker-compose.yaml passes.
-        run(docker()?.args(["compose", "up", "-d", "--wait", "postgres"]).current_dir(&root))?;
+        run(docker()?
+            .args(["compose", "up", "-d", "--wait", "postgres"])
+            .current_dir(&root))?;
     }
 
     step("Applying migrations");
-    // Toasty reads `toasty/` from the current folder, so run it from `web/`.
-    run(Command::new(cargo()).args(["run", "-q", "-p", "web", "--", "toasty", "migration", "apply"]).current_dir(&web))?;
+    // Toasty reads `toasty/` from the current folder, so run it from the web crate.
+    run(Command::new(cargo())
+        .args([
+            "run",
+            "-q",
+            "-p",
+            "tuvi-web",
+            "--",
+            "toasty",
+            "migration",
+            "apply",
+        ])
+        .current_dir(&web))?;
 
     step("Starting topcoat dev (Ctrl-C to stop)");
     let mut dev = Command::new("topcoat");
     dev.arg("dev").current_dir(&web);
-    exec(dev).map_err(|error| format!("{error}\nInstall the Topcoat CLI: cargo install topcoat-cli"))
+    exec(dev)
+        .map_err(|error| format!("{error}\nInstall the Topcoat CLI: cargo install topcoat-cli"))
 }
 
 fn down() -> Result<(), String> {
     step("Stopping Postgres");
-    run(docker()?.args(["compose", "stop", "postgres"]).current_dir(workspace_root()))
+    run(docker()?
+        .args(["compose", "stop", "postgres"])
+        .current_dir(workspace_root()))
 }
 
 /// A `docker` command. When the Docker socket needs root (the user is not in
@@ -84,7 +103,10 @@ fn docker() -> Result<Command, String> {
 
     let stderr = String::from_utf8_lossy(&probe.stderr);
     if !stderr.contains("permission denied") {
-        return Err(format!("Docker is not ready. Is the Docker daemon running?\n{}", stderr.trim()));
+        return Err(format!(
+            "Docker is not ready. Is the Docker daemon running?\n{}",
+            stderr.trim()
+        ));
     }
     step("Docker needs root: running it with sudo (enter your password if asked)");
     let mut command = Command::new("sudo");
@@ -93,16 +115,15 @@ fn docker() -> Result<Command, String> {
 }
 
 /// Whether something accepts connections on the default Postgres port, the one
-/// in docker-compose.yaml and in `web/src/db.rs`.
+/// in docker-compose.yaml and in `crates/tuvi-web/src/db.rs`.
 fn postgres_is_up() -> bool {
     let address = std::net::SocketAddr::from(([127, 0, 0, 1], 5432));
     std::net::TcpStream::connect_timeout(&address, std::time::Duration::from_millis(300)).is_ok()
 }
 
-/// The workspace root: the parent of this crate's folder.
+/// The workspace root. This crate is at `<root>/crates/tuvi-cli`.
 fn workspace_root() -> PathBuf {
-    let manifest_dir = Path::new(env!("CARGO_MANIFEST_DIR"));
-    manifest_dir.parent().unwrap_or(manifest_dir).to_path_buf()
+    Path::new(env!("CARGO_MANIFEST_DIR")).join("../..")
 }
 
 /// The `cargo` that runs this command, so the same toolchain builds `web`.
@@ -117,7 +138,9 @@ fn step(message: &str) {
 /// Runs a command to the end. Its output goes to the terminal.
 fn run(command: &mut Command) -> Result<(), String> {
     let name = display(command);
-    let status = command.status().map_err(|error| format!("cannot run `{name}`: {error}"))?;
+    let status = command
+        .status()
+        .map_err(|error| format!("cannot run `{name}`: {error}"))?;
     if status.success() {
         Ok(())
     } else {

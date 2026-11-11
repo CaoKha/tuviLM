@@ -1,5 +1,5 @@
 [alias]
-# Dev commands. See xtask/src/main.rs.
-xtask = "run -q -p xtask --"
-up = "run -q -p xtask -- up"
-down = "run -q -p xtask -- down"
+# TuviLM dev commands. See crates/tuvi-cli/src/main.rs.
+tuvi = "run -q -p tuvi-cli --"
+up = "run -q -p tuvi-cli -- up"
+down = "run -q -p tuvi-cli -- down"

@@ -3304,11 +3304,30 @@ dependencies = [
 ]
 
 [[package]]
+name = "tuvi-cli"
+version = "0.1.0"
+dependencies = [
+ "clap",
+]
+
+[[package]]
 name = "tuvi-core"
 version = "0.1.0"
 dependencies = [
  "serde",
  "serde_json",
+]
+
+[[package]]
+name = "tuvi-web"
+version = "0.1.0"
+dependencies = [
+ "serde",
+ "toasty",
+ "toasty-cli",
+ "tokio",
+ "topcoat",
+ "tuvi-core",
 ]
 
 [[package]]
@@ -3540,18 +3559,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "web"
-version = "0.1.0"
-dependencies = [
- "serde",
- "toasty",
- "toasty-cli",
- "tokio",
- "topcoat",
- "tuvi-core",
-]
-
-[[package]]
 name = "web-sys"
 version = "0.3.107"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3720,13 +3727,6 @@ dependencies = [
  "der 0.7.10",
  "spki 0.7.3",
  "tls_codec",
-]
-
-[[package]]
-name = "xtask"
-version = "0.1.0"
-dependencies = [
- "clap",
 ]
 
 [[package]]
