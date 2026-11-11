@@ -1,1 +1,1 @@
-"""Who owns the data: the guest owner cookie."""
+"""Login: email and password, Google, sessions, and the guest owner cookie."""

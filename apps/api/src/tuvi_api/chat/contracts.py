@@ -48,6 +48,8 @@ class ConversationHistoryStore(Protocol):
 
     async def delete_chart_profile(self, owner_id: str, chart_profile_id: str) -> None: ...
 
+    async def reassign_owner(self, from_owner_id: str, to_owner_id: str) -> int: ...
+
     async def create_session(
         self,
         owner_id: str,

@@ -6,6 +6,9 @@ FastAPI backend for TuviLM UI.
 - Real route: `POST /api/v1/laso/build`
 - Real route: `GET /api/v1/laso/cau-phu`
 - Real route: `POST /api/v1/laso/build_sao_luu`
+- Login routes are mounted from `apps/api/src/tuvi_api/auth/routes.py`:
+  - `GET /api/v1/auth/me`
+  - `POST /api/v1/auth/register`, `POST /api/v1/auth/login`, `POST /api/v1/auth/logout`
 - Conversation history routes are mounted from `apps/api/src/tuvi_api/chat/routes.py`:
   - `POST /api/v1/chart-profiles`
   - `GET /api/v1/chart-profiles`
@@ -21,11 +24,31 @@ From repo root:
 uv sync
 ```
 
-or if you use pip directly:
+## Who owns the data
 
-```bash
-pip install fastapi uvicorn pydantic
-```
+Chart profiles and chats belong to an owner id, read from cookies by
+`tuvi_api.auth.dependencies.get_owner_id`:
+
+- A logged-in user (cookie `tuvi_session`) owns data as `user_<user id>`.
+- A guest gets `anon_<random>` in a signed httpOnly cookie (`tuvi_owner`).
+  When the guest registers or logs in, their charts and chats move to the account.
+
+Cookies are `SameSite=Lax` and `Secure` when `AUTH__PUBLIC_URL` is https. The web
+app proxies `/api/*` to this server, so the cookies belong to the web app's domain.
+
+## Configuration
+
+Settings come from env vars or `.env` (see `.env.example` at the repo root):
+
+| Variable | Default | Notes |
+| --- | --- | --- |
+| `CONVERSATION_HISTORY_STORE__URI` | `mongodb://localhost:27017` | MongoDB connection string |
+| `CONVERSATION_HISTORY_STORE__DATABASE_NAME` | `tuvilm` | |
+| `AUTH__SECRET_KEY` | dev value | Required when `AUTH__PUBLIC_URL` is https |
+| `AUTH__PUBLIC_URL` | `http://localhost:3000` | The web app URL as the browser sees it |
+| `CORS_ORIGINS` | `["http://localhost:3000"]` | JSON list. Only for browsers that call the API directly |
+| `AGENT_MODEL` | `openrouter:qwen/qwen3.7-max` | Needs `OPENROUTER_API_KEY` |
+| `BOOK_ROOT` | `data/tuvitanbien_chunking_compact/part_2` | Book files, not in git |
 
 ## Run server
 From repo root:

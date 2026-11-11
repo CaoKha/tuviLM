@@ -1,12 +1,13 @@
 from __future__ import annotations
 
+from collections.abc import Sequence
 from dataclasses import dataclass
 from datetime import timedelta
 from hashlib import sha256
 from typing import Self
 from uuid import uuid4
 
-from beanie import PydanticObjectId, init_beanie
+from beanie import Document, PydanticObjectId, init_beanie
 from beanie.odm.operators.find.array import ElemMatch
 from beanie.odm.operators.find.logical import Not
 from beanie.odm.operators.update.array import Push
@@ -57,16 +58,21 @@ class MongoConversationHistoryStore:
         mongo_client: AsyncMongoClient,
         database_name: str,
         stale_pending_after: timedelta = timedelta(minutes=15),
+        extra_document_models: Sequence[type[Document]] = (),
     ) -> None:
         self._mongo_client = mongo_client
         self._database_name = database_name
         self._stale_pending_after = stale_pending_after
+        self._extra_document_models = list(extra_document_models)
 
     @classmethod
     async def connect(
         cls,
         settings: MongoConversationHistorySettings,
+        *,
+        extra_document_models: Sequence[type[Document]] = (),
     ) -> Self:
+        """Connect and initialize Beanie. extra_document_models share the client."""
         mongo_client = AsyncMongoClient(settings.uri, tz_aware=settings.tz_aware)
         store = cls(
             mongo_client=mongo_client,
@@ -74,6 +80,7 @@ class MongoConversationHistoryStore:
             stale_pending_after=timedelta(
                 seconds=settings.stale_pending_after_seconds
             ),
+            extra_document_models=extra_document_models,
         )
         await store._initialize_storage()
         return store
@@ -81,7 +88,11 @@ class MongoConversationHistoryStore:
     async def _initialize_storage(self) -> None:
         await init_beanie(
             database=self._mongo_client[self._database_name],
-            document_models=[ChartProfileDocument, ChatSessionDocument],
+            document_models=[
+                ChartProfileDocument,
+                ChatSessionDocument,
+                *self._extra_document_models,
+            ],
         )
 
     async def close(self) -> None:
@@ -141,6 +152,20 @@ class MongoConversationHistoryStore:
             ChartProfileDocument.owner_id == owner_id
         ).to_list()
         return [chart_profile_from_document(document) for document in documents]
+
+    async def reassign_owner(self, from_owner_id: str, to_owner_id: str) -> int:
+        """Move every chart profile (and so its sessions) to another owner."""
+        result = await ChartProfileDocument.find(
+            ChartProfileDocument.owner_id == from_owner_id
+        ).update_many(
+            Set(
+                {
+                    ChartProfileDocument.owner_id: to_owner_id,
+                    ChartProfileDocument.updated_at: utc_now(),
+                }
+            )
+        )
+        return result.modified_count if result is not None else 0
 
     async def delete_chart_profile(self, owner_id: str, chart_profile_id: str) -> None:
         profile = await _require_chart_profile(owner_id, chart_profile_id)

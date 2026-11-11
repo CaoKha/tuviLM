@@ -3,7 +3,7 @@ from __future__ import annotations
 import datetime as dt
 import logging
 from contextlib import asynccontextmanager
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import datetime
 from typing import cast
 
@@ -14,7 +14,10 @@ from fastapi.responses import JSONResponse
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from tuvi_api._parse import to_cung_payload_map
+from tuvi_api.auth.models import AuthStore
+from tuvi_api.auth.routes import router as auth_router
 from tuvi_api.auth.settings import DEV_SECRET_KEY
+from tuvi_api.auth.storage import AUTH_DOCUMENT_MODELS, MongoAuthStore
 from tuvi_api.chat.contracts import (
     ConversationHistoryError,
     ConversationHistoryStore,
@@ -73,6 +76,7 @@ logging.basicConfig(
 class ApiState:
     agent_deps: TuviAgentDeps
     conversation_history_store: ConversationHistoryStore
+    auth_store: AuthStore = field(default_factory=MongoAuthStore)
 
     @property
     def has_la_so(self) -> bool:
@@ -93,6 +97,7 @@ async def lifespan(app: FastAPI):
         raise RuntimeError("Set AUTH__SECRET_KEY to a random value of 32+ characters for https.")
     conversation_history_store = await MongoConversationHistoryStore.connect(
         settings.conversation_history_store,
+        extra_document_models=AUTH_DOCUMENT_MODELS,
     )
     model = settings.agent_model
     agent_deps = TuviAgentDeps(
@@ -103,6 +108,7 @@ async def lifespan(app: FastAPI):
     app.state.api_state = ApiState(
         agent_deps=agent_deps,
         conversation_history_store=conversation_history_store,
+        auth_store=MongoAuthStore(),
     )
     try:
         yield
@@ -112,6 +118,7 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(title="TuviLM API", version="0.1.0", lifespan=lifespan)
 app.include_router(chat_router)
+app.include_router(auth_router)
 
 app.add_middleware(
     CORSMiddleware,

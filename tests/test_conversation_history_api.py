@@ -899,6 +899,14 @@ class FakeConversationHistoryStore:
         self.deleted_chart_profile_ids: list[str] = []
         self.deleted_session_ids: list[str] = []
 
+    async def reassign_owner(self, from_owner_id: str, to_owner_id: str) -> int:
+        moved = 0
+        for profile_id, profile in list(self.profiles.items()):
+            if profile.owner_id == from_owner_id:
+                self.profiles[profile_id] = profile.model_copy(update={"owner_id": to_owner_id})
+                moved += 1
+        return moved
+
     def add_profile(
         self,
         *,
@@ -1152,3 +1160,24 @@ async def _create_session(store: ConversationHistoryStore, profile_id: str):
         idempotency_key="session",
     )
 
+
+async def test_reassign_owner_moves_profiles_and_their_sessions(mongo_store) -> None:
+    profile = await mongo_store.create_chart_profile(
+        "anon_guest",
+        CreateChartProfileInput(
+            display_name="Guest chart",
+            birth_info=BirthInfo(year=1996, month=4, day=15, hour=10, gender="M"),
+        ),
+        idempotency_key="guest-profile",
+    )
+    session = await mongo_store.create_session(
+        "anon_guest", profile.id, CreateSessionInput(title="t"), idempotency_key="guest-session"
+    )
+
+    moved = await mongo_store.reassign_owner("anon_guest", "user_1")
+
+    assert moved == 1
+    assert await mongo_store.list_chart_profiles("anon_guest") == []
+    assert [p.id for p in await mongo_store.list_chart_profiles("user_1")] == [profile.id]
+    context = await mongo_store.load_session_context("user_1", session.id)
+    assert context.session.id == session.id

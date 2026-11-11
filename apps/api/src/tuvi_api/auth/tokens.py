@@ -1,4 +1,4 @@
-"""Signed anonymous owner ids."""
+"""Session tokens, signed anonymous owner ids and password hashing."""
 
 from __future__ import annotations
 
@@ -6,7 +6,28 @@ import hashlib
 import hmac
 import secrets
 
-ANONYMOUS_OWNER_PREFIX = "anon_"
+from pwdlib import PasswordHash
+
+from tuvi_api.auth.models import ANONYMOUS_OWNER_PREFIX
+
+_password_hash = PasswordHash.recommended()
+
+
+def hash_password(password: str) -> str:
+    return _password_hash.hash(password)
+
+
+def verify_password(password: str, password_hash: str) -> bool:
+    return _password_hash.verify(password, password_hash)
+
+
+def new_session_token() -> str:
+    return secrets.token_urlsafe(32)
+
+
+def hash_session_token(token: str) -> str:
+    """Only the hash is stored, so a database leak does not expose live sessions."""
+    return hashlib.sha256(token.encode()).hexdigest()
 
 
 def new_anonymous_owner_id() -> str:
