@@ -42,29 +42,28 @@ You need: Rust (stable, edition 2024), Docker, and the Topcoat CLI:
 cargo install topcoat-cli
 ```
 
-**1. Start Postgres** (from the repo root)
+Start everything with one command (from any folder in the repo):
 
 ```bash
-docker compose up -d postgres
+cargo up                  # http://127.0.0.1:3000
 ```
+
+`cargo up` does three steps:
+
+1. It starts Postgres with `docker compose` and waits until it is ready. It
+   skips this step when Postgres already runs on port 5432, or when you set
+   `DATABASE_URL`.
+2. It applies the database migrations.
+3. It starts `topcoat dev`. The dev server rebuilds the app and reloads the
+   page when you save a file. Press Ctrl-C to stop it.
+
+`cargo down` stops Postgres. The data stays in the Docker volume.
 
 The app uses `postgres://tuvi:tuvi@localhost:5432/tuvi`. Set `DATABASE_URL` to
 use a different database.
 
-**2. Make the tables** (from `web/`)
-
-```bash
-cd web
-cargo run -- toasty migration apply
-```
-
-**3. Start the app** (from `web/`)
-
-```bash
-topcoat dev               # http://127.0.0.1:3000
-```
-
-The dev server rebuilds the app and reloads the page when you save a file.
+If your user is not in the `docker` group, `cargo up` and `cargo down` run
+Docker with `sudo` and ask for your password.
 
 ## Folders
 
@@ -85,6 +84,7 @@ web/
   src/features/charts.rs      database model and chart rules
   src/components/             Topcoat UI components (edit them freely)
   toasty/                     database migrations
+xtask/                        `cargo up` and `cargo down` (see .cargo/config.toml)
 docker-compose.yaml           Postgres
 ```
 
