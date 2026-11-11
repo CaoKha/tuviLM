@@ -1,148 +1,189 @@
-/* Neutral, the built-in Topcoat theme.
+/* Thiên Hạc theme.
 
-   The theme is a small set of design tokens. Components refer to tokens only,
-   never to raw colors, so a project restyles itself by editing the values in
-   `:root` and `.dark` below.
+   The design reference is docs/design/prototype.html. DESIGN.md in the repo
+   root lists the tokens and the rules. Keep this file in step with both.
 
-     --background              the page background
-     --foreground              text and iconography on the background
-     --card                    cards and panel backgrounds
-     --card-foreground         text and iconography on cards and panels
-     --popover                 floating menu and popover backgrounds
-     --popover-foreground      text and iconography on floating surfaces
-     --muted-foreground        secondary text: captions, descriptions, placeholders
-     --primary                 the emphasis color: primary actions, selection, highlights
-     --primary-foreground      text on a primary-filled surface
-     --destructive             destructive actions and error states
-     --destructive-foreground  text on a destructive-filled surface
-     --border                  hairline borders and dividers
-     --ring                    the focus ring
-     --sidebar                 the sidebar background
-     --sidebar-foreground      sidebar text and icons
-     --sidebar-primary         primary actions inside the sidebar
-     --sidebar-primary-foreground  text on sidebar primary actions
-     --sidebar-accent          sidebar hover and selected backgrounds
-     --sidebar-accent-foreground   text on sidebar accents
-     --sidebar-border          sidebar borders and dividers
-     --sidebar-ring            sidebar focus rings
-     --shadow-xs               a subtle shadow for raised controls
-     --shadow-sm               a shadow for raised surfaces: cards, menus
+   Two groups of tokens:
+   - TuviLM tokens (bg-0, ink, muted, glass, accent, element-*): the design.
+   - Topcoat UI tokens (background, card, primary, border, ...): the vendored
+     components in src/components/ use these names. They point to the
+     TuviLM tokens, so the components follow the design without edits.
 
-   Shadows are disabled by default. To enable them, replace the shadow values
-   in `:root` and `.dark` with the commented values beside them. Use `0 0 #0000`
-   to disable a shadow. Tailwind combines shadows and focus rings in one
-   `box-shadow`, so `none` would also break the ring.
-
-   Components derive hover and press states from their fill or foreground
-   color at reduced opacity. The sidebar has its own accent token for
-   interactive rows, so it can be themed independently.
-
-   The Geist font is not bundled here; provide it with topcoat-font. */
+   The app is always dark: the twilight shell never changes. */
 
 @import "tailwindcss";
 
-/* Scan the project's Rust sources for the Tailwind classes they use. This
-   file is installed at the project root, so `./src` is the crate's source. */
+/* Scan the crate's Rust sources for the Tailwind classes they use. */
 @source "./src/**/*.rs";
 
-/* Dark mode is opted into by putting the `dark` class on an ancestor,
-   typically <html>. */
 @custom-variant dark (&:is(.dark *));
 
-/* Expose the tokens as Tailwind utilities (`bg-background`, `text-primary`,
-   `border-border`, ...). The indirection through plain variables on `:root`
-   and `.dark` is what lets the values swap when the color scheme changes. */
+/* Utility-generating tokens: bg-ink, text-muted, rounded-card, font-display, ... */
+@theme {
+  --color-bg-0: #1a1033;
+  --color-bg-1: #2e1a4a;
+  --color-bg-2: #3b2063;
+  --color-page: #120a24;
+
+  --color-ink: #f3effa;
+  --color-muted: #b9aed1;
+  --color-coral: #ff9e7d;
+  --color-fire: #ff5d6c;
+
+  --color-glass: rgba(255, 255, 255, 0.06);
+  --color-glass-line: rgba(243, 239, 250, 0.14);
+
+  --radius-card: 26px;
+
+  --font-display: "Fraunces", Georgia, serif;
+  --font-sans: "Be Vietnam Pro", system-ui, sans-serif;
+}
+
+/* `inline` tokens resolve where they are used, not at :root. The accent needs
+   this: the chart page sets `--accent` on its own element. */
 @theme inline {
-  --font-sans: "Geist", sans-serif;
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --color-card: var(--card);
-  --color-card-foreground: var(--card-foreground);
-  --color-popover: var(--popover);
-  --color-popover-foreground: var(--popover-foreground);
-  --color-muted-foreground: var(--muted-foreground);
-  --color-primary: var(--primary);
-  --color-primary-foreground: var(--primary-foreground);
-  --color-destructive: var(--destructive);
-  --color-destructive-foreground: var(--destructive-foreground);
-  --color-border: var(--border);
-  --color-ring: var(--ring);
-  --color-sidebar: var(--sidebar);
-  --color-sidebar-foreground: var(--sidebar-foreground);
-  --color-sidebar-primary: var(--sidebar-primary);
-  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
-  --color-sidebar-accent: var(--sidebar-accent);
-  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
-  --color-sidebar-border: var(--sidebar-border);
-  --color-sidebar-ring: var(--sidebar-ring);
-  --shadow-xs: var(--shadow-xs);
-  --shadow-sm: var(--shadow-sm);
+  --color-accent: var(--accent);
+  --color-accent-2: var(--accent-2);
+  --color-accent-glow: var(--accent-glow);
+
+  /* Topcoat UI token names, mapped to the TuviLM tokens. */
+  --color-background: var(--color-page);
+  --color-foreground: var(--color-ink);
+  --color-card: var(--color-glass);
+  --color-card-foreground: var(--color-ink);
+  --color-popover: var(--color-bg-1);
+  --color-popover-foreground: var(--color-ink);
+  --color-muted-foreground: var(--color-muted);
+  --color-primary: var(--accent);
+  --color-primary-foreground: var(--color-bg-0);
+  --color-destructive: var(--color-fire);
+  --color-destructive-foreground: var(--color-bg-0);
+  --color-border: var(--color-glass-line);
+  --color-ring: var(--accent);
+  --shadow-xs: 0 0 #0000;
+  --shadow-sm: 0 0 #0000;
 }
 
 :root {
-  --background: oklch(0.9875 0.003 260);
-  --foreground: oklch(0.24 0.012 260);
-  --card: oklch(0.995 0.003 260);
-  --card-foreground: oklch(0.24 0.012 260);
-  --popover: oklch(0.995 0.003 260);
-  --popover-foreground: oklch(0.24 0.012 260);
-  --muted-foreground: oklch(0.51 0.014 260);
-  --primary: oklch(0.21 0.02 260);
-  --primary-foreground: oklch(0.985 0.003 260);
-  --destructive: oklch(0.55 0.2 27);
-  --destructive-foreground: oklch(0.99 0.012 27);
-  --border: oklch(0.9 0.008 260);
-  --ring: oklch(0.32 0.02 260);
-  --sidebar: oklch(0.995 0.003 260);
-  --sidebar-foreground: oklch(0.24 0.012 260);
-  --sidebar-primary: oklch(0.21 0.02 260);
-  --sidebar-primary-foreground: oklch(0.985 0.003 260);
-  --sidebar-accent: color-mix(in oklab, var(--sidebar-foreground) 10%, var(--sidebar));
-  --sidebar-accent-foreground: oklch(0.24 0.012 260);
-  --sidebar-border: oklch(0.9 0.008 260);
-  --sidebar-ring: oklch(0.32 0.02 260);
-  /* Use these values to enable shadows:
-  --shadow-xs: 0 1px 2px oklch(0.24 0.02 260 / 12%);
-  --shadow-sm:
-    0 1px 2px oklch(0.24 0.02 260 / 10%),
-    0 2px 8px -2px oklch(0.24 0.02 260 / 9%); */
-  --shadow-xs: 0 0 #0000;
-  --shadow-sm: 0 0 #0000;
+  color-scheme: dark;
+
+  /* Ngũ hành palette. The chart page sets the accent from the element of
+     the chính tinh in cung Mệnh (see src/features/charts/accent.rs). Light
+     and glow shades are mixed from the element, so these five are the only
+     element colors. */
+  --element-kim: #e0dbcf;
+  --element-moc: #63c79a;
+  --element-thuy: #79b7ff;
+  --element-hoa: #ff5d57;
+  --element-tho: #b3855a;
+
+  --element-kim-light: color-mix(in srgb, var(--element-kim) 45%, var(--color-ink));
+  --element-moc-light: color-mix(in srgb, var(--element-moc) 45%, var(--color-ink));
+  --element-thuy-light: color-mix(in srgb, var(--element-thuy) 45%, var(--color-ink));
+  --element-hoa-light: color-mix(in srgb, var(--element-hoa) 45%, var(--color-ink));
+  --element-tho-light: color-mix(in srgb, var(--element-tho) 45%, var(--color-ink));
+
+  --element-kim-glow: color-mix(in srgb, var(--element-kim) 50%, transparent);
+  --element-moc-glow: color-mix(in srgb, var(--element-moc) 50%, transparent);
+  --element-thuy-glow: color-mix(in srgb, var(--element-thuy) 50%, transparent);
+  --element-hoa-glow: color-mix(in srgb, var(--element-hoa) 50%, transparent);
+  --element-tho-glow: color-mix(in srgb, var(--element-tho) 50%, transparent);
+
+  /* Default accent: no chart yet, or vô chính diệu in cung Mệnh. */
+  --accent-neutral: #bca6f5;
+  --accent-neutral-light: #e8e1fb;
+  --accent-neutral-glow: rgba(188, 166, 245, 0.45);
+
+  --accent: var(--accent-neutral);
+  --accent-2: var(--accent-neutral-light);
+  --accent-glow: var(--accent-neutral-glow);
 }
 
-.dark {
-  --background: oklch(0.17 0.012 260);
-  --foreground: oklch(0.93 0.006 260);
-  --card: oklch(0.22 0.012 260);
-  --card-foreground: oklch(0.93 0.006 260);
-  --popover: oklch(0.22 0.012 260);
-  --popover-foreground: oklch(0.93 0.006 260);
-  --muted-foreground: oklch(0.68 0.012 260);
-  --primary: oklch(0.92 0.008 260);
-  --primary-foreground: oklch(0.21 0.015 260);
-  --destructive: oklch(0.66 0.18 25);
-  --destructive-foreground: oklch(0.14 0.02 25);
-  --border: oklch(0.3 0.012 260);
-  --ring: oklch(0.6 0.02 260);
-  --sidebar: oklch(0.22 0.012 260);
-  --sidebar-foreground: oklch(0.93 0.006 260);
-  --sidebar-primary: oklch(0.92 0.008 260);
-  --sidebar-primary-foreground: oklch(0.21 0.015 260);
-  --sidebar-accent: color-mix(in oklab, var(--sidebar-foreground) 10%, var(--sidebar));
-  --sidebar-accent-foreground: oklch(0.93 0.006 260);
-  --sidebar-border: oklch(0.3 0.012 260);
-  --sidebar-ring: oklch(0.6 0.02 260);
-  /* Use these values to enable shadows:
-  --shadow-xs: 0 1px 2px oklch(0 0 0 / 35%);
-  --shadow-sm:
-    0 1px 2px oklch(0 0 0 / 35%),
-    0 2px 8px -2px oklch(0 0 0 / 30%); */
-  --shadow-xs: 0 0 #0000;
-  --shadow-sm: 0 0 #0000;
+/* The frosted surface of every card and bar. */
+@utility glass {
+  background: var(--color-glass);
+  border: 1px solid var(--color-glass-line);
+  border-radius: var(--radius-card);
+  backdrop-filter: blur(16px);
+}
+
+/* Primary pill: the accent gradient with an inner highlight. */
+@utility pill-primary {
+  color: var(--color-bg-0);
+  background: linear-gradient(135deg, var(--accent-2), var(--accent));
+  box-shadow:
+    0 14px 40px var(--accent-glow),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.3);
+}
+
+/* Ghost pill: a quiet outline on the twilight. */
+@utility pill-ghost {
+  color: var(--color-ink);
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--color-glass-line);
+}
+
+/* The page backdrop: twilight gradient with a warm glow at the bottom. */
+@utility cosmos {
+  background:
+    radial-gradient(80% 55% at 50% 108%, rgba(255, 158, 125, 0.22), transparent 60%),
+    radial-gradient(120% 90% at 50% 0%, #3b2063 0%, #2e1a4a 45%, #160d2c 100%);
+}
+
+/* A slow pulse for the nebulae behind the page. */
+@keyframes breathe {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.08);
+  }
+}
+
+@utility animate-breathe {
+  animation: breathe 12s ease-in-out infinite;
 }
 
 @layer base {
+  /* Hide scrollbars but keep every region scrollable. */
+  * {
+    scrollbar-width: none;
+  }
+
+  *::-webkit-scrollbar {
+    display: none;
+  }
+
   body {
-    @apply bg-background font-sans text-foreground;
+    min-height: 100dvh;
+    overflow-x: hidden;
+    font-family: var(--font-sans);
+    color: var(--color-ink);
+    background: var(--color-page);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-display);
+  }
+
+  ::selection {
+    background: var(--accent);
+    color: var(--color-bg-0);
+  }
+}
+
+/* One global answer to reduced motion. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001s !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.15s !important;
+    scroll-behavior: auto !important;
   }
 }
