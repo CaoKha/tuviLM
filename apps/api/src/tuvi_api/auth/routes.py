@@ -5,9 +5,12 @@ import secrets
 from datetime import UTC, datetime, timedelta
 
 from fastapi import APIRouter, Depends, HTTPException, Request, Response
+from fastapi.responses import RedirectResponse
 from pydantic import BaseModel, Field, field_validator
 
+from tuvi_api.auth import google
 from tuvi_api.auth.dependencies import (
+    OAUTH_STATE_COOKIE,
     OWNER_COOKIE,
     SESSION_COOKIE,
     clear_cookie,
@@ -133,6 +136,56 @@ async def logout(
         await store.delete_session(hash_session_token(token))
     response = Response(status_code=204)
     clear_cookie(response, SESSION_COOKIE, settings)
+    return response
+
+
+@router.get("/google/start")
+async def google_start(settings: AuthSettings = Depends(get_auth_settings)) -> Response:
+    if not settings.google_enabled:
+        raise HTTPException(status_code=404, detail="Google sign-in is not configured.")
+    state = secrets.token_urlsafe(24)
+    response = RedirectResponse(google.authorize_url(settings, state=state), status_code=302)
+    response.set_cookie(
+        OAUTH_STATE_COOKIE,
+        state,
+        max_age=600,
+        httponly=True,
+        secure=settings.cookie_secure,
+        samesite="lax",
+        path="/api/v1/auth/google",
+    )
+    return response
+
+
+@router.get("/google/callback")
+async def google_callback(
+    request: Request,
+    code: str | None = None,
+    state: str | None = None,
+    store: AuthStore = Depends(get_auth_store),
+    settings: AuthSettings = Depends(get_auth_settings),
+) -> Response:
+    base = settings.public_url.rstrip("/")
+    expected_state = request.cookies.get(OAUTH_STATE_COOKIE)
+    failure = RedirectResponse(f"{base}/login?error=google", status_code=302)
+    if not settings.google_enabled or not code or not state or not expected_state:
+        return failure
+    if not secrets.compare_digest(state, expected_state):
+        return failure
+    try:
+        identity = await google.exchange_code(settings, code=code)
+    except Exception:  # network errors as well as GoogleAuthError
+        logger.exception("Google sign-in failed")
+        return failure
+
+    user = await store.upsert_google_user(
+        google_sub=identity.sub,
+        email=identity.email,
+        display_name=identity.display_name,
+    )
+    response = RedirectResponse(f"{base}/", status_code=302)
+    response.delete_cookie(OAUTH_STATE_COOKIE, path="/api/v1/auth/google")
+    await _start_session(request, response, user, store, settings)
     return response
 
 

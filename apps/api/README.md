@@ -9,6 +9,7 @@ FastAPI backend for TuviLM UI.
 - Login routes are mounted from `apps/api/src/tuvi_api/auth/routes.py`:
   - `GET /api/v1/auth/me`
   - `POST /api/v1/auth/register`, `POST /api/v1/auth/login`, `POST /api/v1/auth/logout`
+  - `GET /api/v1/auth/google/start`, `GET /api/v1/auth/google/callback`
 - Conversation history routes are mounted from `apps/api/src/tuvi_api/chat/routes.py`:
   - `POST /api/v1/chart-profiles`
   - `GET /api/v1/chart-profiles`
@@ -46,6 +47,7 @@ Settings come from env vars or `.env` (see `.env.example` at the repo root):
 | `CONVERSATION_HISTORY_STORE__DATABASE_NAME` | `tuvilm` | |
 | `AUTH__SECRET_KEY` | dev value | Required when `AUTH__PUBLIC_URL` is https |
 | `AUTH__PUBLIC_URL` | `http://localhost:3000` | The web app URL as the browser sees it |
+| `AUTH__GOOGLE_CLIENT_ID`, `AUTH__GOOGLE_CLIENT_SECRET` | unset | Google sign-in is off when unset. Redirect URI: `<AUTH__PUBLIC_URL>/api/v1/auth/google/callback` |
 | `CORS_ORIGINS` | `["http://localhost:3000"]` | JSON list. Only for browsers that call the API directly |
 | `AGENT_MODEL` | `openrouter:qwen/qwen3.7-max` | Needs `OPENROUTER_API_KEY` |
 | `BOOK_ROOT` | `data/tuvitanbien_chunking_compact/part_2` | Book files, not in git |

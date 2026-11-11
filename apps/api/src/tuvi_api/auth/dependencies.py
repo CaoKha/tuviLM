@@ -18,6 +18,7 @@ from tuvi_api.settings import get_settings
 
 SESSION_COOKIE = "tuvi_session"
 OWNER_COOKIE = "tuvi_owner"
+OAUTH_STATE_COOKIE = "tuvi_oauth_state"
 
 _OWNER_COOKIE_MAX_AGE = 365 * 24 * 3600
 

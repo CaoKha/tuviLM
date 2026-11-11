@@ -7,7 +7,8 @@ import httpx
 import pytest
 
 from tests.test_conversation_history_api import FakeConversationHistoryStore
-from tuvi_api.auth.dependencies import OWNER_COOKIE, SESSION_COOKIE
+from tuvi_api.auth import google, routes as auth_routes
+from tuvi_api.auth.dependencies import OAUTH_STATE_COOKIE, OWNER_COOKIE, SESSION_COOKIE
 from tuvi_api.auth.models import EmailTakenError, User
 from tuvi_api.auth.settings import AuthSettings
 from tuvi_api.auth.tokens import sign_owner_id, unsign_owner_id
@@ -202,6 +203,80 @@ async def test_logged_in_user_does_not_see_guest_data_of_others(client, stores) 
     profiles = await client.get("/api/v1/chart-profiles")
 
     assert profiles.json()["chart_profiles"] == []
+
+
+async def test_google_start_is_404_when_not_configured(client, stores) -> None:
+    response = await client.get("/api/v1/auth/google/start", follow_redirects=False)
+
+    assert response.status_code == 404
+
+
+@pytest.fixture()
+def google_settings():
+    settings = AuthSettings(
+        public_url="http://localhost:3000",
+        google_client_id="client-id",
+        google_client_secret="client-secret",
+    )
+    app.dependency_overrides[auth_routes.get_auth_settings] = lambda: settings
+    try:
+        yield settings
+    finally:
+        app.dependency_overrides.pop(auth_routes.get_auth_settings, None)
+
+
+async def test_google_start_redirects_with_a_state_cookie(client, stores, google_settings) -> None:
+    response = await client.get("/api/v1/auth/google/start", follow_redirects=False)
+
+    assert response.status_code == 302
+    location = response.headers["location"]
+    assert location.startswith(google.AUTHORIZE_URL)
+    assert f"state={response.cookies[OAUTH_STATE_COOKIE]}" in location
+    assert "redirect_uri=http%3A%2F%2Flocalhost%3A3000%2Fapi%2Fv1%2Fauth%2Fgoogle%2Fcallback" in location
+
+
+async def test_google_callback_rejects_a_wrong_state(client, stores, google_settings) -> None:
+    client.cookies.set(OAUTH_STATE_COOKIE, "expected", path="/api/v1/auth/google")
+
+    response = await client.get(
+        "/api/v1/auth/google/callback?code=abc&state=other", follow_redirects=False
+    )
+
+    assert response.status_code == 302
+    assert response.headers["location"] == "http://localhost:3000/login?error=google"
+    assert SESSION_COOKIE not in response.cookies
+
+
+async def test_google_callback_logs_the_user_in(
+    client, stores, google_settings, monkeypatch
+) -> None:
+    async def fake_exchange(settings, *, code):
+        assert code == "abc"
+        return google.GoogleIdentity(sub="google-1", email="g@example.com", display_name="G")
+
+    monkeypatch.setattr(google, "exchange_code", fake_exchange)
+    client.cookies.set(OAUTH_STATE_COOKIE, "state-1", path="/api/v1/auth/google")
+
+    response = await client.get(
+        "/api/v1/auth/google/callback?code=abc&state=state-1", follow_redirects=False
+    )
+
+    assert response.status_code == 302
+    assert response.headers["location"] == "http://localhost:3000/"
+    assert SESSION_COOKIE in response.cookies
+
+
+async def test_exchange_code_requires_a_verified_email(google_settings) -> None:
+    def handler(request: httpx.Request) -> httpx.Response:
+        if request.url == google.TOKEN_URL:
+            return httpx.Response(200, json={"access_token": "token"})
+        return httpx.Response(
+            200, json={"sub": "1", "email": "g@example.com", "email_verified": False}
+        )
+
+    async with httpx.AsyncClient(transport=httpx.MockTransport(handler)) as http:
+        with pytest.raises(google.GoogleAuthError):
+            await google.exchange_code(google_settings, code="abc", client=http)
 
 
 def test_owner_cookie_signature() -> None:
