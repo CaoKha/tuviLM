@@ -11,7 +11,7 @@ use tuvi_core::Chart;
 const MENH: &str = "Mệnh";
 
 /// Ngũ hành of a chính tinh, as the CSS variable suffix.
-fn element(chinh_tinh: &str) -> Option<&'static str> {
+pub(super) fn element(chinh_tinh: &str) -> Option<&'static str> {
     Some(match chinh_tinh {
         "Tử Vi" | "Thiên Phủ" => "tho",
         "Thất Sát" | "Vũ Khúc" => "kim",

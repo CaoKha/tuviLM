@@ -2,7 +2,7 @@
 //!
 //! - `form`: the "new chart" form data and its checks
 //! - `store`: the database model and queries
-//! - `grid`: the chart drawing
+//! - `grid`: the chart drawing and the cung popups
 //! - `accent`: the chart's accent color from cung Mệnh
 //!
 //! The database keeps only the birth data. Pages build the chart again with

@@ -186,8 +186,6 @@ reads its CSS and JS from `target/<profile>/assets/`. Without them, it does not 
 
 - Stars that move per period (lưu tinh, Tứ Hóa of a Đại hạn or a year),
   cách cục, câu phú
-- The web app does not show phụ tinh, Tứ Hóa, Tuần/Triệt, Bản mệnh,
-  Đại hạn or Tiểu hạn yet. `tuvi-core` computes them.
 - AI chat about the chart (the LLM client is ready: `crates/tuvi-llm`)
 - Users and login
 
