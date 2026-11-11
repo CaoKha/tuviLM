@@ -1,6 +1,7 @@
 //! Parity with the old Python engine. The fixtures were made by that engine,
-//! which is now removed (see git history). They are the reference: change them
-//! only on purpose, and say why in the PR.
+//! which is now removed (it is in commit 0d69bed). `scripts/gen_fixtures.py`
+//! makes them again; its top comment gives the command. They are the
+//! reference: change them only on purpose, and say why in the PR.
 
 use serde::Deserialize;
 use serde_json::Value;
