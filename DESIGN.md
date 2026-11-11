@@ -42,7 +42,8 @@ The accent is the element of the chính tinh in cung Mệnh:
 - No star (vô chính diệu) or no chart: the neutral lavender `#bca6f5`.
 
 The chart page sets `--accent` on its `<main>`
-(`crates/tuvi-web/src/features/charts/accent.rs`).
+(`crates/tuvi-web/src/features/charts/accent.rs`). The An sao preview sets it
+on `:root` with a `<style>` rule, so the whole page changes.
 
 ## Type
 
@@ -62,6 +63,35 @@ Both fonts load with the Vietnamese subset. Small labels are uppercase, bold,
 | `pill-primary` | The one main action on a screen: accent gradient, round |
 | `pill-ghost` | Other choices, for example the gender toggle |
 | `cosmos` | The fixed page backdrop, with two slow nebulae |
+
+## An sao screen
+
+The home page for a logged-in user. It casts a new chart
+(`crates/tuvi-web/src/features/an_sao/`).
+
+- Order on a phone: title, the preview, the input card, the main button, then
+  the saved charts. From 768px: title and preview on the left, the input card
+  and the button on the right.
+- The input card (`glass`): name, then three scroll-snap wheels (day, month,
+  year 1900–2099) over one accent band, then AM/PM, the birth clock and gender.
+- AM/PM and gender are segments (`.segment`): the picked one has the accent
+  gradient and `bg-0` text.
+- The birth clock (`.birth-clock`) has 12 hours, 12 at the top. A tap on the
+  ring picks an hour, a drag left or right winds the hand one hour per 22px,
+  and arrow keys step one hour. The center shows the hour, the canh giờ and
+  its range. The hand always turns the short way.
+- The preview (`.reward`) sleeps until the user picks an hour. Then it shows
+  the chính tinh of cung Mệnh and the caption "Chòm sao … đã thức", and the
+  page accent takes the color of the chart. Vô chính diệu keeps the neutral
+  accent.
+- The main button opens the confirm dialog (`.confirm-card`, a native
+  `<dialog>`). "Không nhắc lại" skips it next time (in `localStorage`).
+- Then the casting loader covers the page for 2.6 s: orbit rings, the crane
+  video (`mix-blend-mode: screen`) and three rotating lines. Under reduced
+  motion, the crane stays on its first frame.
+- A missing hour or gender shows a toast, and the clock pulses.
+- Every control is a native radio, so the form works without JavaScript. The
+  clock hand and the picked styles then come from CSS `:has()`.
 
 ## Chart
 

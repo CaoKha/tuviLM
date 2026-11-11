@@ -3690,6 +3690,8 @@ dependencies = [
  "futures-util",
  "pulldown-cmark",
  "serde",
+ "serde_json",
+ "serde_urlencoded",
  "toasty",
  "toasty-cli",
  "tokio",

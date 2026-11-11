@@ -24,8 +24,11 @@ Browser ──► tuvi-web (:3000, server-rendered HTML) ──► tuvi-core (ch
                     └─────────────────────────────────► Postgres (saved charts)
 ```
 
-1. The user enters a name, a solar birth date, an hour and a gender.
-2. `tuvi-web` checks the input and calls `tuvi_core::build_chart`.
+1. On the An sao screen, the user enters a name, a solar birth date (three
+   wheels), an hour (a 12-hour clock with AM/PM) and a gender. A preview shows
+   the chính tinh of cung Mệnh while the user picks.
+2. The form posts to `/charts`. `tuvi-web` checks the input and calls
+   `tuvi_core::build_chart`.
 3. `tuvi-web` saves the birth data in Postgres and opens `/charts/{id}`.
 4. The chart page builds the chart again and draws the 12 cung.
 
@@ -34,7 +37,8 @@ The database stores only the birth data, not the chart. One chart takes about
 you do not need to migrate data.
 
 Topcoat renders all HTML on the server. There is no separate API and no
-JavaScript build step.
+JavaScript build step. One small static script (`an_sao.js`) adds the wheel
+scroll, the clock drag and the confirm dialog to the An sao screen.
 
 ## Setup
 
@@ -138,15 +142,17 @@ crates/
     tests/bench.rs                speed test
   tuvi-web/                       web app
     src/main.rs                   start-up, database connection
-    src/app.rs                    root layout and home page (URL /)
-    src/app/charts.rs             chart form, POST /charts
+    src/app.rs                    root layout, home page (URL /), web manifest
+    src/app/charts.rs             POST /charts (saves the An sao form)
     src/app/charts/chart_id.rs    GET /charts/{id}
     src/features/charts/          form checks, database queries, chart grid, accent
+    src/features/an_sao/          An sao screen, preview shard, an_sao.js
     src/features/chat/            chat messages, system prompt, markdown, LLM service
     src/features/auth/            users, sessions, Argon2 passwords, form checks
     src/app/login.rs, register.rs, logout.rs, ho_so.rs   account pages
     src/app/charts/chart_id/hoi_ai.rs   GET and POST /charts/{id}/hoi-ai
     styles.css                    theme: tokens and utilities (see DESIGN.md)
+    assets/                       app icons and the crane video (served with asset!)
     toasty/                       database migrations
   tuvi-llm/                       LLM client (OpenAI chat-completions format)
     src/config.rs                 provider, key, model and URL from the environment
@@ -238,6 +244,14 @@ reads its CSS and JS from `target/<profile>/assets/`. Without them, it does not 
   for a man, counter-clockwise for a woman.
 - A cung lists its Tứ Hóa in the old engine's id order (Khoa, Kỵ, Lộc, Quyền),
   not in the usual order (Lộc, Quyền, Khoa, Kỵ).
+- The An sao preview shard (`POST /an-sao/menh`) needs no login. It only
+  builds a chart from the posted numbers, and it saves nothing.
+- Without JavaScript, the An sao wheels do not center the picked value in
+  every browser, and the clock center does not show the picked hour. The
+  form still posts, and the server checks every field.
+- Topcoat runtime expressions cannot parse a string to a number, read the
+  scroll position or a pointer angle, or use `localStorage`. `an_sao.js` does
+  these parts (see `src/features/an_sao.rs`).
 - Topcoat and Toasty are early-stage projects. Expect breaking changes when you
   update them.
 
