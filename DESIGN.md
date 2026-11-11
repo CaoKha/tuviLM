@@ -68,8 +68,16 @@ Both fonts load with the Vietnamese subset. Small labels are uppercase, bold,
 - A 4×4 grid. The 12 cung go around the edge, read clockwise from Tị at the top
   left. The center 2×2 shows the name and birth data.
 - Each cung shows: role (top left), Địa Chi (top right), chính tinh in the
-  accent color, "Vô chính diệu" when empty, and Thiên Can (bottom).
+  accent color ("Vô chính diệu" when empty), the first two phụ tinh and "+N",
+  coral flags (Cung Thân, Tuần, Triệt), and on the bottom row the Tràng Sinh
+  stage (left) and the Đại hạn ages (right).
 - Cung Mệnh has an accent border and a light accent fill.
+- A tap on a cung opens its popup: Thiên Can, Địa Chi and Âm/Dương, the
+  Tràng Sinh stage, Đại hạn and Tiểu hạn, all chính tinh with Tứ Hóa (in the
+  order Lộc, Quyền, Khoa, Kỵ), and all phụ tinh. Each star has a dot in the
+  color of its element; stars without a known element use `muted`.
+- Popups use the HTML `popover` attribute, so the browser handles Esc, a tap
+  outside and focus. Do not add a script for this.
 
 ## Rules
 
