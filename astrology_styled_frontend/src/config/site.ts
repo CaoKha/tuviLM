@@ -6,13 +6,7 @@
  * destination means adding a row, not touching two components.
  */
 
-export const NAV_ICONS = [
-  "banMenh",
-  "vanHan",
-  "hoiAi",
-  "nangCao",
-  "hoSo",
-] as const;
+export const NAV_ICONS = ["banMenh", "vanHan", "hoiAi", "nangCao", "hoSo"] as const;
 
 export type NavIcon = (typeof NAV_ICONS)[number];
 
@@ -51,6 +45,8 @@ export const NAV_ITEMS: readonly NavItem[] = [
     group: GROUP_CHART,
     title: "Bản mệnh",
     requiresChart: true,
+    // The full chart is a detail view opened from Bản mệnh.
+    alsoMatches: ["/la-so"],
   },
   {
     href: "/van-han",
@@ -75,8 +71,8 @@ export const NAV_ITEMS: readonly NavItem[] = [
     group: GROUP_DEEP,
     title: "Thiên Bàn",
     requiresChart: true,
-    // The full 12-cung chart is reached from Thiên Bàn and shares its tab.
-    alsoMatches: ["/la-so"],
+    // Capability reports are launched from Thiên Bàn and share its tab.
+    alsoMatches: ["/nang-luc"],
   },
   {
     href: "/ho-so",
@@ -90,6 +86,12 @@ export const NAV_ITEMS: readonly NavItem[] = [
 
 /** Screens that have no tab of their own but still title the top bar. */
 const EXTRA_SCREENS: Record<string, ScreenMeta> = {
+  "/nang-luc": {
+    href: "/nang-luc",
+    group: GROUP_DEEP,
+    title: "Khám phá năng lực",
+    requiresChart: true,
+  },
   "/": { href: "/", group: GROUP_CHART, title: "An sao", requiresChart: false },
   "/goi": { href: "/goi", group: "Tài khoản", title: "Gói sử dụng", requiresChart: false },
   [ADMIN_REDEEM_CODES_ROUTE]: {
@@ -100,7 +102,7 @@ const EXTRA_SCREENS: Record<string, ScreenMeta> = {
   },
   "/la-so": {
     href: "/la-so",
-    group: GROUP_DEEP,
+    group: GROUP_CHART,
     title: "Lá số gốc · 12 cung",
     requiresChart: true,
   },

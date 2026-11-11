@@ -1,5 +1,7 @@
 "use client";
 
+import { useCapabilityStore } from "@/features/nang-luc/data";
+
 import { useEffect } from "react";
 
 import { usePreferencesStore } from "@/store/preferences-store";
@@ -12,6 +14,7 @@ import { usePreferencesStore } from "@/store/preferences-store";
  */
 export function StoreHydration() {
   useEffect(() => {
+    void useCapabilityStore.persist.rehydrate();
     void usePreferencesStore.persist.rehydrate();
   }, []);
 
