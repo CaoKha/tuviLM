@@ -1,0 +1,169 @@
+# TuviLM
+
+TuviLM makes a **Lá Số Tử Vi** (Vietnamese astrology chart) from a birth date
+and hour.
+
+This branch rewrites TuviLM in Rust. One Rust binary and Postgres replace the
+Next.js app, the FastAPI server and MongoDB. The old Python and Next.js code
+stays in the repo as the reference until the Rust app has all its features.
+
+## Parts
+
+| Folder | What it is | Tech |
+| --- | --- | --- |
+| `crates/tuvi-core/` | Chart engine. No IO, no network, no database. | Rust |
+| `web/` | Web app: pages, forms, database | [Topcoat](https://github.com/tokio-rs/topcoat), [Toasty](https://github.com/tokio-rs/toasty), Postgres |
+| `src/refactored/` | Old chart engine. The Rust tests compare against it. | Python |
+| `api/`, `astrology_styled_frontend/`, `frontend/` | Old backend and web apps. Do not add features here. | FastAPI, Next.js |
+
+## How it works
+
+```text
+Browser ──► web (:3000, server-rendered HTML) ──► tuvi-core (chart engine)
+                    └────────────────────────────► Postgres (saved charts)
+```
+
+1. The user enters a name, a solar birth date, an hour and a gender.
+2. `web` checks the input and calls `tuvi_core::build_chart`.
+3. `web` saves the birth data in Postgres and opens `/charts/{id}`.
+4. The chart page builds the chart again and draws the 12 cung.
+
+The database stores only the birth data, not the chart. One chart takes about
+300 ns to build, so the app builds it on each read. When the engine changes,
+you do not need to migrate data.
+
+Topcoat renders all HTML on the server. There is no separate API and no
+JavaScript build step.
+
+## Setup
+
+You need: Rust (stable, edition 2024), Docker, and the Topcoat CLI:
+
+```bash
+cargo install topcoat-cli
+```
+
+**1. Start Postgres** (from the repo root)
+
+```bash
+docker compose up -d postgres
+```
+
+The app uses `postgres://tuvi:tuvi@localhost:5432/tuvi`. Set `DATABASE_URL` to
+use a different database.
+
+**2. Make the tables** (from `web/`)
+
+```bash
+cd web
+cargo run -- toasty migration apply
+```
+
+**3. Start the app** (from `web/`)
+
+```bash
+topcoat dev               # http://127.0.0.1:3000
+```
+
+The dev server rebuilds the app and reloads the page when you save a file.
+
+## Folders
+
+```text
+Cargo.toml                    workspace
+crates/tuvi-core/
+  src/lib.rs                  public API: BirthInput, Chart, build_chart
+  src/calendar.rs             solar to lunar date, hour branch
+  src/lunar_table.rs          lunar years 1800–2199 (generated)
+  src/cung.rs                 12 cung roles, Mệnh, Thân, Thiên Can of each cung
+  src/cuc.rs                  Cục
+  src/chinh_tinh.rs           the 14 main stars
+  scripts/                    generators for the lunar table and test fixtures
+  tests/parity.rs             compares every chart with the Python engine
+web/
+  src/app.rs                  layout, home page, chart form
+  src/app/charts.rs           POST /charts: save a chart
+  src/app/charts/chart_id.rs  GET /charts/{id}: the chart page
+  src/features/charts.rs      database model and chart rules
+  src/components/             Topcoat UI components (edit them freely)
+  toasty/                     database migrations
+docker-compose.yaml           Postgres (and MongoDB for the old backend)
+```
+
+## Tests
+
+```bash
+cargo test --workspace
+cargo clippy --workspace --all-targets -- -D warnings
+```
+
+Measure the speed of the engine:
+
+```bash
+cargo test --release -p tuvi-core --test bench -- --ignored --nocapture
+```
+
+There is no CI. Run the tests before you open a PR.
+
+## How to contribute
+
+**Change the chart engine:** edit `crates/tuvi-core/`. The Python engine is
+the reference. After a change, make the fixtures again and run the tests:
+
+```bash
+uv sync
+uv run python crates/tuvi-core/scripts/gen_fixtures.py
+cargo test -p tuvi-core
+```
+
+**Change a database model:** edit `web/src/features/*.rs`. Then, from `web/`:
+
+```bash
+cargo run -- toasty migration generate
+cargo run -- toasty migration apply
+```
+
+Commit the new files in `web/toasty/`. Run these commands from `web/`, because
+Toasty writes `toasty/` in the current folder.
+
+**Add a page:** add a file in `web/src/app/`. The file path is the URL path.
+Put data and rules in `web/src/features/`, not in the page.
+
+**Add a UI component:** from `web/`, run `topcoat ui add <name>`.
+
+**Run without `topcoat dev`:** run `topcoat asset bundle` first. The binary
+reads its CSS and JS from `target/<profile>/assets/`. Without them, it does not start.
+
+**Rules:**
+
+- `tuvi-core` has no IO, network, database or AI calls.
+- Code names use Vietnamese words without accents: `cung`, `sao`, `dia_chi`.
+- No `unwrap` outside tests. No `unsafe`.
+- Make a branch and open a PR to `main`.
+
+## Not done yet
+
+- Phụ tinh, Tứ Hóa, Tuần/Triệt, Đại hạn/Tiểu hạn, cách cục, câu phú
+- AI chat about the chart
+- Users and login
+
+## Known issues
+
+- The engine takes the birth hour as Vietnam time. It does not handle time zones.
+- A date in a leap month gets the same month number as the regular month. The
+  Python engine does the same. Some schools of Tử Vi use the next month.
+- Supported dates are 1800-01-25 (Tết 1800) to 2199-12-31 22:59.
+- Topcoat and Toasty are early-stage projects. Expect breaking changes when you
+  update them.
+
+## Words
+
+| Word | Meaning |
+| --- | --- |
+| Lá số | The chart |
+| Cung | One of 12 boxes on the chart. Each has a role: Mệnh (self), Tài Bạch (money), … |
+| Địa Chi | The 12 positions (Tý to Hợi) |
+| Thiên Can | The 10 heavenly stems |
+| Sao | Star. Chính tinh = 14 main stars. Phụ tinh = minor stars. |
+| Cục | Element from the Mệnh box. It decides where the star Tử Vi goes. |
+| Thân | The second "self" cung. It is marked "(Thân)" on the chart. |
