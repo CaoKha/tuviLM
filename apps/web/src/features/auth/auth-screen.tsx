@@ -2,10 +2,11 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { type FormEvent, useState } from "react";
+import { type FormEvent, useEffect, useState } from "react";
 import { z } from "zod";
 
-import { authClient } from "@/lib/auth-client";
+import { signInWithGoogle as startGoogleSignIn, useLogin, useRegister, useSession } from "@/lib/api/auth";
+import { ApiErrorException } from "@/lib/http/errors";
 import { showToast } from "@/lib/toast";
 import { cn } from "@/lib/utils";
 
@@ -34,13 +35,21 @@ const registerFormSchema = z
     path: ["confirmPassword"],
   });
 
-export function AuthScreen({ mode }: { mode: AuthMode }) {
+export function AuthScreen({ mode, googleError = false }: { mode: AuthMode; googleError?: boolean }) {
   const isLogin = mode === "login";
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [passwordValue, setPasswordValue] = useState("");
   const [pendingAction, setPendingAction] = useState<"email" | "google" | null>(null);
+  const { data: session } = useSession();
+  const login = useLogin();
+  const register = useRegister();
+
+  // The backend sends the browser back to /login?error=google when Google sign-in fails.
+  useEffect(() => {
+    if (googleError) showToast("Đăng nhập Google không thành công. Vui lòng thử lại.");
+  }, [googleError]);
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -69,44 +78,27 @@ export function AuthScreen({ mode }: { mode: AuthMode }) {
 
     setPendingAction("email");
     try {
-      const result = isLogin
-        ? await authClient.signIn.email({ email, password })
-        : await authClient.signUp.email({
-            name: displayName,
-            email,
-            password,
-          });
-
-      if (result.error) {
-        showToast(authErrorMessage(result.error.message, isLogin));
-        return;
+      if (isLogin) {
+        await login.mutateAsync({ email, password });
+      } else {
+        await register.mutateAsync({ displayName, email, password });
       }
-
       router.replace("/");
       router.refresh();
-    } catch {
-      showToast("Không thể kết nối máy chủ xác thực. Vui lòng thử lại sau.");
+    } catch (error) {
+      showToast(authErrorMessage(error, isLogin));
     } finally {
       setPendingAction(null);
     }
   };
 
-  const signInWithGoogle = async () => {
-    setPendingAction("google");
-    try {
-      const result = await authClient.signIn.social({
-        provider: "google",
-        callbackURL: "/",
-        errorCallbackURL: "/login",
-      });
-      if (result.error) {
-        showToast(authErrorMessage(result.error.message, true));
-        setPendingAction(null);
-      }
-    } catch {
-      showToast("Không thể mở đăng nhập Google. Vui lòng thử lại sau.");
-      setPendingAction(null);
+  const signInWithGoogle = () => {
+    if (session !== undefined && !session.google_enabled) {
+      showToast("Google OAuth chưa được cấu hình trên máy chủ.");
+      return;
     }
+    setPendingAction("google");
+    startGoogleSignIn();
   };
 
   return (
@@ -129,7 +121,7 @@ export function AuthScreen({ mode }: { mode: AuthMode }) {
               showConfirmPassword={showConfirmPassword}
               showPassword={showPassword}
               onConfirmPasswordToggle={() => setShowConfirmPassword((visible) => !visible)}
-              onGoogleSignIn={() => void signInWithGoogle()}
+              onGoogleSignIn={signInWithGoogle}
               onPasswordChange={setPasswordValue}
               onPasswordToggle={() => setShowPassword((visible) => !visible)}
               onSubmit={(event) => void handleSubmit(event)}
@@ -613,16 +605,13 @@ function getPasswordStrength(value: string): number {
   ].filter(Boolean).length;
 }
 
-function authErrorMessage(message: string | undefined, isLogin: boolean): string {
-  const normalizedMessage = message?.toLocaleLowerCase("vi");
-
-  if (normalizedMessage?.includes("provider")) {
-    return "Google OAuth chưa được cấu hình trên máy chủ.";
+function authErrorMessage(error: unknown, isLogin: boolean): string {
+  if (!(error instanceof ApiErrorException) || error.error.kind === "network") {
+    return "Không thể kết nối máy chủ xác thực. Vui lòng thử lại sau.";
   }
-  if (normalizedMessage?.includes("already")) {
+  if (error.error.kind === "http" && error.error.status === 409) {
     return "Email này đã có tài khoản. Hãy đăng nhập nhé.";
   }
-
   return isLogin
     ? "Email hoặc mật khẩu chưa đúng."
     : "Không thể tạo tài khoản. Vui lòng kiểm tra lại thông tin.";

@@ -9,6 +9,10 @@ import type { BirthInfo, PreviewLasoRequest } from "./schemas";
 export const queryKeys = {
   health: () => ["health"] as const,
 
+  auth: {
+    me: () => ["auth", "me"] as const,
+  },
+
   laso: {
     all: () => ["laso"] as const,
     /** Prefix of the chart family, for query defaults and predicates. */

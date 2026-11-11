@@ -233,6 +233,21 @@ export const previewLasoResponseSchema = z.object({
 
 export type PreviewLasoResponse = z.infer<typeof previewLasoResponseSchema>;
 
+export const authUserSchema = z.object({
+  id: z.string(),
+  email: z.string(),
+  display_name: z.string().nullable(),
+});
+export type AuthUser = z.infer<typeof authUserSchema>;
+
+export const meResponseSchema = z.object({
+  user: authUserSchema.nullable(),
+  google_enabled: z.boolean(),
+});
+export type MeResponse = z.infer<typeof meResponseSchema>;
+
+export const authUserResponseSchema = z.object({ user: authUserSchema });
+
 export const chartProfileSchema = z.object({
   id: z.string(),
   display_name: z.string(),

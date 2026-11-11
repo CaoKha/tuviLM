@@ -19,6 +19,11 @@ The backend runs separately, from the repo root:
 uv run uvicorn tuvi_api.main:app --reload
 ```
 
+The browser only calls `/api/*` on this site. `next.config.ts` forwards those
+requests to `API_ORIGIN` (default `http://localhost:8000`), so the login and guest
+cookies belong to this site. Login lives in the backend (`/api/v1/auth/*`); the
+client side is `src/lib/api/auth.ts`.
+
 ## Commands
 
 | Command | What it does |

@@ -2,18 +2,19 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
-
-import { authClient } from "@/lib/auth-client";
+import { useLogout, userLabel, useSession } from "@/lib/api/auth";
 import { cn } from "@/lib/utils";
 
 export function AuthLinks({ className }: { className?: string }) {
   const router = useRouter();
-  const { data: session, isPending } = authClient.useSession();
-  const [isSigningOut, setIsSigningOut] = useState(false);
+  const { data: session, isPending } = useSession();
+  const logout = useLogout();
+  const isSigningOut = logout.isPending;
+  const user = session?.user ?? null;
 
-  if (session !== null && session !== undefined) {
-    const initial = session.user.name.trim().charAt(0).toLocaleUpperCase("vi") || "✦";
+  if (user !== null) {
+    const name = userLabel(user);
+    const initial = name.trim().charAt(0).toLocaleUpperCase("vi") || "✦";
 
     return (
       <div className={cn("flex min-w-0 items-center gap-2", className)} aria-label="Tài khoản">
@@ -21,7 +22,7 @@ export function AuthLinks({ className }: { className?: string }) {
           <span className="accent-gradient grid size-6 shrink-0 place-items-center rounded-full text-[11px] text-bg-0">
             {initial}
           </span>
-          <span className="hidden max-w-28 truncate md:inline">{session.user.name}</span>
+          <span className="hidden max-w-28 truncate md:inline">{name}</span>
         </span>
         <button
           type="button"
@@ -56,13 +57,12 @@ export function AuthLinks({ className }: { className?: string }) {
   );
 
   async function signOut() {
-    setIsSigningOut(true);
     try {
-      await authClient.signOut();
-      router.replace("/");
-      router.refresh();
-    } finally {
-      setIsSigningOut(false);
+      await logout.mutateAsync();
+    } catch {
+      // The session cookie may already be gone; land on the home screen either way.
     }
+    router.replace("/");
+    router.refresh();
   }
 }

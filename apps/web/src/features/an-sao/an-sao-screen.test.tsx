@@ -11,6 +11,13 @@ vi.mock("next/navigation", () => ({
   useRouter: () => ({ push: vi.fn() }),
 }));
 
+// The header's account links read the session through React Query.
+vi.mock("@/lib/api/auth", () => ({
+  useSession: () => ({ data: { user: null, google_enabled: false }, isPending: false }),
+  useLogout: () => ({ isPending: false, mutateAsync: vi.fn() }),
+  userLabel: () => "",
+}));
+
 vi.mock("@/lib/api/hooks", () => ({
   profileDisplayName: () => "01/01/2000",
   useBuildLaso: () => ({ mutateAsync: vi.fn() }),
