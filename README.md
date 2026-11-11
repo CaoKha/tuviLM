@@ -3,9 +3,8 @@
 TuviLM makes a **Lá Số Tử Vi** (Vietnamese astrology chart) from a birth date
 and hour.
 
-This branch rewrites TuviLM in Rust. One Rust binary and Postgres replace the
-Next.js app, the FastAPI server and MongoDB. The old Python and Next.js code
-stays in the repo as the reference until the Rust app has all its features.
+TuviLM is one Rust binary with a Postgres database. It replaces the old
+Next.js app, FastAPI server and MongoDB. The old code is in git history.
 
 ## Parts
 
@@ -13,8 +12,8 @@ stays in the repo as the reference until the Rust app has all its features.
 | --- | --- | --- |
 | `crates/tuvi-core/` | Chart engine. No IO, no network, no database. | Rust |
 | `web/` | Web app: pages, forms, database | [Topcoat](https://github.com/tokio-rs/topcoat), [Toasty](https://github.com/tokio-rs/toasty), Postgres |
-| `src/refactored/` | Old chart engine. The Rust tests compare against it. | Python |
-| `api/`, `astrology_styled_frontend/`, `frontend/` | Old backend and web apps. Do not add features here. | FastAPI, Next.js |
+| `data/` | Cách cục rules and câu phú text, for later features | YAML, JSON |
+| `docs/` | Design docs. Some describe the old Python code. | Markdown |
 
 ## How it works
 
@@ -78,8 +77,7 @@ crates/tuvi-core/
   src/cung.rs                 12 cung roles, Mệnh, Thân, Thiên Can of each cung
   src/cuc.rs                  Cục
   src/chinh_tinh.rs           the 14 main stars
-  scripts/                    generators for the lunar table and test fixtures
-  tests/parity.rs             compares every chart with the Python engine
+  tests/parity.rs             compares 359 charts with saved reference data
 web/
   src/app.rs                  layout, home page, chart form
   src/app/charts.rs           POST /charts: save a chart
@@ -87,7 +85,7 @@ web/
   src/features/charts.rs      database model and chart rules
   src/components/             Topcoat UI components (edit them freely)
   toasty/                     database migrations
-docker-compose.yaml           Postgres (and MongoDB for the old backend)
+docker-compose.yaml           Postgres
 ```
 
 ## Tests
@@ -107,14 +105,10 @@ There is no CI. Run the tests before you open a PR.
 
 ## How to contribute
 
-**Change the chart engine:** edit `crates/tuvi-core/`. The Python engine is
-the reference. After a change, make the fixtures again and run the tests:
-
-```bash
-uv sync
-uv run python crates/tuvi-core/scripts/gen_fixtures.py
-cargo test -p tuvi-core
-```
+**Change the chart engine:** edit `crates/tuvi-core/` and run
+`cargo test -p tuvi-core`. The old Python engine made the reference charts in
+`tests/fixtures/charts.json`. Change this file only when you change a result on
+purpose, and say why in the PR.
 
 **Change a database model:** edit `web/src/features/*.rs`. Then, from `web/`:
 
@@ -150,8 +144,8 @@ reads its CSS and JS from `target/<profile>/assets/`. Without them, it does not 
 ## Known issues
 
 - The engine takes the birth hour as Vietnam time. It does not handle time zones.
-- A date in a leap month gets the same month number as the regular month. The
-  Python engine does the same. Some schools of Tử Vi use the next month.
+- A date in a leap month gets the same month number as the regular month.
+  The old engine did the same. Some schools of Tử Vi use the next month.
 - Supported dates are 1800-01-25 (Tết 1800) to 2199-12-31 22:59.
 - Topcoat and Toasty are early-stage projects. Expect breaking changes when you
   update them.

@@ -15,14 +15,5 @@ services:
       timeout: 3s
       retries: 15
 
-  # Used by the old Python backend (api/). Remove when the Rust app replaces it.
-  mongodb:
-    image: mongo:7
-    ports:
-      - "27017:27017"
-    volumes:
-      - mongodb_data:/data/db
-
 volumes:
   postgres_data:
-  mongodb_data:

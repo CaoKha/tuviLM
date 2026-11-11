@@ -1,1 +1,0 @@
-"""Placement-rule context package."""
