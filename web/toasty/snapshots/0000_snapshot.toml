@@ -1,0 +1,59 @@
+version = 1
+
+[schema]
+
+[[schema.tables]]
+id = 0
+name = "saved_charts"
+primary_key = { columns = [{ table = 0, index = 0 }], index = { table = 0, index = 0 } }
+
+[[schema.tables.columns]]
+id = { table = 0, index = 0 }
+name = "id"
+ty = "U64"
+storage_ty = { UnsignedInteger = 8 }
+auto_increment = true
+
+[[schema.tables.columns]]
+id = { table = 0, index = 1 }
+name = "name"
+ty = "String"
+storage_ty = "Text"
+
+[[schema.tables.columns]]
+id = { table = 0, index = 2 }
+name = "year"
+ty = "I32"
+storage_ty = { Integer = 4 }
+
+[[schema.tables.columns]]
+id = { table = 0, index = 3 }
+name = "month"
+ty = "I16"
+storage_ty = { Integer = 2 }
+
+[[schema.tables.columns]]
+id = { table = 0, index = 4 }
+name = "day"
+ty = "I16"
+storage_ty = { Integer = 2 }
+
+[[schema.tables.columns]]
+id = { table = 0, index = 5 }
+name = "hour"
+ty = "I16"
+storage_ty = { Integer = 2 }
+
+[[schema.tables.columns]]
+id = { table = 0, index = 6 }
+name = "gender"
+ty = "String"
+storage_ty = "Text"
+
+[[schema.tables.indices]]
+id = { table = 0, index = 0 }
+name = "index_saved_charts_by_id"
+on = 0
+columns = [{ column = { table = 0, index = 0 }, op = "Eq", scope = "Partition" }]
+unique = true
+primary_key = true
