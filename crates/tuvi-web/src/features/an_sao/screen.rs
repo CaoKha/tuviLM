@@ -210,7 +210,7 @@ pub async fn an_sao_screen(
 
         casting_loader()
         <div
-            class="pointer-events-none fixed bottom-[22px] left-1/2 z-40 w-max max-w-[calc(100%-32px)] -translate-x-1/2 translate-y-5 rounded-full border border-accent-glow bg-bg-1/95 px-[18px] py-3 text-[13.5px] opacity-0 transition data-show:translate-y-0 data-show:opacity-100"
+            class="pointer-events-none fixed bottom-[calc(var(--spacing-tabbar)+22px)] left-1/2 z-40 w-max max-w-[calc(100%-32px)] -translate-x-1/2 translate-y-5 rounded-full border border-accent-glow bg-bg-1/95 px-[18px] py-3 text-[13.5px] opacity-0 transition data-show:translate-y-0 data-show:opacity-100"
             role="status"
             aria-live="polite"
             data-toast=""

@@ -8,13 +8,14 @@ use topcoat::{
     router::{RouterBuilder, Slot, content::Json, href, layout, module_router, page, route},
     runtime::RuntimeLayer,
     tailwind,
-    view::{View, view},
+    view::{View, class, view},
 };
 
 use crate::features::{
     an_sao::{an_sao_screen, menh_preview},
     auth::current_user,
     charts::recent,
+    shell::{LOGO, app_nav, brand},
 };
 
 pub mod charts;
@@ -46,7 +47,6 @@ const BODY_FONT: Font = fontsource_font!(
 const FAVICON: Asset = asset!("assets/icons/favicon.ico");
 const FAVICON_16: Asset = asset!("assets/icons/favicon-16x16.png");
 const FAVICON_32: Asset = asset!("assets/icons/favicon-32x32.png");
-const FAVICON_48: Asset = asset!("assets/icons/favicon-48x48.png");
 const APPLE_TOUCH_ICON: Asset = asset!("assets/icons/apple-touch-icon.png");
 const ANDROID_ICON_192: Asset = asset!("assets/icons/android-chrome-192x192.png");
 const ANDROID_ICON_512: Asset = asset!("assets/icons/android-chrome-512x512.png");
@@ -95,6 +95,7 @@ async fn web_manifest(cx: &Cx) -> Result<Json<serde_json::Value>> {
 
 #[layout]
 async fn root(cx: &Cx, slot: Slot<'_>) -> Result<impl View> {
+    let user = current_user(cx).await?;
     Ok(view! {
         <!DOCTYPE html>
         <html lang="vi" class="dark">
@@ -113,7 +114,7 @@ async fn root(cx: &Cx, slot: Slot<'_>) -> Result<impl View> {
                 <link rel="icon" href=(FAVICON) sizes="any">
                 <link rel="icon" type="image/png" sizes="16x16" href=(FAVICON_16)>
                 <link rel="icon" type="image/png" sizes="32x32" href=(FAVICON_32)>
-                <link rel="icon" type="image/png" sizes="48x48" href=(FAVICON_48)>
+                <link rel="icon" type="image/png" sizes="48x48" href=(LOGO)>
                 <link rel="apple-touch-icon" sizes="180x180" href=(APPLE_TOUCH_ICON)>
                 <link rel="manifest" href="/manifest.webmanifest">
                 <link rel="stylesheet" href=(tailwind::stylesheet!())>
@@ -124,29 +125,30 @@ async fn root(cx: &Cx, slot: Slot<'_>) -> Result<impl View> {
             </head>
             <body>
                 cosmos()
-                <div class="relative z-10">
+                <div
+                    class=(class!(
+                        "relative z-10",
+                        "pb-tabbar lg:pt-8 lg:pl-rail" if user.is_some(),
+                    ))
+                >
+                    if let Some(user) = &user {
+                        app_nav(user_id: user.id)
+                    }
                     <header
-                        class="mx-auto flex max-w-5xl items-baseline gap-3 px-4 pt-6 pb-5"
+                        class=(class!(
+                            "mx-auto flex max-w-5xl items-center justify-between gap-3 px-4 pt-6 pb-5",
+                            "lg:hidden" if user.is_some(),
+                        ))
                     >
-                        <a
-                            href=(href!(home))
-                            class="flex items-center gap-2 self-center font-display text-2xl font-semibold"
-                        >
-                            <img
-                                src=(FAVICON_48)
-                                alt=""
-                                width="48"
-                                height="48"
-                                class="size-9 drop-shadow-[0_0_10px_var(--accent-glow)]"
+                        brand()
+                        if user.is_none() {
+                            <a
+                                href=(href!(login::page))
+                                class="pill-ghost rounded-full px-4 py-1.5 text-xs font-semibold"
                             >
-                            "Thiên Hạc"
-                        </a>
-                        <span
-                            class="text-[10px] font-bold tracking-[0.24em] text-muted uppercase max-sm:hidden"
-                        >
-                            "An sao & luận giải Tử Vi"
-                        </span>
-                        account_link()
+                                "Đăng nhập"
+                            </a>
+                        }
                     </header>
                     (slot)
                 </div>
@@ -168,29 +170,6 @@ async fn cosmos(cx: &Cx) -> Result<impl View> {
                 class="animate-breathe absolute right-[-12vmax] bottom-[-10vmax] h-[50vmax] w-[50vmax] rounded-full bg-[radial-gradient(circle,rgba(79,157,224,0.35),transparent_60%)] opacity-50 blur-[60px] [animation-delay:-4s] max-sm:hidden"
             ></div>
         </div>
-    })
-}
-
-/// Top right: the profile link when logged in, else the login link.
-#[topcoat::view::component]
-async fn account_link(cx: &Cx) -> Result<impl View> {
-    let user = current_user(cx).await?;
-    Ok(view! {
-        if let Some(user) = &user {
-            <a
-                href=(href!(ho_so::page))
-                class="pill-ghost ml-auto max-w-40 truncate rounded-full px-4 py-1.5 text-xs font-semibold"
-            >
-                (user.display_name.as_str())
-            </a>
-        } else {
-            <a
-                href=(href!(login::page))
-                class="pill-ghost ml-auto rounded-full px-4 py-1.5 text-xs font-semibold"
-            >
-                "Đăng nhập"
-            </a>
-        }
     })
 }
 
@@ -232,7 +211,7 @@ async fn landing(cx: &Cx) -> Result<impl View> {
 }
 
 #[page]
-async fn home(cx: &Cx) -> Result<impl View> {
+pub async fn home(cx: &Cx) -> Result<impl View> {
     let user = current_user(cx).await?;
     let saved_charts = match &user {
         Some(user) => recent(cx, user.id, RECENT_LIMIT).await?,

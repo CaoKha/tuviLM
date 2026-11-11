@@ -149,6 +149,7 @@ crates/
     src/features/an_sao/          An sao screen, preview shard, constellations, an_sao.js
     src/features/chat/            chat messages, system prompt, markdown, LLM service
     src/features/auth/            users, sessions, Argon2 passwords, form checks
+    src/features/shell/           app navigation: tab bar, rail, brand
     src/app/login.rs, register.rs, logout.rs, ho_so.rs   account pages
     src/app/charts/chart_id/hoi_ai.rs   GET and POST /charts/{id}/hoi-ai
     styles.css                    theme: tokens and utilities (see DESIGN.md)
@@ -224,6 +225,8 @@ reads its CSS and JS from `target/<profile>/assets/`. Without them, it does not 
 
 ## Not done yet
 
+- The Bản mệnh and Vận hạn screens: their tabs are locked ("Sắp có")
+- A desktop top bar with the screen title
 - Stars that move per period (lưu tinh, Tứ Hóa of a Đại hạn or a year),
   cách cục, câu phú
 - AI chat: tools, cách cục and the book Tử Vi Tân Biên (the chat sees only the chart)

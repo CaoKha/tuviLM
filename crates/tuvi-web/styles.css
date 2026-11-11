@@ -35,6 +35,11 @@
 
   --radius-card: 26px;
 
+  /* The app navigation (src/features/shell/): the left rail from `lg`, and
+     the room the bottom tab bar takes below `lg` (`pb-tabbar`). */
+  --spacing-rail: 250px;
+  --spacing-tabbar: calc(74px + env(safe-area-inset-bottom, 0px));
+
   --font-display: "Fraunces", Georgia, serif;
   --font-sans: "Be Vietnam Pro", system-ui, sans-serif;
 }
@@ -97,6 +102,13 @@
   --accent: var(--accent-neutral);
   --accent-2: var(--accent-neutral-light);
   --accent-glow: var(--accent-neutral-glow);
+}
+
+/* From `lg` the tab bar is a rail, so pages keep no room for it. */
+@media (width >= 64rem) {
+  :root {
+    --spacing-tabbar: 0px;
+  }
 }
 
 /* The frosted surface of every card and bar. */
