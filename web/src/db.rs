@@ -22,7 +22,6 @@ pub async fn connect() -> toasty::Result<Db> {
 
 /// Clones the database handle stored in the context. The clone uses the same
 /// connection pool, so it is cheap to create.
-#[allow(dead_code, reason = "features call it once they store data")]
 pub fn db(cx: &Cx) -> Db {
     context::<Db>(cx).clone()
 }
