@@ -1,6 +1,6 @@
 from .deps import TuviAgentDeps
 from .main import DEFAULT_MODEL, build_tuvi_agent, run_tuvi_agent
-from src.agent.workflow.personality import (
+from tuvi_agent.workflow.personality import (
     DEFAULT_PERSONALITY_CONFIG,
     PERSONALITY_INPUT_REGISTRY,
     PERSONALITY_OUTPUT_INSTRUCTION_REGISTRY,

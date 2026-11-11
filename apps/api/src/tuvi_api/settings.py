@@ -1,11 +1,12 @@
 from __future__ import annotations
 
 from functools import lru_cache
+from pathlib import Path
 
 from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
-from api.chat.storage.settings import MongoConversationHistorySettings
+from tuvi_api.chat.storage.settings import MongoConversationHistorySettings
 
 
 class ApiSettings(BaseSettings):
@@ -18,6 +19,9 @@ class ApiSettings(BaseSettings):
     conversation_history_store: MongoConversationHistorySettings = Field(
         default_factory=MongoConversationHistorySettings
     )
+    agent_model: str = "openrouter:qwen/qwen3.7-max"
+    # The book files are not in git. Relative paths resolve from the working directory.
+    book_root: Path = Path("data/tuvitanbien_chunking_compact/part_2")
 
 
 @lru_cache

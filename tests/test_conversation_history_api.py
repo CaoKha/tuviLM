@@ -13,14 +13,14 @@ from pymongo import AsyncMongoClient
 from pymongo.errors import ServerSelectionTimeoutError
 from pydantic_ai import PartStartEvent, TextPart
 
-from api.chat.contracts import (
+from tuvi_api.chat.contracts import (
     ConversationHistoryStore,
     DuplicateStreamInProgressError,
     IdempotencyConflictError,
     MissingOwnerIdError,
     NotFoundError,
 )
-from api.chat.models import (
+from tuvi_api.chat.models import (
     BirthInfo,
     ChartProfile,
     ChatMessageStatus,
@@ -34,14 +34,14 @@ from api.chat.models import (
     ReservedMessagePair,
     SessionContext,
 )
-from api.chat.storage.documents import (
+from tuvi_api.chat.storage.documents import (
     ChartProfileDocument,
     ChatSessionDocument,
 )
-from api.chat.storage.mappers import chart_profile_from_document
-from api.chat.storage.store import MongoConversationHistoryStore
-from api.main import ApiState, app
-from src.agent.deps import TuviAgentDeps
+from tuvi_api.chat.storage.mappers import chart_profile_from_document
+from tuvi_api.chat.storage.store import MongoConversationHistoryStore
+from tuvi_api.main import ApiState, app
+from tuvi_agent.deps import TuviAgentDeps
 
 
 pytestmark = pytest.mark.anyio
@@ -655,7 +655,7 @@ async def test_session_chat_stream_logs_generation_failure(
         yield {"type": "text", "delta": "Partial answer."}
         raise RuntimeError("upstream 429 rate limit")
 
-    caplog.set_level(logging.ERROR, logger="api.chat.routes")
+    caplog.set_level(logging.ERROR, logger="tuvi_api.chat.routes")
     app.state.session_chat_streamer = failing_streamer
     profile = await _create_profile(fake_store)
     session = await _create_session(fake_store, profile.id)
@@ -840,7 +840,7 @@ async def test_create_chart_profile_endpoint_returns_conflict_for_idempotency_mi
     fake_store,
     caplog,
 ) -> None:
-    caplog.set_level(logging.WARNING, logger="api.main")
+    caplog.set_level(logging.WARNING, logger="tuvi_api.main")
     fake_store.create_chart_profile_errors = [None, IdempotencyConflictError()]
     headers = {
         "X-Anonymous-Owner-Id": "anon_owner",

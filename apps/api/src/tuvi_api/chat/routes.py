@@ -21,8 +21,8 @@ from pydantic_ai import (
 )
 from pydantic_ai.messages import ModelMessage, ModelRequest, ModelResponse, UserPromptPart
 
-from api.chat.contracts import ConversationHistoryStore
-from api.chat.models import (
+from tuvi_api.chat.contracts import ConversationHistoryStore
+from tuvi_api.chat.models import (
     BirthInfo,
     ChartProfile,
     ChatMessage,
@@ -34,7 +34,7 @@ from api.chat.models import (
     ReservedMessagePair,
     SessionContext,
 )
-from api.schemas import (
+from tuvi_api.schemas import (
     ChartProfilePayload,
     CreateAnonymousResponse,
     CreateChartProfileRequest,
@@ -46,9 +46,9 @@ from api.schemas import (
     ListSessionsResponse,
     SessionChatStreamRequest,
 )
-from src.agent.deps import TuviAgentDeps
-from src.refactored.la_so import LaSo
-from src.refactored.model.prior import Gender, LaSoPrior
+from tuvi_agent.deps import TuviAgentDeps
+from tuvi_engine.la_so import LaSo
+from tuvi_engine.model.prior import Gender, LaSoPrior
 
 
 logger = logging.getLogger(__name__)

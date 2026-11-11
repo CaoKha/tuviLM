@@ -13,8 +13,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
-from api._parse import to_cung_payload_map
-from api.chat.contracts import (
+from tuvi_api._parse import to_cung_payload_map
+from tuvi_api.chat.contracts import (
     ConversationHistoryError,
     ConversationHistoryStore,
     DuplicateStreamInProgressError,
@@ -22,9 +22,9 @@ from api.chat.contracts import (
     MissingOwnerIdError,
     NotFoundError,
 )
-from api.chat.routes import router as chat_router
-from api.chat.storage.store import MongoConversationHistoryStore
-from api.schemas import (
+from tuvi_api.chat.routes import router as chat_router
+from tuvi_api.chat.storage.store import MongoConversationHistoryStore
+from tuvi_api.schemas import (
     AmDuongRelationKey,
     BuildLasoRequest,
     BuildLasoResponse,
@@ -37,19 +37,19 @@ from api.schemas import (
     PreviewLasoResponse,
     CauPhuResponse,
 )
-from api.settings import get_settings
-from src.agent.deps import TuviAgentDeps
-from src.agent.main import build_tuvi_agent
-from src.agent.tool.ban_menh.laso_foundation import build_laso_foundation_payload
-from src.agent.workflow.personality.agent import build_personality_agent
-from src.refactored.components.definitions.sao import ChinhPhuTinh
-from src.refactored.cau_phu import (
+from tuvi_api.settings import get_settings
+from tuvi_agent.deps import TuviAgentDeps
+from tuvi_agent.main import build_tuvi_agent
+from tuvi_agent.tool.ban_menh.laso_foundation import build_laso_foundation_payload
+from tuvi_agent.workflow.personality.agent import build_personality_agent
+from tuvi_engine.components.definitions.sao import ChinhPhuTinh
+from tuvi_engine.cau_phu import (
     CauPhuNotFoundError,
     get_cau_phu,
 )
-from src.refactored.la_so import LaSo
-from src.refactored.model.prior import Gender, LaSoPrior
-from src.refactored.view.builder import build_laso_view
+from tuvi_engine.la_so import LaSo
+from tuvi_engine.model.prior import Gender, LaSoPrior
+from tuvi_engine.view.builder import build_laso_view
 
 
 logger = logging.getLogger(__name__)
@@ -90,11 +90,11 @@ async def lifespan(app: FastAPI):
     conversation_history_store = await MongoConversationHistoryStore.connect(
         settings.conversation_history_store,
     )
-    model = "openrouter:qwen/qwen3.7-max"
+    model = settings.agent_model
     agent_deps = TuviAgentDeps(
         agent=build_tuvi_agent(model=model),
         personality_agent=build_personality_agent(model=model),
-        book_root="./data/tuvitanbien_chunking_compact/part_2",
+        book_root=settings.book_root,
     )
     app.state.api_state = ApiState(
         agent_deps=agent_deps,

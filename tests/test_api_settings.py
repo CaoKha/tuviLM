@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from api.settings import ApiSettings
+from tuvi_api.settings import ApiSettings
 
 
 def test_api_settings_uses_default_conversation_history_store_when_env_omits_it(
