@@ -146,13 +146,13 @@ crates/
     src/app/charts.rs             POST /charts (saves the An sao form)
     src/app/charts/chart_id.rs    GET /charts/{id}
     src/features/charts/          form checks, database queries, chart grid, accent
-    src/features/an_sao/          An sao screen, preview shard, an_sao.js
+    src/features/an_sao/          An sao screen, preview shard, constellations, an_sao.js
     src/features/chat/            chat messages, system prompt, markdown, LLM service
     src/features/auth/            users, sessions, Argon2 passwords, form checks
     src/app/login.rs, register.rs, logout.rs, ho_so.rs   account pages
     src/app/charts/chart_id/hoi_ai.rs   GET and POST /charts/{id}/hoi-ai
     styles.css                    theme: tokens and utilities (see DESIGN.md)
-    assets/                       app icons and the crane video (served with asset!)
+    assets/                       app icons, crane video, god-ghosts/ portraits (asset!)
     toasty/                       database migrations
   tuvi-llm/                       LLM client (OpenAI chat-completions format)
     src/config.rs                 provider, key, model and URL from the environment
@@ -252,6 +252,11 @@ reads its CSS and JS from `target/<profile>/assets/`. Without them, it does not 
 - Topcoat runtime expressions cannot parse a string to a number, read the
   scroll position or a pointer angle, or use `localStorage`. `an_sao.js` does
   these parts (see `src/features/an_sao.rs`).
+- The ghost portraits (`assets/god-ghosts/*.svg`) are 77–414 KB each. The
+  page loads one only when its star is in the preview, and the router sends
+  it compressed (for example 223 KB becomes 75 KB). The star coordinates
+  follow these SVG portraits. The old app's smaller `*-ghost.webp` files are
+  square crops that its last version did not use, so they are not ported.
 - Topcoat and Toasty are early-stage projects. Expect breaking changes when you
   update them.
 

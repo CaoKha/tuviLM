@@ -12,6 +12,7 @@ use topcoat::{
 };
 use tuvi_core::{BirthInput, ChartError, Gender, build_chart};
 
+use super::chom_sao::{chom_figure, chom_sao_of};
 use crate::features::charts::{Buoi, accent_style, hour_24, menh_chinh_tinh};
 
 /// Scattered dots for the sky before the stars wake, in a 320×100 box.
@@ -101,14 +102,24 @@ pub async fn menh_preview(
         (Preview::Menh { .. }, true) => "Mệnh vô chính diệu · trời rộng mở".to_owned(),
         (Preview::Menh { .. }, false) => format!("Chòm sao {names} đã thức"),
     };
+    // The figures of the Mệnh stars. Vô chính diệu keeps the sky.
+    let figures = match &state {
+        Preview::Menh { chinh_tinh, .. } => chinh_tinh
+            .iter()
+            .filter_map(|name| chom_sao_of(name))
+            .collect(),
+        _ => Vec::new(),
+    };
+    let song_tinh = figures.len() > 1;
+    let height = match figures.len() {
+        0 => "h-[154px]",
+        1 => "h-[196px] md:h-[clamp(230px,82vw,278px)]",
+        _ => "h-[176px] md:h-[clamp(190px,58vw,220px)]",
+    };
 
     Ok(view! {
         <div
-            class=(class!(
-                "relative h-[154px]",
-                "lit" if lit,
-                "quiet" if names.is_empty(),
-            ))
+            class=(class!("relative", height, "lit" if lit, "quiet" if names.is_empty()))
             role="status"
             aria-live="polite"
         >
@@ -119,24 +130,32 @@ pub async fn menh_preview(
                     " }"
                 </style>
             }
-            <svg
-                aria-hidden="true"
-                viewBox="0 0 320 100"
-                class="absolute inset-x-0 top-0 h-[116px] w-full overflow-visible"
-            >
-                for (x, y) in SCATTER {
-                    <circle class="constel-node" cx=(x) cy=(y) r="2.4"></circle>
-                }
-            </svg>
-            if !names.is_empty() {
-                <p
-                    class="absolute inset-x-0 top-[38px] animate-[reward-in_0.62s_ease-out_both] text-center font-display text-3xl font-semibold text-accent [text-shadow:0_0_18px_var(--accent-glow)]"
+            if figures.is_empty() {
+                <svg
+                    aria-hidden="true"
+                    viewBox="0 0 320 100"
+                    class="absolute inset-x-0 top-0 h-[116px] w-full overflow-visible"
                 >
-                    (names.as_str())
-                </p>
+                    for (x, y) in SCATTER {
+                        <circle class="constel-node" cx=(x) cy=(y) r="2.4"></circle>
+                    }
+                </svg>
+            } else {
+                <div class="absolute inset-x-0 top-0 flex justify-center gap-0.5">
+                    for (index, chom) in figures.into_iter().enumerate() {
+                        chom_figure(
+                            chom: chom,
+                            song_tinh: song_tinh,
+                            delay_ms: index * 90
+                        )
+                    }
+                </div>
             }
             <p
-                class="absolute inset-x-0 bottom-1 px-2 text-center text-xs tracking-[0.2em] text-muted uppercase"
+                class=(class!(
+                    "absolute inset-x-0 bottom-1 px-2 text-center text-muted uppercase",
+                    "text-[10px] leading-[1.45] tracking-[0.08em]" if song_tinh else "text-xs tracking-[0.2em]",
+                ))
             >
                 (caption)
             </p>

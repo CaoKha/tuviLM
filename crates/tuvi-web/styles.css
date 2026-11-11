@@ -381,6 +381,56 @@
     fill: var(--color-muted);
   }
 
+  /* A constellation figure: the ghost and stars fade out at the edge. A
+     line draws in, holds, then draws out, once per 4.2 s wave; each star
+     pulses on a 4.5 s cycle. */
+  .chom-figure {
+    position: relative;
+    aspect-ratio: 1;
+    mask-image: radial-gradient(circle, #000 52%, rgba(0, 0, 0, 0.92) 65%, rgba(0, 0, 0, 0.42) 78%, transparent 94%);
+    animation: reward-in 0.62s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  }
+
+  .chom-line {
+    fill: none;
+    stroke: color-mix(in srgb, var(--accent-2) 68%, var(--color-ink));
+    stroke-width: 0.42;
+    stroke-linecap: round;
+    stroke-dasharray: 1;
+    opacity: 0.65;
+    animation: chom-link 4.2s linear infinite both;
+  }
+
+  .chom-halo,
+  .chom-core {
+    opacity: var(--star-rest);
+    animation: chom-pulse 4.5s ease-in-out infinite;
+  }
+
+  .chom-halo {
+    --star-rest: 0.04;
+  }
+
+  .chom-core {
+    --star-rest: 0.16;
+    fill: var(--color-ink);
+    stroke: var(--accent-2);
+    stroke-width: 0.16;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .chom-line {
+      opacity: 0.44;
+      animation: none;
+    }
+
+    .chom-halo,
+    .chom-core {
+      opacity: 1;
+      animation: none;
+    }
+  }
+
   .confirm-card {
     width: calc(100% - 32px);
     max-width: 380px;
@@ -442,6 +492,31 @@
   from {
     opacity: 0;
     transform: translateY(7px) scale(0.96);
+  }
+}
+
+/* 1.9 s of travel in a 4.2 s cycle: in until 45% of it, hold to 55%, out. */
+@keyframes chom-link {
+  0% {
+    stroke-dashoffset: 1;
+    animation-timing-function: ease-in-out;
+  }
+  20.36% {
+    stroke-dashoffset: 0;
+  }
+  24.88% {
+    stroke-dashoffset: 0;
+    animation-timing-function: ease-in-out;
+  }
+  45.24%,
+  100% {
+    stroke-dashoffset: -1;
+  }
+}
+
+@keyframes chom-pulse {
+  50% {
+    opacity: 1;
   }
 }
 
