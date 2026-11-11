@@ -6,7 +6,7 @@ FastAPI backend for TuviLM UI.
 - Real route: `POST /api/v1/laso/build`
 - Real route: `GET /api/v1/laso/cau-phu`
 - Real route: `POST /api/v1/laso/build_sao_luu`
-- Conversation history routes are mounted from `api/chat/routes.py`:
+- Conversation history routes are mounted from `apps/api/src/tuvi_api/chat/routes.py`:
   - `POST /api/v1/anonymous`
   - `POST /api/v1/chart-profiles`
   - `GET /api/v1/chart-profiles`
@@ -32,7 +32,7 @@ pip install fastapi uvicorn pydantic
 From repo root:
 
 ```bash
-uv run uvicorn api.main:app --reload --port 8000
+uv run uvicorn tuvi_api.main:app --reload --port 8000
 ```
 
 ## Health check
@@ -60,7 +60,7 @@ curl -X POST http://localhost:8000/api/v1/laso/build \
 Call this route after `POST /api/v1/laso/build`. It matches the completed
 chart by cung Mệnh position, main stars, Tuần and Triệt, then returns the
 original phú text from
-`data/cung_menh_phu_luc_bat_v3_tieu_de_moi.json`.
+`packages/tuvi-engine/src/tuvi_engine/data/cung_menh_phu_luc_bat_v3_tieu_de_moi.json`.
 
 ```bash
 curl http://localhost:8000/api/v1/laso/cau-phu
