@@ -86,6 +86,7 @@ crates/
     src/tu_hoa.rs                 Tứ Hóa of the birth year
     src/tuan_triet.rs             Tuần and Triệt
     src/ban_menh.rs               Bản mệnh of the birth year
+    src/van_han.rs                Đại hạn and Tiểu hạn of each cung
     scripts/gen_fixtures.py       makes the reference data from the old Python engine
     tests/parity.rs               compares 359 charts with saved reference data
     tests/bench.rs                speed test
@@ -162,9 +163,10 @@ reads its CSS and JS from `target/<profile>/assets/`. Without them, it does not 
 
 ## Not done yet
 
-- Đại hạn/Tiểu hạn, cách cục, câu phú
-- The web app does not show phụ tinh, Tứ Hóa, Tuần/Triệt or Bản mệnh yet.
-  `tuvi-core` computes them.
+- Stars that move per period (lưu tinh, Tứ Hóa of a Đại hạn or a year),
+  cách cục, câu phú
+- The web app does not show phụ tinh, Tứ Hóa, Tuần/Triệt, Bản mệnh,
+  Đại hạn or Tiểu hạn yet. `tuvi-core` computes them.
 - AI chat about the chart
 - Users and login
 
@@ -178,6 +180,9 @@ reads its CSS and JS from `target/<profile>/assets/`. Without them, it does not 
   Tử Vi tables: Cô Thần for Hợi Tý Sửu years is in Mùi (not Dần), Quả Tú for
   Thân Dậu Tuất years is in Dần (not Mùi), Lưu Hà for Tân years is in Thìn
   (not Mão), and Thiên Quan and Thiên Phúc for Ất and Bính years differ.
+- Tiểu hạn goes in the same direction as Đại hạn (by gender and the Âm/Dương
+  of the year), as in the old engine. Many schools use gender only: clockwise
+  for a man, counter-clockwise for a woman.
 - A cung lists its Tứ Hóa in the old engine's id order (Khoa, Kỵ, Lộc, Quyền),
   not in the usual order (Lộc, Quyền, Khoa, Kỵ).
 - Topcoat and Toasty are early-stage projects. Expect breaking changes when you
