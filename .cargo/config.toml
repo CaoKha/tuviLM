@@ -1,0 +1,5 @@
+[alias]
+# Dev commands. See xtask/src/main.rs.
+xtask = "run -q -p xtask --"
+up = "run -q -p xtask -- up"
+down = "run -q -p xtask -- down"
