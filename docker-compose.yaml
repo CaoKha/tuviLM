@@ -1,4 +1,21 @@
 services:
+  postgres:
+    image: postgres:18
+    environment:
+      POSTGRES_USER: tuvi
+      POSTGRES_PASSWORD: tuvi
+      POSTGRES_DB: tuvi
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U tuvi -d tuvi"]
+      interval: 2s
+      timeout: 3s
+      retries: 15
+
+  # Used by the old Python backend (api/). Remove when the Rust app replaces it.
   mongodb:
     image: mongo:7
     ports:
@@ -7,4 +24,5 @@ services:
       - mongodb_data:/data/db
 
 volumes:
+  postgres_data:
   mongodb_data:
