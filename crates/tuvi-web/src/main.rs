@@ -6,6 +6,9 @@ use std::process::ExitCode;
 
 #[tokio::main]
 async fn main() -> ExitCode {
+    // Settings can come from `.env` in this folder or a parent (see `.env.example`).
+    let _ = dotenvy::dotenv();
+
     let db = match db::connect().await {
         Ok(db) => db,
         Err(error) => {
@@ -24,7 +27,12 @@ async fn main() -> ExitCode {
         return ExitCode::SUCCESS;
     }
 
-    if let Err(error) = topcoat::start(app::router().with(db).build()).await {
+    let chat = features::chat::ChatService::from_env();
+    if let Err(reason) = chat.client() {
+        eprintln!("AI chat is off: {reason}");
+    }
+
+    if let Err(error) = topcoat::start(app::router().with(db).with(chat).build()).await {
         eprintln!("{error:#}");
         return ExitCode::FAILURE;
     }
