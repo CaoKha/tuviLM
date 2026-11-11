@@ -4,3 +4,5 @@
 pub mod charts;
 
 pub mod chat;
+
+pub mod auth;
