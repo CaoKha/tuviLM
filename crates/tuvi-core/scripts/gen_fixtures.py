@@ -55,10 +55,26 @@ def jd_to_date(jd: int) -> dt.date:
     return dt.date.fromordinal(jd - JD_ORDINAL_OFFSET)
 
 
-def build_cung(la_so: LaSo, dia_chi: DiaChi) -> dict:
+def van_han_by_cung(la_so: LaSo) -> tuple[dict, dict]:
+    """Invert the period focus maps: cung -> Đại hạn age range, cung -> the
+    year Địa Chi whose Tiểu hạn falls there. Both maps are one-to-one."""
+    dai_han = {}
+    for age_range, focus in la_so.dai_han_focus_map().by_range.items():
+        assert focus not in dai_han, focus
+        dai_han[focus] = (age_range.start_age, age_range.end_age)
+    tieu_han = {}
+    for year_dia_chi, focus in la_so.tieu_han_focus_map().items():
+        assert focus not in tieu_han, focus
+        tieu_han[focus] = year_dia_chi
+    assert len(dai_han) == len(tieu_han) == len(DiaChi)
+    return dai_han, tieu_han
+
+
+def build_cung(la_so: LaSo, dia_chi: DiaChi, van_han: tuple[dict, dict]) -> dict:
     """One cung. Lists keep the Python order: component ids sorted as strings."""
     name = lambda component_id: la_so.component(component_id).name  # noqa: E731
     cung = la_so.cung_at(dia_chi)
+    dai_han, tieu_han = van_han
     tu_hoa_targets = TU_HOA_TARGETS[la_so.prior.thien_can]
     chinh_tinh, phu_tinh, tu_hoa = [], [], []
     tuan = triet = False
@@ -91,6 +107,9 @@ def build_cung(la_so: LaSo, dia_chi: DiaChi) -> dict:
         "tu_hoa": tu_hoa,
         "tuan": tuan,
         "triet": triet,
+        "dai_han_start": dai_han[dia_chi][0],
+        "dai_han_end": dai_han[dia_chi][1],
+        "tieu_han": name(tieu_han[dia_chi].value),
     }
 
 
@@ -104,6 +123,7 @@ def build_expected(inp: dict) -> dict:
         raise
     la_so = LaSo.from_prior(prior)
     name = lambda component_id: la_so.component(component_id).name  # noqa: E731
+    van_han = van_han_by_cung(la_so)
 
     chart = {
         "input": inp,
@@ -115,7 +135,7 @@ def build_expected(inp: dict) -> dict:
         "nam_chi": name(prior.dia_chi.value),
         "cuc": la_so.natal_context.cuc.name,
         "ban_menh": la_so.ban_menh.name,
-        "cungs": [build_cung(la_so, dia_chi) for dia_chi in DiaChi],
+        "cungs": [build_cung(la_so, dia_chi, van_han) for dia_chi in DiaChi],
     }
     return {"input": inp, "expected": chart}
 

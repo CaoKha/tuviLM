@@ -13,6 +13,7 @@
 //! - `tu_hoa`: Tứ Hóa of the birth year
 //! - `tuan_triet`: Tuần and Triệt
 //! - `ban_menh`: Bản mệnh of the birth year
+//! - `van_han`: Đại hạn and Tiểu hạn of each cung
 //! - `chart`: the public types and `build_chart`
 
 mod ban_menh;
@@ -25,5 +26,6 @@ mod cung;
 mod phu_tinh;
 mod tu_hoa;
 mod tuan_triet;
+mod van_han;
 
 pub use chart::{BirthInput, Chart, ChartError, Cung, Gender, TuHoa, build_chart};

@@ -11,6 +11,7 @@ use crate::cung::{self, CungRole};
 use crate::phu_tinh::{self, PhuTinh};
 use crate::tu_hoa::{self, Hoa};
 use crate::tuan_triet;
+use crate::van_han;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 pub enum Gender {
@@ -68,6 +69,13 @@ pub struct Cung {
     pub tu_hoa: Vec<TuHoa>,
     pub tuan: bool,
     pub triet: bool,
+    /// Đại hạn: the first and last age (tuổi mụ) of the 10-year period in
+    /// this cung, e.g. 6 and 15.
+    pub dai_han_start: u8,
+    pub dai_han_end: u8,
+    /// Tiểu hạn: the Địa Chi of the years whose Tiểu hạn falls in this cung,
+    /// e.g. "Mão".
+    pub tieu_han: &'static str,
 }
 
 /// One Hóa of the birth year and the star that takes it.
@@ -102,7 +110,7 @@ pub struct Chart {
 
 /// Build the natal chart: lunar date, year Can Chi, Mệnh/Thân, the 12 cung
 /// roles and Thiên Can, Cục, Bản mệnh, the 14 chính tinh, the phụ tinh,
-/// Tứ Hóa and Tuần/Triệt.
+/// Tứ Hóa, Tuần/Triệt, Đại hạn and Tiểu hạn.
 ///
 /// Only the non-empty `Vec` fields allocate. Release build: about
 /// 0.8 µs per call, allocations included (see `tests/bench.rs`).
@@ -132,6 +140,7 @@ pub fn build_chart(input: BirthInput) -> Result<Chart, ChartError> {
     let tu_vi = chinh_tinh::tu_vi_position(lunar.day, cuc.number());
     let sao_positions = chinh_tinh::chinh_tinh_positions(tu_vi);
 
+    let van = cung::van_direction(input.gender, nam_chi);
     let phu_tinh_positions = phu_tinh::positions(&phu_tinh::Input {
         nam_can,
         nam_chi,
@@ -141,10 +150,12 @@ pub fn build_chart(input: BirthInput) -> Result<Chart, ChartError> {
         menh,
         than,
         cuc,
-        van: cung::van_direction(input.gender, nam_chi),
+        van,
     });
     let tuan = tuan_triet::tuan(nam_can, nam_chi);
     let triet = tuan_triet::triet(nam_can);
+    let dai_han_start = van_han::dai_han_start(cuc.number(), menh, van);
+    let tieu_han = van_han::tieu_han(nam_chi, van);
 
     // Bucket the stars by cung in one pass each. `ALL` is in the old engine's
     // id order, so each bucket is already sorted.
@@ -180,6 +191,9 @@ pub fn build_chart(input: BirthInput) -> Result<Chart, ChartError> {
             tu_hoa: std::mem::take(&mut tu_hoa[i]),
             tuan: tuan.contains(&dia_chi),
             triet: triet.contains(&dia_chi),
+            dai_han_start: dai_han_start[i],
+            dai_han_end: dai_han_start[i] + 9,
+            tieu_han: tieu_han[i].name(),
         }
     });
 
