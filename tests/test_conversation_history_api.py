@@ -40,7 +40,10 @@ from tuvi_api.chat.storage.documents import (
 )
 from tuvi_api.chat.storage.mappers import chart_profile_from_document
 from tuvi_api.chat.storage.store import MongoConversationHistoryStore
+from tuvi_api.auth.dependencies import OWNER_COOKIE
+from tuvi_api.auth.tokens import sign_owner_id, unsign_owner_id
 from tuvi_api.main import ApiState, app
+from tuvi_api.settings import get_settings
 from tuvi_agent.deps import TuviAgentDeps
 
 
@@ -68,7 +71,12 @@ async def api_client():
         transport=transport,
         base_url="http://testserver",
     ) as client:
+        client.cookies.set(OWNER_COOKIE, owner_cookie("anon_owner"))
         yield client
+
+
+def owner_cookie(owner_id: str) -> str:
+    return sign_owner_id(owner_id, get_settings().auth.secret_key)
 
 
 @pytest.fixture()
@@ -149,11 +157,26 @@ async def test_build_laso_accepts_birth_info_day_field(api_client) -> None:
     assert response.json()["summary"] == "Sinh dương lịch: 15/04/1996 10:00"
 
 
-async def test_create_anonymous_owner_returns_owner_id(api_client) -> None:
-    response = await api_client.post("/api/v1/anonymous")
+async def test_guest_without_cookie_gets_a_signed_owner_cookie(fake_store) -> None:
+    transport = httpx.ASGITransport(app=app)
+    async with httpx.AsyncClient(transport=transport, base_url="http://testserver") as client:
+        response = await client.get("/api/v1/chart-profiles")
 
     assert response.status_code == 200
-    assert response.json()["owner_id"].startswith("anon_")
+    owner_id = unsign_owner_id(response.cookies[OWNER_COOKIE], get_settings().auth.secret_key)
+    assert owner_id is not None and owner_id.startswith("anon_")
+    assert "httponly" in response.headers["set-cookie"].lower()
+
+
+async def test_forged_owner_cookie_is_ignored(fake_store) -> None:
+    fake_store.add_profile(owner_id="anon_victim")
+    transport = httpx.ASGITransport(app=app)
+    async with httpx.AsyncClient(transport=transport, base_url="http://testserver") as client:
+        client.cookies.set(OWNER_COOKIE, "anon_victim.not-a-valid-signature")
+        response = await client.get("/api/v1/chart-profiles")
+
+    assert response.json()["chart_profiles"] == []
+    assert response.cookies[OWNER_COOKIE] != "anon_victim.not-a-valid-signature"
 
 
 async def test_chart_profile_endpoints_use_store(api_client, fake_store) -> None:
@@ -169,7 +192,6 @@ async def test_chart_profile_endpoints_use_store(api_client, fake_store) -> None
     create_response = await api_client.post(
         "/api/v1/chart-profiles",
         headers={
-            "X-Anonymous-Owner-Id": "anon_owner",
             "Idempotency-Key": "create-profile-1",
         },
         json={
@@ -186,7 +208,6 @@ async def test_chart_profile_endpoints_use_store(api_client, fake_store) -> None
     )
     list_response = await api_client.get(
         "/api/v1/chart-profiles",
-        headers={"X-Anonymous-Owner-Id": "anon_owner"},
     )
 
     assert create_response.status_code == 200
@@ -196,33 +217,6 @@ async def test_chart_profile_endpoints_use_store(api_client, fake_store) -> None
     ]
 
 
-async def test_create_chart_profile_rejects_blank_owner_id(
-    api_client,
-    fake_store,
-) -> None:
-    response = await api_client.post(
-        "/api/v1/chart-profiles",
-        headers={
-            "X-Anonymous-Owner-Id": "",
-            "Idempotency-Key": "create-profile-1",
-        },
-        json={
-            "display_name": "Me",
-            "birth_info": {
-                "calendar": "solar",
-                "year": 1996,
-                "month": 4,
-                "day": 15,
-                "hour": 10,
-                "gender": "M",
-            },
-        },
-    )
-
-    assert response.status_code == 400
-    assert response.json()["detail"] == "Owner id is required."
-
-
 async def test_mutating_routes_reject_blank_idempotency_key(
     api_client,
     fake_store,
@@ -230,7 +224,6 @@ async def test_mutating_routes_reject_blank_idempotency_key(
     profile = await _create_profile(fake_store)
     session = await _create_session(fake_store, profile.id)
     headers = {
-        "X-Anonymous-Owner-Id": "anon_owner",
         "Idempotency-Key": "",
     }
 
@@ -271,7 +264,6 @@ async def test_session_endpoints_use_store(api_client, fake_store) -> None:
     create_response = await api_client.post(
         f"/api/v1/chart-profiles/{profile.id}/sessions",
         headers={
-            "X-Anonymous-Owner-Id": "anon_owner",
             "Idempotency-Key": "create-session-1",
         },
         json={"title": "Career"},
@@ -279,11 +271,9 @@ async def test_session_endpoints_use_store(api_client, fake_store) -> None:
     session = create_response.json()["session"]
     list_response = await api_client.get(
         f"/api/v1/chart-profiles/{profile.id}/sessions",
-        headers={"X-Anonymous-Owner-Id": "anon_owner"},
     )
     get_response = await api_client.get(
         f"/api/v1/sessions/{session['id']}",
-        headers={"X-Anonymous-Owner-Id": "anon_owner"},
     )
 
     assert create_response.status_code == 200
@@ -302,7 +292,6 @@ async def test_delete_session_route_returns_no_content(
 
     delete_response = await api_client.delete(
         f"/api/v1/sessions/{session.id}",
-        headers={"X-Anonymous-Owner-Id": "anon_owner"},
     )
 
     assert delete_response.status_code == 204
@@ -317,7 +306,6 @@ async def test_delete_chart_profile_route_returns_no_content(
 
     delete_response = await api_client.delete(
         f"/api/v1/chart-profiles/{profile.id}",
-        headers={"X-Anonymous-Owner-Id": "anon_owner"},
     )
 
     assert delete_response.status_code == 204
@@ -632,7 +620,6 @@ async def test_session_chat_stream_persists_confirmed_assistant_message(
     response = await api_client.post(
         f"/api/v1/sessions/{session.id}/chat/stream",
         headers={
-            "X-Anonymous-Owner-Id": "anon_owner",
             "Idempotency-Key": "message-1",
         },
         json={"content": "Tell me about career."},
@@ -663,7 +650,6 @@ async def test_session_chat_stream_logs_generation_failure(
     response = await api_client.post(
         f"/api/v1/sessions/{session.id}/chat/stream",
         headers={
-            "X-Anonymous-Owner-Id": "anon_owner",
             "Idempotency-Key": "message-1",
         },
         json={"content": "Tell me about career."},
@@ -693,7 +679,6 @@ async def test_session_chat_stream_cancellation_marks_assistant_cancelled(
         await api_client.post(
             f"/api/v1/sessions/{session.id}/chat/stream",
             headers={
-                "X-Anonymous-Owner-Id": "anon_owner",
                 "Idempotency-Key": "message-1",
             },
             json={"content": "Tell me about career."},
@@ -753,7 +738,6 @@ async def test_session_chat_stream_default_runner_reconstructs_agent_context(
     response = await api_client.post(
         f"/api/v1/sessions/{session.id}/chat/stream",
         headers={
-            "X-Anonymous-Owner-Id": "anon_owner",
             "Idempotency-Key": "message-1",
         },
         json={"content": "New question."},
@@ -788,7 +772,6 @@ async def test_session_chat_stream_duplicate_pending_request_does_not_start_gene
     response = await api_client.post(
         f"/api/v1/sessions/{session.id}/chat/stream",
         headers={
-            "X-Anonymous-Owner-Id": "anon_owner",
             "Idempotency-Key": "message-1",
         },
         json={"content": "Tell me about career."},
@@ -823,7 +806,6 @@ async def test_session_chat_stream_completed_replay_does_not_start_generation(
     response = await api_client.post(
         f"/api/v1/sessions/{session.id}/chat/stream",
         headers={
-            "X-Anonymous-Owner-Id": "anon_owner",
             "Idempotency-Key": "message-1",
         },
         json={"content": "Tell me about career."},
@@ -843,7 +825,6 @@ async def test_create_chart_profile_endpoint_returns_conflict_for_idempotency_mi
     caplog.set_level(logging.WARNING, logger="tuvi_api.main")
     fake_store.create_chart_profile_errors = [None, IdempotencyConflictError()]
     headers = {
-        "X-Anonymous-Owner-Id": "anon_owner",
         "Idempotency-Key": "create-profile-1",
     }
 
@@ -1170,3 +1151,4 @@ async def _create_session(store: ConversationHistoryStore, profile_id: str):
         payload=CreateSessionInput(title="Career"),
         idempotency_key="session",
     )
+

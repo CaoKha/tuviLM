@@ -3,11 +3,10 @@ from __future__ import annotations
 import asyncio
 import json
 import logging
-import secrets
 from datetime import datetime
 from typing import Any, AsyncIterator
 
-from fastapi import APIRouter, Header, Request, Response
+from fastapi import APIRouter, Depends, Header, Request, Response
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import StreamingResponse
 from pydantic_ai import (
@@ -21,6 +20,7 @@ from pydantic_ai import (
 )
 from pydantic_ai.messages import ModelMessage, ModelRequest, ModelResponse, UserPromptPart
 
+from tuvi_api.auth.dependencies import get_owner_id
 from tuvi_api.chat.contracts import ConversationHistoryStore
 from tuvi_api.chat.models import (
     BirthInfo,
@@ -36,7 +36,6 @@ from tuvi_api.chat.models import (
 )
 from tuvi_api.schemas import (
     ChartProfilePayload,
-    CreateAnonymousResponse,
     CreateChartProfileRequest,
     CreateChartProfileResponse,
     CreateSessionRequest,
@@ -56,16 +55,11 @@ logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/api/v1")
 
 
-@router.post("/anonymous", response_model=CreateAnonymousResponse)
-def create_anonymous() -> CreateAnonymousResponse:
-    return CreateAnonymousResponse(owner_id=f"anon_{secrets.token_urlsafe(24)}")
-
-
 @router.post("/chart-profiles", response_model=CreateChartProfileResponse)
 async def create_chart_profile(
     payload: CreateChartProfileRequest,
     request: Request,
-    owner_id: str = Header(alias="X-Anonymous-Owner-Id"),
+    owner_id: str = Depends(get_owner_id),
     idempotency_key: str = Header(alias="Idempotency-Key", min_length=1),
 ) -> CreateChartProfileResponse:
     profile = await _get_store(request).create_chart_profile(
@@ -82,7 +76,7 @@ async def create_chart_profile(
 @router.get("/chart-profiles", response_model=ListChartProfilesResponse)
 async def list_chart_profiles(
     request: Request,
-    owner_id: str = Header(alias="X-Anonymous-Owner-Id"),
+    owner_id: str = Depends(get_owner_id),
 ) -> ListChartProfilesResponse:
     profiles = await _get_store(request).list_chart_profiles(owner_id)
     return ListChartProfilesResponse(
@@ -94,7 +88,7 @@ async def list_chart_profiles(
 async def delete_chart_profile(
     chart_profile_id: str,
     request: Request,
-    owner_id: str = Header(alias="X-Anonymous-Owner-Id"),
+    owner_id: str = Depends(get_owner_id),
 ) -> Response:
     await _get_store(request).delete_chart_profile(owner_id, chart_profile_id)
     return Response(status_code=204)
@@ -108,7 +102,7 @@ async def create_session(
     chart_profile_id: str,
     payload: CreateSessionRequest,
     request: Request,
-    owner_id: str = Header(alias="X-Anonymous-Owner-Id"),
+    owner_id: str = Depends(get_owner_id),
     idempotency_key: str = Header(alias="Idempotency-Key", min_length=1),
 ) -> CreateSessionResponse:
     session = await _get_store(request).create_session(
@@ -127,7 +121,7 @@ async def create_session(
 async def list_sessions(
     chart_profile_id: str,
     request: Request,
-    owner_id: str = Header(alias="X-Anonymous-Owner-Id"),
+    owner_id: str = Depends(get_owner_id),
 ) -> ListSessionsResponse:
     sessions = await _get_store(request).list_sessions(owner_id, chart_profile_id)
     return ListSessionsResponse(sessions=sessions)
@@ -137,7 +131,7 @@ async def list_sessions(
 async def get_session(
     session_id: str,
     request: Request,
-    owner_id: str = Header(alias="X-Anonymous-Owner-Id"),
+    owner_id: str = Depends(get_owner_id),
 ) -> GetSessionResponse:
     context = await _get_store(request).load_session_context(owner_id, session_id)
     return GetSessionResponse(session=context.session)
@@ -147,7 +141,7 @@ async def get_session(
 async def delete_session(
     session_id: str,
     request: Request,
-    owner_id: str = Header(alias="X-Anonymous-Owner-Id"),
+    owner_id: str = Depends(get_owner_id),
 ) -> Response:
     await _get_store(request).delete_session(owner_id, session_id)
     return Response(status_code=204)
@@ -158,7 +152,7 @@ async def session_chat_stream(
     session_id: str,
     payload: SessionChatStreamRequest,
     request: Request,
-    owner_id: str = Header(alias="X-Anonymous-Owner-Id"),
+    owner_id: str = Depends(get_owner_id),
     idempotency_key: str = Header(alias="Idempotency-Key", min_length=1),
 ) -> StreamingResponse:
     store = _get_store(request)

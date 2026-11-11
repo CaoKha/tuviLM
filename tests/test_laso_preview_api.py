@@ -88,7 +88,7 @@ async def test_preview_does_not_touch_la_so_state(api_client, fresh_api_state) -
 
 
 async def test_preview_needs_no_identity_headers(api_client, fresh_api_state) -> None:
-    # The httpx client sends no X-Anonymous-Owner-Id / Idempotency-Key here.
+    # The httpx client sends no owner cookie / Idempotency-Key here.
     response = await api_client.post(
         "/api/v1/laso/preview",
         json={"calendar": "solar", "year": 1996, "month": 4, "day": 15, "hour": 10},

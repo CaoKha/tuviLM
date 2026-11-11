@@ -14,6 +14,7 @@ from fastapi.responses import JSONResponse
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from tuvi_api._parse import to_cung_payload_map
+from tuvi_api.auth.settings import DEV_SECRET_KEY
 from tuvi_api.chat.contracts import (
     ConversationHistoryError,
     ConversationHistoryStore,
@@ -87,6 +88,9 @@ class ApiState:
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     settings = get_settings()
+    secret_key = settings.auth.secret_key
+    if settings.auth.cookie_secure and (secret_key == DEV_SECRET_KEY or len(secret_key) < 32):
+        raise RuntimeError("Set AUTH__SECRET_KEY to a random value of 32+ characters for https.")
     conversation_history_store = await MongoConversationHistoryStore.connect(
         settings.conversation_history_store,
     )
@@ -111,7 +115,7 @@ app.include_router(chat_router)
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=get_settings().cors_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

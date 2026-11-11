@@ -7,7 +7,6 @@ FastAPI backend for TuviLM UI.
 - Real route: `GET /api/v1/laso/cau-phu`
 - Real route: `POST /api/v1/laso/build_sao_luu`
 - Conversation history routes are mounted from `apps/api/src/tuvi_api/chat/routes.py`:
-  - `POST /api/v1/anonymous`
   - `POST /api/v1/chart-profiles`
   - `GET /api/v1/chart-profiles`
   - `POST /api/v1/chart-profiles/{chart_profile_id}/sessions`
