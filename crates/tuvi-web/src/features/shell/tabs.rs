@@ -11,7 +11,7 @@ use topcoat::{
 
 use crate::{
     app::{
-        charts::chart_id::{chart_id, hoi_ai, show as la_so},
+        charts::chart_id::{ban_menh, chart_id, hoi_ai, show as la_so},
         ho_so,
     },
     features::charts::recent,
@@ -64,7 +64,12 @@ impl Tab {
 /// The tabs for `chart`. Without a chart, the chart tabs are locked.
 pub(super) fn tabs(cx: &Cx, chart: Option<u64>) -> [Tab; 5] {
     [
-        Tab::soon("Bản mệnh", iconify_icon!("lucide:star")),
+        Tab::new(
+            cx,
+            "Bản mệnh",
+            iconify_icon!("lucide:star"),
+            chart.map(|id| href!(ban_menh::show, chart_id: id)),
+        ),
         Tab::soon("Vận hạn", iconify_icon!("lucide:orbit")),
         Tab::new(
             cx,

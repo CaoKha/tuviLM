@@ -12,22 +12,8 @@ use topcoat::{
 };
 use tuvi_core::{BirthInput, ChartError, Gender, build_chart};
 
-use super::chom_sao::{chom_figure, chom_sao_of};
+use super::chom_sao::{chom_figure, chom_sao_of, sky};
 use crate::features::charts::{Buoi, accent_style, hour_24, menh_chinh_tinh};
-
-/// Scattered dots for the sky before the stars wake, in a 320×100 box.
-const SCATTER: [(u16, u16); 10] = [
-    (26, 34),
-    (66, 62),
-    (108, 40),
-    (150, 72),
-    (192, 34),
-    (232, 66),
-    (272, 46),
-    (300, 56),
-    (90, 80),
-    (210, 22),
-];
 
 /// What the preview shows.
 #[derive(Debug, PartialEq, Eq)]
@@ -131,15 +117,7 @@ pub async fn menh_preview(
                 </style>
             }
             if figures.is_empty() {
-                <svg
-                    aria-hidden="true"
-                    viewBox="0 0 320 100"
-                    class="absolute inset-x-0 top-0 h-[116px] w-full overflow-visible"
-                >
-                    for (x, y) in SCATTER {
-                        <circle class="constel-node" cx=(x) cy=(y) r="2.4"></circle>
-                    }
-                </svg>
+                sky(class: "absolute inset-x-0 top-0 h-[116px] w-full")
             } else {
                 <div class="absolute inset-x-0 top-0 flex justify-center gap-0.5">
                     for (index, chom) in figures.into_iter().enumerate() {

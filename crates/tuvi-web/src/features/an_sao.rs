@@ -5,7 +5,8 @@
 //!   segments, and the birth clock
 //! - `preview`: the shard that shows the chính tinh of cung Mệnh while the
 //!   user picks, and tints the page accent
-//! - `chom_sao`: the constellation of each chính tinh over its ghost portrait
+//! - `chom_sao`: the constellation of each chính tinh over its ghost portrait,
+//!   and the scattered sky. The Bản mệnh deck shows them too.
 //! - `confirm`, `loader`: the confirm dialog and the casting loader
 //! - `an_sao.js`: what runtime expressions cannot do: wheel scroll, clock
 //!   drag, the confirm dialog and the loader delay
@@ -22,5 +23,6 @@ mod screen;
 mod segment;
 mod wheel;
 
+pub use chom_sao::{chom_figure, chom_sao_of, sky};
 pub use preview::menh_preview;
 pub use screen::an_sao_screen;
