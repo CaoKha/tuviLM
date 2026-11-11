@@ -22,11 +22,19 @@ pub(super) fn element(chinh_tinh: &str) -> Option<&'static str> {
     })
 }
 
+/// The chính tinh in cung Mệnh. Empty for vô chính diệu.
+pub fn menh_chinh_tinh(chart: &Chart) -> &[&'static str] {
+    chart
+        .cungs
+        .iter()
+        .find(|cung| cung.role == MENH)
+        .map_or(&[], |menh| menh.chinh_tinh.as_slice())
+}
+
 /// An inline `style` value that sets `--accent`, `--accent-2` and
 /// `--accent-glow`, or `None` to keep the neutral default.
 pub fn accent_style(chart: &Chart) -> Option<String> {
-    let menh = chart.cungs.iter().find(|cung| cung.role == MENH)?;
-    let mut elements = menh.chinh_tinh.iter().map(|sao| element(sao));
+    let mut elements = menh_chinh_tinh(chart).iter().map(|sao| element(sao));
     let first = elements.next()??;
     let accent_2 = match elements.next() {
         None => format!("var(--element-{first}-light)"),

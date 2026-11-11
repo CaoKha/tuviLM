@@ -3,7 +3,7 @@
 use topcoat::{Result, context::Cx, router::error::not_found};
 use tuvi_core::{BirthInput, Chart, Gender};
 
-use super::ValidChart;
+use super::{ValidChart, form::gender_value};
 use crate::{db::db, features::auth::require_user};
 
 /// One row: a name and the birth data. The chart is not stored.
@@ -48,10 +48,7 @@ impl SavedChart {
 /// Saves a checked form for `user_id` and returns the new id.
 pub async fn create(cx: &Cx, user_id: u64, chart: ValidChart<'_>) -> Result<u64> {
     let birth = chart.birth;
-    let gender = match birth.gender {
-        Gender::Nam => "Nam",
-        Gender::Nu => "Nu",
-    };
+    let gender = gender_value(birth.gender);
     let saved = toasty::create!(SavedChart {
         user_id: Some(user_id),
         name: chart.name,

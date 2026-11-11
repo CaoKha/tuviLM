@@ -1,16 +1,21 @@
+use serde_json::json;
 use topcoat::{
     Result,
-    asset::{AssetBundle, RouterBuilderAssetExt},
+    asset::{Asset, AssetBundle, RouterBuilderAssetExt, asset, asset_config},
     context::Cx,
     cookie::CookieLayer,
     font::{Font, RouterBuilderFontExt, fontsource::fontsource_font},
-    router::{RouterBuilder, Slot, href, layout, module_router, page},
+    router::{RouterBuilder, Slot, content::Json, href, layout, module_router, page, route},
     runtime::RuntimeLayer,
     tailwind,
     view::{View, view},
 };
 
-use crate::features::{auth::current_user, charts::recent};
+use crate::features::{
+    an_sao::{an_sao_screen, menh_preview},
+    auth::current_user,
+    charts::recent,
+};
 
 pub mod charts;
 pub mod ho_so;
@@ -18,7 +23,6 @@ pub mod login;
 pub mod logout;
 pub mod register;
 
-use charts::new_chart_form;
 // `href!` needs the path parameter in scope.
 use charts::chart_id::chart_id;
 
@@ -38,6 +42,16 @@ const BODY_FONT: Font = fontsource_font!(
     subset: [Latin, Vietnamese],
 );
 
+/// Browser tab icons and the home screen icons, from the old app.
+const FAVICON: Asset = asset!("assets/icons/favicon.ico");
+const FAVICON_16: Asset = asset!("assets/icons/favicon-16x16.png");
+const FAVICON_32: Asset = asset!("assets/icons/favicon-32x32.png");
+const FAVICON_48: Asset = asset!("assets/icons/favicon-48x48.png");
+const APPLE_TOUCH_ICON: Asset = asset!("assets/icons/apple-touch-icon.png");
+const ANDROID_ICON_192: Asset = asset!("assets/icons/android-chrome-192x192.png");
+const ANDROID_ICON_512: Asset = asset!("assets/icons/android-chrome-512x512.png");
+const MASKABLE_ICON_512: Asset = asset!("assets/icons/maskable-icon-512x512.png");
+
 /// How many saved charts the home page lists.
 const RECENT_LIMIT: usize = 20;
 
@@ -47,10 +61,36 @@ pub fn router() -> RouterBuilder {
         .font(DISPLAY_FONT)
         .font(BODY_FONT)
         .assets(AssetBundle::load().unwrap())
+        .route(web_manifest)
+        // The live preview of the An sao screen.
+        .route(menh_preview)
         // Reads and writes the session cookie.
         .layer(CookieLayer::new())
         // Lets the browser runtime rerun pages; register it after other layers.
         .layer(RuntimeLayer::new())
+}
+
+/// `GET /manifest.webmanifest`, for "Add to home screen". It is built per
+/// request because the icon URLs carry a content hash.
+#[route(GET "/manifest.webmanifest")]
+async fn web_manifest(cx: &Cx) -> Result<Json<serde_json::Value>> {
+    let icon = |asset, sizes, purpose| json!({ "src": asset_config(cx).resolve(cx, asset), "sizes": sizes, "type": "image/png", "purpose": purpose });
+    Ok(Json(json!({
+        "name": "Thiên Hạc",
+        "short_name": "Thiên Hạc",
+        "description": "Thiên Hạc: lá số và luận giải Tử Vi",
+        "start_url": "/",
+        "display": "standalone",
+        // A manifest cannot read CSS variables: these are the `page` and
+        // `bg-0` tokens of styles.css.
+        "background_color": "#120a24",
+        "theme_color": "#1a1033",
+        "icons": [
+            icon(ANDROID_ICON_192, "192x192", "any"),
+            icon(ANDROID_ICON_512, "512x512", "any"),
+            icon(MASKABLE_ICON_512, "512x512", "maskable"),
+        ],
+    })))
 }
 
 #[layout]
@@ -66,6 +106,16 @@ async fn root(cx: &Cx, slot: Slot<'_>) -> Result<impl View> {
                 >
                 <meta name="theme-color" content="#1a1033">
                 <title>"Thiên Hạc · An sao & luận giải Tử Vi"</title>
+                <meta
+                    name="description"
+                    content="An sao, đọc lá số và trò chuyện cùng Thiên Hạc."
+                >
+                <link rel="icon" href=(FAVICON) sizes="any">
+                <link rel="icon" type="image/png" sizes="16x16" href=(FAVICON_16)>
+                <link rel="icon" type="image/png" sizes="32x32" href=(FAVICON_32)>
+                <link rel="icon" type="image/png" sizes="48x48" href=(FAVICON_48)>
+                <link rel="apple-touch-icon" sizes="180x180" href=(APPLE_TOUCH_ICON)>
+                <link rel="manifest" href="/manifest.webmanifest">
                 <link rel="stylesheet" href=(tailwind::stylesheet!())>
                 topcoat::font::link(font: DISPLAY_FONT)
                 topcoat::font::link(font: BODY_FONT)
@@ -80,8 +130,15 @@ async fn root(cx: &Cx, slot: Slot<'_>) -> Result<impl View> {
                     >
                         <a
                             href=(href!(home))
-                            class="font-display text-2xl font-semibold"
+                            class="flex items-center gap-2 self-center font-display text-2xl font-semibold"
                         >
+                            <img
+                                src=(FAVICON_48)
+                                alt=""
+                                width="48"
+                                height="48"
+                                class="size-9 drop-shadow-[0_0_10px_var(--accent-glow)]"
+                            >
                             "Thiên Hạc"
                         </a>
                         <span
@@ -186,9 +243,13 @@ async fn home(cx: &Cx) -> Result<impl View> {
         if user.is_none() {
             landing()
         } else {
-            <main class="mx-auto grid max-w-5xl gap-6 px-4 pb-16 md:grid-cols-2">
-                new_chart_form(error: None)
-                <section class="glass p-6">
+            <main class="mx-auto max-w-5xl px-4 pb-16">
+                an_sao_screen(
+                    action: href!(charts::create).resolve(cx),
+                    sent: None,
+                    error: None
+                )
+                <section class="glass mt-10 p-6">
                     <p
                         class="text-[10px] font-bold tracking-[0.26em] text-accent uppercase"
                     >

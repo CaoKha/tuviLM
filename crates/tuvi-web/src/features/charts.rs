@@ -14,7 +14,7 @@ mod form;
 mod grid;
 mod store;
 
-pub use accent::accent_style;
-pub use form::{NewChart, ValidChart};
+pub use accent::{accent_style, menh_chinh_tinh};
+pub use form::{Buoi, NewChart, ValidChart, gender_value, hour_24};
 pub use grid::chart_grid;
 pub use store::{create, load, recent};
