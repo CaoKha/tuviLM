@@ -8,3 +8,7 @@ description = "TuviLM dev commands: `cargo up` and `cargo down`."
 
 [dependencies]
 clap = { version = "4.6.7", features = ["derive"] }
+dotenvy = "0.15.7"
+futures-util = "0.3.34"
+tokio = { version = "1.54.1", features = ["rt"] }
+tuvi-llm.workspace = true

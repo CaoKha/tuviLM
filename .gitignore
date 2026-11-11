@@ -4,6 +4,7 @@
 # Local settings and secrets
 .env
 .env.*
+!.env.example
 
 # Book files: not in git (see data/README.md)
 data/tuvitanbien*

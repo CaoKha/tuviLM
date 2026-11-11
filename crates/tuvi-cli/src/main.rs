@@ -2,6 +2,7 @@
 //!
 //! - `cargo up`: start Postgres, apply migrations, then run `topcoat dev`.
 //! - `cargo down`: stop Postgres. The data stays in the Docker volume.
+//! - `cargo tuvi ask "..."`: ask the LLM one question, to check the key.
 
 use std::{
     ffi::OsStr,
@@ -28,12 +29,24 @@ enum Task {
     Up,
     /// Stop Postgres. The data stays in the Docker volume.
     Down,
+    /// Ask the LLM one question and print the answer as it streams.
+    ///
+    /// Use it to check your key. The provider comes from OPENCODE_API_KEY or
+    /// OPENROUTER_API_KEY (see `.env.example`).
+    Ask {
+        /// The question.
+        question: String,
+    },
 }
 
 fn main() -> ExitCode {
+    // A missing `.env` is fine: the variables can come from the shell.
+    let _ = dotenvy::from_path(workspace_root().join(".env"));
+
     let result = match Cli::parse().command {
         Task::Up => up(),
         Task::Down => down(),
+        Task::Ask { question } => ask(&question),
     };
     match result {
         Ok(()) => ExitCode::SUCCESS,
@@ -80,6 +93,36 @@ fn up() -> Result<(), String> {
     dev.arg("dev").current_dir(&web);
     exec(dev)
         .map_err(|error| format!("{error}\nInstall the Topcoat CLI: cargo install topcoat-cli"))
+}
+
+fn ask(question: &str) -> Result<(), String> {
+    use futures_util::StreamExt;
+    use std::io::Write;
+    use tuvi_llm::{LlmClient, LlmConfig, Message, Session};
+
+    let config = LlmConfig::from_env().map_err(|error| error.to_string())?;
+    step(&format!("{} · {}", config.provider, config.model));
+    let client = LlmClient::new(config).map_err(|error| error.to_string())?;
+
+    let runtime = tokio::runtime::Builder::new_current_thread()
+        .enable_all()
+        .build()
+        .map_err(|error| error.to_string())?;
+    runtime.block_on(async {
+        let session = Session::new();
+        let mut answer = client
+            .stream(&session, &[Message::user(question)])
+            .await
+            .map_err(|error| error.to_string())?;
+        let mut stdout = std::io::stdout().lock();
+        while let Some(piece) = answer.next().await {
+            let piece = piece.map_err(|error| error.to_string())?;
+            let _ = stdout.write_all(piece.as_bytes());
+            let _ = stdout.flush();
+        }
+        let _ = writeln!(stdout);
+        Ok(())
+    })
 }
 
 fn down() -> Result<(), String> {
