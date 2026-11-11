@@ -3,9 +3,9 @@
 //!
 //! Names come from `components/data/sao.json`.
 
-use crate::elementary::DiaChi;
+use crate::can_chi::DiaChi;
 
-/// Chính tinh, declared in component-id order. Python sorts the stars of a
+/// Chính tinh, declared in component-id order. The old engine sorted the stars of a
 /// cung by id, so iterating `ALL` gives the same order.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 #[repr(u8)]

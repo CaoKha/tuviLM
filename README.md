@@ -11,20 +11,21 @@ Next.js app, FastAPI server and MongoDB. The old code is in git history.
 | Folder | What it is | Tech |
 | --- | --- | --- |
 | `crates/tuvi-core/` | Chart engine. No IO, no network, no database. | Rust |
-| `web/` | Web app: pages, forms, database | [Topcoat](https://github.com/tokio-rs/topcoat), [Toasty](https://github.com/tokio-rs/toasty), Postgres |
+| `crates/tuvi-web/` | Web app: pages, forms, database | [Topcoat](https://github.com/tokio-rs/topcoat), [Toasty](https://github.com/tokio-rs/toasty), Postgres |
+| `crates/tuvi-cli/` | Dev commands: `cargo up`, `cargo down` | Rust, [clap](https://docs.rs/clap) |
 | `data/` | Cách cục rules and câu phú text, for later features | YAML, JSON |
-| `docs/` | Design docs. Some describe the old Python code. | Markdown |
+| `docs/` | Domain notes and the cách cục rule language | Markdown |
 
 ## How it works
 
 ```text
-Browser ──► web (:3000, server-rendered HTML) ──► tuvi-core (chart engine)
-                    └────────────────────────────► Postgres (saved charts)
+Browser ──► tuvi-web (:3000, server-rendered HTML) ──► tuvi-core (chart engine)
+                    └─────────────────────────────────► Postgres (saved charts)
 ```
 
 1. The user enters a name, a solar birth date, an hour and a gender.
-2. `web` checks the input and calls `tuvi_core::build_chart`.
-3. `web` saves the birth data in Postgres and opens `/charts/{id}`.
+2. `tuvi-web` checks the input and calls `tuvi_core::build_chart`.
+3. `tuvi-web` saves the birth data in Postgres and opens `/charts/{id}`.
 4. The chart page builds the chart again and draws the 12 cung.
 
 The database stores only the birth data, not the chart. One chart takes about
@@ -68,25 +69,37 @@ Docker with `sudo` and ask for your password.
 ## Folders
 
 ```text
-Cargo.toml                    workspace
-crates/tuvi-core/
-  src/lib.rs                  public API: BirthInput, Chart, build_chart
-  src/calendar.rs             solar to lunar date, hour branch
-  src/lunar_table.rs          lunar years 1800–2199 (generated)
-  src/cung.rs                 12 cung roles, Mệnh, Thân, Thiên Can of each cung
-  src/cuc.rs                  Cục
-  src/chinh_tinh.rs           the 14 main stars
-  tests/parity.rs             compares 359 charts with saved reference data
-web/
-  src/app.rs                  layout, home page, chart form
-  src/app/charts.rs           POST /charts: save a chart
-  src/app/charts/chart_id.rs  GET /charts/{id}: the chart page
-  src/features/charts.rs      database model and chart rules
-  src/components/             Topcoat UI components (edit them freely)
-  toasty/                     database migrations
-xtask/                        `cargo up` and `cargo down` (see .cargo/config.toml)
-docker-compose.yaml           Postgres
+Cargo.toml                        workspace: every crate is in crates/
+.cargo/config.toml                aliases: cargo tuvi, cargo up, cargo down
+docker-compose.yaml               Postgres
+crates/
+  tuvi-core/                      chart engine
+    src/lib.rs                    module list and public API
+    src/chart.rs                  BirthInput, Chart, Cung, build_chart
+    src/calendar.rs               solar to lunar date, birth hour branch
+    src/calendar/lunar_table.rs   lunar years 1800–2199 (generated, do not edit)
+    src/can_chi.rs                Thiên Can and Địa Chi
+    src/cung.rs                   12 cung roles, Mệnh, Thân, Thiên Can of each cung
+    src/cuc.rs                    Cục
+    src/chinh_tinh.rs             the 14 main stars
+    tests/parity.rs               compares 359 charts with saved reference data
+    tests/bench.rs                speed test
+  tuvi-web/                       web app
+    src/main.rs                   start-up, database connection
+    src/app.rs                    root layout and home page (URL /)
+    src/app/charts.rs             chart form, POST /charts
+    src/app/charts/chart_id.rs    GET /charts/{id}
+    src/features/charts/          form checks, database queries, chart grid
+    src/components/               Topcoat UI components (edit them freely)
+    toasty/                       database migrations
+  tuvi-cli/                       dev commands (cargo tuvi --help)
+data/                             data for later features (see data/README.md)
+docs/                             domain notes
 ```
+
+`src/app/` holds pages only: the file path is the URL path. Pages call
+`src/features/` for data and rules. `src/components/` holds UI parts that no
+single feature owns.
 
 ## Tests
 
@@ -110,20 +123,21 @@ There is no CI. Run the tests before you open a PR.
 `tests/fixtures/charts.json`. Change this file only when you change a result on
 purpose, and say why in the PR.
 
-**Change a database model:** edit `web/src/features/*.rs`. Then, from `web/`:
+**Change a database model:** edit `crates/tuvi-web/src/features/`. Then, from
+`crates/tuvi-web/`:
 
 ```bash
 cargo run -- toasty migration generate
 cargo run -- toasty migration apply
 ```
 
-Commit the new files in `web/toasty/`. Run these commands from `web/`, because
-Toasty writes `toasty/` in the current folder.
+Commit the new files in `crates/tuvi-web/toasty/`. Run these commands from
+`crates/tuvi-web/`, because Toasty writes `toasty/` in the current folder.
 
-**Add a page:** add a file in `web/src/app/`. The file path is the URL path.
-Put data and rules in `web/src/features/`, not in the page.
+**Add a page:** add a file in `crates/tuvi-web/src/app/`. The file path is the
+URL path. Put data and rules in `crates/tuvi-web/src/features/`, not in the page.
 
-**Add a UI component:** from `web/`, run `topcoat ui add <name>`.
+**Add a UI component:** from `crates/tuvi-web/`, run `topcoat ui add <name>`.
 
 **Run without `topcoat dev`:** run `topcoat asset bundle` first. The binary
 reads its CSS and JS from `target/<profile>/assets/`. Without them, it does not start.
@@ -131,7 +145,8 @@ reads its CSS and JS from `target/<profile>/assets/`. Without them, it does not 
 **Rules:**
 
 - `tuvi-core` has no IO, network, database or AI calls.
-- Code names use Vietnamese words without accents: `cung`, `sao`, `dia_chi`.
+- Domain names use Vietnamese words without accents: `cung`, `sao`, `dia_chi`.
+- Folder names match crate names: `crates/<crate-name>/`.
 - No `unwrap` outside tests. No `unsafe`.
 - Make a branch and open a PR to `main`.
 
@@ -149,6 +164,12 @@ reads its CSS and JS from `target/<profile>/assets/`. Without them, it does not 
 - Supported dates are 1800-01-25 (Tết 1800) to 2199-12-31 22:59.
 - Topcoat and Toasty are early-stage projects. Expect breaking changes when you
   update them.
+
+## Docs
+
+- [`docs/domain.md`](docs/domain.md): what a chart is and how its parts relate
+- [`docs/cach_cuc_rules.md`](docs/cach_cuc_rules.md): the rule language of `data/cach_cuc.yaml`
+- [`data/README.md`](data/README.md): the data files
 
 ## Words
 

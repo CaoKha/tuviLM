@@ -4,7 +4,7 @@
 //! Ports `context/natal.py::_get_menh_position`,
 //! `placement/rules/data/cung_roles.yaml` and `model/cung.py`.
 
-use crate::elementary::{DiaChi, ThienCan};
+use crate::can_chi::{DiaChi, ThienCan};
 
 /// The 12 cung roles, in the clockwise order of `cung_roles.yaml`
 /// (Mệnh first). Names come from `components/data/cung_role.json`.

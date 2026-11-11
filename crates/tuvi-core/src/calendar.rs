@@ -1,14 +1,16 @@
-//! Solar → Vietnamese lunar date (port of `calendar/lunar.py`) and the birth
-//! hour rules of `LaSoPrior.from_solar_day` (`model/prior.py`).
+//! Solar date to Vietnamese lunar date, and the birth hour rules.
 //!
 //! No allocation: the lunar year data is a packed `static` table.
 
 use crate::ChartError;
-use crate::elementary::DiaChi;
-use crate::lunar_table::{FIRST_YEAR, LAST_YEAR, LUNAR_YEARS};
+use crate::can_chi::DiaChi;
+mod lunar_table;
+
+use lunar_table::LUNAR_YEARS;
+pub(crate) use lunar_table::{FIRST_YEAR, LAST_YEAR};
 
 /// A lunar date. `is_leap_month` is kept for completeness; the chart uses
-/// only the month number (same as Python).
+/// only the month number (same as the old engine).
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct LunarDate {
     pub day: u8,
@@ -49,7 +51,7 @@ impl YearInfo {
     }
 }
 
-/// Julian Day Number of a Gregorian date (same integer formula as Python).
+/// Julian Day Number of a Gregorian date .
 pub const fn jdn(day: i32, month: i32, year: i32) -> i32 {
     let a = (14 - month) / 12;
     let y = year + 4800 - a;
@@ -91,7 +93,7 @@ pub fn solar_to_lunar(year: i32, month: u8, day: u8) -> Result<LunarDate, ChartE
 }
 
 /// Walk the month starts of one lunar year and keep the last start <= `jd`
-/// (Python `find_lunar_date`).
+///
 fn find_lunar_date(jd: i32, lunar_year: i32, tet: i32, info: YearInfo) -> LunarDate {
     let leap_month = info.leap_month();
     let mut start = tet;
@@ -123,13 +125,13 @@ fn find_lunar_date(jd: i32, lunar_year: i32, tet: i32, info: YearInfo) -> LunarD
 
 /// Birth data after the hour rules: hour branch and lunar date.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub struct Prior {
+pub struct LunarBirth {
     pub hour: DiaChi,
-    pub lunar: LunarDate,
+    pub date: LunarDate,
 }
 
-impl Prior {
-    /// Port of `LaSoPrior.from_solar_day`: 23h belongs to the Tý hour of the
+impl LunarBirth {
+    /// 23h belongs to the Tý hour of the
     /// next day. The date must already be valid.
     pub fn from_solar(year: i32, month: u8, day: u8, hour: u8) -> Result<Self, ChartError> {
         let (year, month, day, hour_chi) = if hour == 23 {
@@ -145,7 +147,7 @@ impl Prior {
         };
         Ok(Self {
             hour: hour_chi,
-            lunar: solar_to_lunar(year, month, day)?,
+            date: solar_to_lunar(year, month, day)?,
         })
     }
 }
@@ -186,11 +188,11 @@ mod tests {
 
     #[test]
     fn hour_23_moves_to_next_day() {
-        let Ok(prior) = Prior::from_solar(2023, 12, 31, 23) else {
+        let Ok(birth) = LunarBirth::from_solar(2023, 12, 31, 23) else {
             panic!("in range");
         };
-        assert_eq!(prior.hour, DiaChi::Ty);
-        assert_eq!(solar_to_lunar(2024, 1, 1), Ok(prior.lunar));
+        assert_eq!(birth.hour, DiaChi::Ty);
+        assert_eq!(solar_to_lunar(2024, 1, 1), Ok(birth.date));
     }
 
     #[test]

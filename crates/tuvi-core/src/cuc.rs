@@ -1,7 +1,7 @@
 //! Cục (port of `context/natal.py::_get_cuc`). Names come from
 //! `components/data/cuc.json`.
 
-use crate::elementary::{DiaChi, ThienCan};
+use crate::can_chi::{DiaChi, ThienCan};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 #[repr(u8)]
