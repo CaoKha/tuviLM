@@ -12,6 +12,7 @@ Next.js app, FastAPI server and MongoDB. The old code is in git history.
 | --- | --- | --- |
 | `crates/tuvi-core/` | Chart engine. No IO, no network, no database. | Rust |
 | `crates/tuvi-web/` | Web app: pages, forms, database | [Topcoat](https://github.com/tokio-rs/topcoat), [Toasty](https://github.com/tokio-rs/toasty), Postgres |
+| `crates/tuvi-llm/` | LLM client: OpenCode Go and OpenRouter | Rust, reqwest |
 | `crates/tuvi-cli/` | Dev commands: `cargo up`, `cargo down` | Rust, [clap](https://docs.rs/clap) |
 | `data/` | Cách cục rules and câu phú text, for later features | YAML, JSON |
 | `docs/` | Domain notes and the cách cục rule language | Markdown |
@@ -66,6 +67,21 @@ use a different database.
 If your user is not in the `docker` group, `cargo up` and `cargo down` run
 Docker with `sudo` and ask for your password.
 
+### LLM key
+
+The AI features need a key from **OpenCode Go** or **OpenRouter**:
+
+```bash
+cp .env.example .env          # then set OPENCODE_API_KEY or OPENROUTER_API_KEY
+cargo tuvi ask "Tử Vi là gì?" # checks the key: prints the answer as it streams
+```
+
+- When both keys are set, OpenCode Go wins. Set `TUVI_LLM_PROVIDER` to choose.
+- Set `TUVI_LLM_MODEL` to change the model. On OpenCode Go, use a model with
+  the `chat-completions` format: `curl -s https://opencode.ai/zen/go/v1/models`.
+  Models with the `messages`, `responses` or Google formats do not work yet.
+- `.env.example` lists every setting.
+
 ## Folders
 
 ```text
@@ -98,6 +114,11 @@ crates/
     src/features/charts/          form checks, database queries, chart grid, accent
     styles.css                    theme: tokens and utilities (see DESIGN.md)
     toasty/                       database migrations
+  tuvi-llm/                       LLM client (OpenAI chat-completions format)
+    src/config.rs                 provider, key, model and URL from the environment
+    src/client.rs                 chat: whole answer or a stream of text
+    src/sse.rs                    server-sent events parser
+    tests/fake_server.rs          end-to-end tests against a local fake server
   tuvi-cli/                       dev commands (cargo tuvi --help)
 data/                             data for later features (see data/README.md)
 docs/                             domain notes and the design prototype
@@ -167,7 +188,7 @@ reads its CSS and JS from `target/<profile>/assets/`. Without them, it does not 
   cách cục, câu phú
 - The web app does not show phụ tinh, Tứ Hóa, Tuần/Triệt, Bản mệnh,
   Đại hạn or Tiểu hạn yet. `tuvi-core` computes them.
-- AI chat about the chart
+- AI chat about the chart (the LLM client is ready: `crates/tuvi-llm`)
 - Users and login
 
 ## Known issues
