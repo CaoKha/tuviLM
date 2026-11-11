@@ -79,6 +79,13 @@ Both fonts load with the Vietnamese subset. Small labels are uppercase, bold,
 - Popups use the HTML `popover` attribute, so the browser handles Esc, a tap
   outside and focus. Do not add a script for this.
 
+## Chat
+
+- Thiên Hạc's messages: `glass` bubble on the left, a small "THIÊN HẠC" label
+  in the accent color. The user's messages: `pill-primary` bubble on the right.
+- The composer sticks to the bottom: one round field and a round send button.
+- Answers are markdown. `strong` text uses the accent color.
+
 ## Rules
 
 - Mobile first. Check every page at 390px wide and at 1280px wide.

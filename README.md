@@ -80,7 +80,18 @@ cargo tuvi ask "Tử Vi là gì?" # checks the key: prints the answer as it stre
 - Set `TUVI_LLM_MODEL` to change the model. On OpenCode Go, use a model with
   the `chat-completions` format: `curl -s https://opencode.ai/zen/go/v1/models`.
   Models with the `messages`, `responses` or Google formats do not work yet.
-- `.env.example` lists every setting.
+- `.env.example` lists every setting. `cargo up` and `cargo tuvi` both read `.env`.
+- Without a key the app still runs. The chat page says what is missing.
+
+### AI chat
+
+Open a chart and press **Hỏi Thiên Hạc**, or go to `/charts/{id}/hoi-ai`.
+
+1. The question is saved in Postgres (`chat_messages`), then the page reloads.
+2. The page sends the model a system prompt with the whole chart as text,
+   plus the last 20 messages.
+3. The answer streams into the page (Topcoat `live!`) and is saved when it ends.
+4. If the answer fails, the question stays. A reload tries again.
 
 ## Folders
 
@@ -112,6 +123,8 @@ crates/
     src/app/charts.rs             chart form, POST /charts
     src/app/charts/chart_id.rs    GET /charts/{id}
     src/features/charts/          form checks, database queries, chart grid, accent
+    src/features/chat/            chat messages, system prompt, markdown, LLM service
+    src/app/charts/chart_id/hoi_ai.rs   GET and POST /charts/{id}/hoi-ai
     styles.css                    theme: tokens and utilities (see DESIGN.md)
     toasty/                       database migrations
   tuvi-llm/                       LLM client (OpenAI chat-completions format)
@@ -186,7 +199,7 @@ reads its CSS and JS from `target/<profile>/assets/`. Without them, it does not 
 
 - Stars that move per period (lưu tinh, Tứ Hóa of a Đại hạn or a year),
   cách cục, câu phú
-- AI chat about the chart (the LLM client is ready: `crates/tuvi-llm`)
+- AI chat: tools, cách cục and the book Tử Vi Tân Biên (the chat sees only the chart)
 - Users and login
 
 ## Known issues

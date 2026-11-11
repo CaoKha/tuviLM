@@ -2,3 +2,5 @@
 //! data and business rules, for the pages in `app` to use.
 
 pub mod charts;
+
+pub mod chat;
