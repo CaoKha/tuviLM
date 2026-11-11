@@ -85,7 +85,7 @@ pub async fn show(cx: &Cx) -> Result<impl View> {
                 id="cuoi"
                 method="post"
                 action=(href!(ask, chart_id: id))
-                class="sticky bottom-4 mt-6 flex items-center gap-2.5 rounded-full border border-[rgba(243,239,250,0.18)] bg-[rgba(48,29,80,0.97)] py-2 pr-2 pl-5 shadow-[0_8px_24px_rgba(8,4,20,0.5)]"
+                class="sticky bottom-[calc(var(--spacing-tabbar)+1rem)] mt-6 flex items-center gap-2.5 rounded-full border border-[rgba(243,239,250,0.18)] bg-[rgba(48,29,80,0.97)] py-2 pr-2 pl-5 shadow-[0_8px_24px_rgba(8,4,20,0.5)]"
             >
                 <input
                     name="question"

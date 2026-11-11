@@ -64,6 +64,24 @@ Both fonts load with the Vietnamese subset. Small labels are uppercase, bold,
 | `pill-ghost` | Other choices, for example the gender toggle |
 | `cosmos` | The fixed page backdrop, with two slow nebulae |
 
+## Navigation
+
+A logged-in user gets one `<nav>` (`crates/tuvi-web/src/features/shell/`).
+The prototype calls it `.tabbar`.
+
+- Below `lg` (1024px) it is a bottom tab bar, fixed and as wide as the phone
+  column (480px). Pages keep room for it with `pb-tabbar`. Sticky and fixed
+  parts at the bottom add `var(--spacing-tabbar)` to their offset.
+- From `lg` it is a 250px rail on the left (`lg:pl-rail`) with the brand on
+  top. The page header then hides, so the brand shows once.
+- Five tabs, in order: Bản mệnh, Vận hạn, Hỏi AI, Nâng cao (the 12-cung
+  chart), Hồ sơ. The icons are lucide icons.
+- The current tab has the accent text in the bar and the `pill-primary` fill
+  in the rail.
+- The chart tabs open the chart in the URL, else the newest chart. Without a
+  chart they are locked: an `<a>` without `href`, at 40% opacity. A screen
+  that is not ported yet shows a small "Sắp có" label.
+
 ## An sao screen
 
 The home page for a logged-in user. It casts a new chart

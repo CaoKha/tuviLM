@@ -8,3 +8,5 @@ pub mod chat;
 pub mod an_sao;
 
 pub mod auth;
+
+pub mod shell;
