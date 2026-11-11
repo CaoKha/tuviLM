@@ -29,8 +29,10 @@ Browser ──► tuvi-web (:3000, server-rendered HTML) ──► tuvi-core (ch
    the chính tinh of cung Mệnh while the user picks.
 2. The form posts to `/charts`. `tuvi-web` checks the input and calls
    `tuvi_core::build_chart`.
-3. `tuvi-web` saves the birth data in Postgres and opens `/charts/{id}`.
-4. The chart page builds the chart again and draws the 12 cung.
+3. `tuvi-web` saves the birth data in Postgres and opens the Bản mệnh deck
+   (`/charts/{id}/ban-menh`): three cards from the chart.
+4. Each chart page builds the chart again. The Nâng cao tab
+   (`/charts/{id}`) draws the 12 cung.
 
 The database stores only the birth data, not the chart. One chart takes about
 300 ns to build, so the app builds it on each read. When the engine changes,
@@ -147,11 +149,13 @@ crates/
     src/app/charts/chart_id.rs    GET /charts/{id}
     src/features/charts/          form checks, database queries, chart grid, accent
     src/features/an_sao/          An sao screen, preview shard, constellations, an_sao.js
+    src/features/ban_menh/        Bản mệnh deck: card text, chart facts, the three cards
     src/features/chat/            chat messages, system prompt, markdown, LLM service
     src/features/auth/            users, sessions, Argon2 passwords, form checks
     src/features/shell/           app navigation: tab bar, rail, brand
     src/app/login.rs, register.rs, logout.rs, ho_so.rs   account pages
     src/app/charts/chart_id/hoi_ai.rs   GET and POST /charts/{id}/hoi-ai
+    src/app/charts/chart_id/ban_menh.rs GET /charts/{id}/ban-menh
     styles.css                    theme: tokens and utilities (see DESIGN.md)
     assets/                       app icons, crane video, god-ghosts/ portraits (asset!)
     toasty/                       database migrations
@@ -225,8 +229,11 @@ reads its CSS and JS from `target/<profile>/assets/`. Without them, it does not 
 
 ## Not done yet
 
-- The Bản mệnh and Vận hạn screens: their tabs are locked ("Sắp có")
+- The Vận hạn screen: its tab is locked ("Sắp có")
 - A desktop top bar with the screen title
+- Bản mệnh deck: the card flip, the focus zoom and the dots of the phone
+  deck, the auras around the main card, a greeting by the time of day, and
+  the "Lưu ảnh" and "Chia sẻ" buttons (the old app only showed "coming soon")
 - Stars that move per period (lưu tinh, Tứ Hóa of a Đại hạn or a year),
   cách cục, câu phú
 - AI chat: tools, cách cục and the book Tử Vi Tân Biên (the chat sees only the chart)

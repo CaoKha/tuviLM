@@ -9,6 +9,7 @@ use crate::features::charts::{accent_style, chart_grid, load};
 
 module_param!(pub chart_id: u64 else not_found);
 
+pub mod ban_menh;
 pub mod hoi_ai;
 
 #[page]

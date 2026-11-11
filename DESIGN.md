@@ -82,6 +82,26 @@ The prototype calls it `.tabbar`.
   chart they are locked: an `<a>` without `href`, at 40% opacity. A screen
   that is not ported yet shows a small "Sắp có" label.
 
+## Bản mệnh screen
+
+A new chart lands here (`crates/tuvi-web/src/features/ban_menh/`). The
+prototype calls it `#s-home`.
+
+- The header: "Chào bạn", the chart name, and a badge with the chính tinh of
+  cung Mệnh. With song tinh, the first name has `accent` and the second has
+  `accent-2`.
+- Below `lg` the three cards are a row that scrolls sideways and snaps to
+  each card. The next card peeks in at the edge. From `lg` the main card is
+  on the left (364px) and the two other cards are on the right.
+- Lá Bài Bản Mệnh (main card): 9:16, a twilight gradient, an accent border
+  and glow. It shows the archetype chip, the constellations of the An sao
+  preview (`.chom-*`) and the mantra in italic Fraunces. Vô chính diệu shows
+  the scattered sky.
+- Lá bài phụ (Vận May, Lời Khuyên): `glass` with a border and a corner glow
+  in the card's own hue (`--t-hue`). Vận May takes the lucky color, the
+  element of Bản mệnh. Lời Khuyên takes `accent-2`. The page accent does not
+  change.
+
 ## An sao screen
 
 The home page for a logged-in user. It casts a new chart

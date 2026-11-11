@@ -15,7 +15,7 @@ use crate::features::{
 
 pub mod chart_id;
 
-/// Saves a new chart, then redirects to it. On bad input, shows the An sao
+/// Saves a new chart, then opens its Bản mệnh deck. On bad input, shows the An sao
 /// screen again with the sent values and the error.
 #[page(POST)]
 pub async fn create(cx: &Cx, Form(form): Form<NewChart>) -> Result<impl View> {
@@ -23,7 +23,9 @@ pub async fn create(cx: &Cx, Form(form): Form<NewChart>) -> Result<impl View> {
     let error = match form.validate() {
         Ok(chart) => {
             let id = save_chart(cx, user.id, chart).await?;
-            return Err(see_other(href!(chart_id::show, chart_id: id).resolve(cx)).into());
+            return Err(
+                see_other(href!(chart_id::ban_menh::show, chart_id: id).resolve(cx)).into(),
+            );
         }
         Err(error) => error.to_string(),
     };

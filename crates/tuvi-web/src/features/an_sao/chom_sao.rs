@@ -10,7 +10,7 @@ use topcoat::{
     Result,
     asset::Asset,
     context::Cx,
-    view::{View, view},
+    view::{View, class, view},
 };
 
 mod data;
@@ -34,6 +34,20 @@ pub struct ChomSao {
 pub fn chom_sao_of(chinh_tinh: &str) -> Option<&'static ChomSao> {
     data::ALL.iter().find(|chom| chom.chinh_tinh == chinh_tinh)
 }
+
+/// Scattered dots for the sky before the stars wake, in a 320×100 box.
+const SCATTER: [(u16, u16); 10] = [
+    (26, 34),
+    (66, 62),
+    (108, 40),
+    (150, 72),
+    (192, 34),
+    (232, 66),
+    (272, 46),
+    (300, 56),
+    (90, 80),
+    (210, 22),
+];
 
 /// When the wave of lines starts in each 4.2 s cycle, in ms.
 const WAVE_START_MS: f64 = 150.0;
@@ -187,6 +201,22 @@ pub async fn chom_figure(
                 }
             </svg>
         </div>
+    })
+}
+
+/// The sky without a figure: scattered dots, dim until a parent has `lit`.
+#[topcoat::view::component]
+pub async fn sky(cx: &Cx, class: &'static str) -> Result<impl View> {
+    Ok(view! {
+        <svg
+            aria-hidden="true"
+            viewBox="0 0 320 100"
+            class=(class!("overflow-visible", class))
+        >
+            for (x, y) in SCATTER {
+                <circle class="constel-node" cx=(x) cy=(y) r="2.4"></circle>
+            }
+        </svg>
     })
 }
 
