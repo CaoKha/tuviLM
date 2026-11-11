@@ -51,6 +51,29 @@ The book files are not in git. The agent reads them from
 `data/tuvitanbien_chunking_compact/part_2/`. Ask a maintainer for this folder.
 Without it, charts work but the agent cannot read the book.
 
+### If setup fails
+
+**`'pnpm' is not on PATH`:** pnpm is not active in your shell. With mise, run
+`mise use -g pnpm@11` (the lockfile is pnpm 11). Without mise, run `corepack enable pnpm`.
+
+**Docker permission denied:** your user cannot use Docker. `tuvi up` prints the
+fix and, in a terminal, asks whether to run the docker command with sudo this
+time. Pick one:
+
+- Add your user to the `docker` group, then open a new shell. This group gives
+  root-level access to the machine.
+  ```bash
+  sudo usermod -aG docker $USER
+  newgrp docker      # or log out and log in
+  docker ps          # must work without sudo
+  ```
+- Or run Docker with sudo: `uv run tuvi up --sudo`, and stop MongoDB with
+  `uv run tuvi down --sudo`.
+- Or run your own MongoDB on port 27017 and use `uv run tuvi up --no-db`.
+
+**`uv: command not found`:** install uv: `mise use -g uv@latest`, or see
+https://docs.astral.sh/uv/getting-started/installation/.
+
 **Without the CLI:**
 
 ```bash
