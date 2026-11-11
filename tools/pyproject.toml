@@ -10,6 +10,9 @@ dependencies = [
     "streamlit>=1.40.0,<2",
 ]
 
+[project.scripts]
+tuvi = "tuvi_tools.cli:main"
+
 [tool.uv.sources]
 tuvi-engine = { workspace = true }
 
