@@ -1,6 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { OWNER_ID_KEY, resetOwnerIdCache } from "@/lib/api/owner";
 import { isApiError } from "@/lib/http/errors";
 
 import type { SseChatEvent } from "./schemas";
@@ -26,7 +25,6 @@ async function collect(body: ReadableStream<Uint8Array>): Promise<SseChatEvent[]
 
 beforeEach(() => {
   localStorage.clear();
-  resetOwnerIdCache();
 });
 
 afterEach(() => {
@@ -35,7 +33,6 @@ afterEach(() => {
 
 describe("streamChat", () => {
   it("uses the logical turn's idempotency key and abort signal", async () => {
-    localStorage.setItem(OWNER_ID_KEY, "anon_stored");
     const controller = new AbortController();
     const fetchMock = vi.fn().mockResolvedValue(
       new Response('data: {"type":"done","status":"confirmed"}\n\n', {

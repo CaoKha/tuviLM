@@ -1,7 +1,6 @@
 import { ApiErrorException } from "@/lib/http/errors";
 
-import { apiUrl, mintOwnerId, safeBody } from "./client";
-import { getOwnerId } from "./owner";
+import { safeBody } from "./client";
 import { sseChatEventSchema, type SseChatEvent } from "./schemas";
 
 /**
@@ -9,8 +8,8 @@ import { sseChatEventSchema, type SseChatEvent } from "./schemas";
  *
  * Streams are not TanStack Query queries, so they do not go through `request`
  * (which reads the whole body). They do, however, share the client's rules:
- * the same base-URL/host resolution (`apiUrl`), the same identity and
- * idempotency headers, and the same normalized `ApiError` failures.
+ * same-origin `/api` paths (the guest or login cookie goes along), the same
+ * idempotency header, and the same normalized `ApiError` failures.
  *
  * The backend sends one `data: {…}\n\n` frame per event. A frame is split
  * into `data:` lines and JSON-decoded; an event that fails the Zod schema
@@ -32,13 +31,12 @@ export async function* streamChat(
 ): AsyncGenerator<SseChatEvent> {
   const headers: Record<string, string> = {
     "Content-Type": "application/json",
-    "X-Anonymous-Owner-Id": await getOwnerId(mintOwnerId),
     "Idempotency-Key": opts.idempotencyKey,
   };
 
   let response: Response;
   try {
-    response = await fetch(apiUrl(`/api/v1/sessions/${sessionId}/chat/stream`), {
+    response = await fetch(`/api/v1/sessions/${sessionId}/chat/stream`, {
       method: "POST",
       headers,
       body: JSON.stringify({ content }),

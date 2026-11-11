@@ -1,10 +1,9 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { isApiError } from "@/lib/http/errors";
 
 import fixture from "./__fixtures__/build-laso.json";
-import { newIdempotencyKey, request, resolveBaseUrl } from "./client";
-import { OWNER_ID_KEY, resetOwnerIdCache } from "./owner";
+import { newIdempotencyKey, request } from "./client";
 import { buildLasoResponseSchema } from "./schemas";
 
 function jsonResponse(body: unknown, status = 200) {
@@ -24,11 +23,6 @@ async function errorFrom(promise: Promise<unknown>) {
   }
   throw new Error("expected the request to reject");
 }
-
-beforeEach(() => {
-  localStorage.clear();
-  resetOwnerIdCache();
-});
 
 afterEach(() => {
   vi.restoreAllMocks();
@@ -98,8 +92,7 @@ describe("request", () => {
 });
 
 describe("headers", () => {
-  it("attaches the stored owner id without minting a new one", async () => {
-    localStorage.setItem(OWNER_ID_KEY, "anon_stored");
+  it("calls the same-origin path and attaches the idempotency key", async () => {
     const fetchMock = vi.fn().mockResolvedValue(jsonResponse(fixture));
     vi.stubGlobal("fetch", fetchMock);
 
@@ -108,99 +101,26 @@ describe("headers", () => {
       method: "POST",
       body: {},
       schema: buildLasoResponseSchema,
-      withOwner: true,
       idempotencyKey: key,
     });
 
     expect(fetchMock).toHaveBeenCalledTimes(1);
-    const headers = fetchMock.mock.calls[0]![1].headers;
-    expect(headers["X-Anonymous-Owner-Id"]).toBe("anon_stored");
-    expect(headers["Idempotency-Key"]).toBe(key);
-    expect(headers["Content-Type"]).toBe("application/json");
+    const [url, init] = fetchMock.mock.calls[0]!;
+    // Relative: next.config.ts forwards /api/* to FastAPI, and cookies go along.
+    expect(url).toBe("/api/v1/laso/build");
+    expect(init.headers["Idempotency-Key"]).toBe(key);
+    expect(init.headers["Content-Type"]).toBe("application/json");
+    expect(init.headers["X-Anonymous-Owner-Id"]).toBeUndefined();
   });
 
-  it("omits both headers when they are not requested", async () => {
+  it("omits the idempotency header when it is not requested", async () => {
     const fetchMock = vi.fn().mockResolvedValue(jsonResponse(fixture));
     vi.stubGlobal("fetch", fetchMock);
 
     await request("/api/v1/laso/build", { schema: buildLasoResponseSchema });
 
     const headers = fetchMock.mock.calls[0]![1].headers;
-    expect(headers["X-Anonymous-Owner-Id"]).toBeUndefined();
     expect(headers["Idempotency-Key"]).toBeUndefined();
-  });
-
-  it("mints exactly one owner id when two first requests race", async () => {
-    const fetchMock = vi.fn((url: string, init?: RequestInit) => {
-      void init;
-      if (url.endsWith("/api/v1/anonymous")) {
-        return Promise.resolve(jsonResponse({ owner_id: `anon_${Math.random()}` }));
-      }
-      return Promise.resolve(jsonResponse(fixture));
-    });
-    vi.stubGlobal("fetch", fetchMock);
-
-    const [a, b] = await Promise.all([
-      request("/api/v1/laso/build", { schema: buildLasoResponseSchema, withOwner: true }),
-      request("/api/v1/laso/build", { schema: buildLasoResponseSchema, withOwner: true }),
-    ]);
-
-    expect(a).toBeDefined();
-    expect(b).toBeDefined();
-
-    const mintCalls = fetchMock.mock.calls.filter(([url]) =>
-      String(url).endsWith("/api/v1/anonymous"),
-    );
-    expect(mintCalls).toHaveLength(1);
-
-    const sent = fetchMock.mock.calls
-      .filter(([url]) => url.endsWith("/api/v1/laso/build"))
-      .map(([, init]) => (init?.headers as Record<string, string>)["X-Anonymous-Owner-Id"]);
-    expect(new Set(sent).size).toBe(1);
-    expect(localStorage.getItem(OWNER_ID_KEY)).toBe(sent[0]);
-  });
-
-  it("does not poison later attempts when minting fails", async () => {
-    const fetchMock = vi
-      .fn()
-      .mockResolvedValueOnce(jsonResponse({ detail: "boom" }, 500))
-      .mockResolvedValueOnce(jsonResponse({ owner_id: "anon_second" }))
-      .mockResolvedValue(jsonResponse(fixture));
-    vi.stubGlobal("fetch", fetchMock);
-
-    await errorFrom(
-      request("/api/v1/laso/build", { schema: buildLasoResponseSchema, withOwner: true }),
-    );
-
-    await request("/api/v1/laso/build", { schema: buildLasoResponseSchema, withOwner: true });
-
-    expect(localStorage.getItem(OWNER_ID_KEY)).toBe("anon_second");
-  });
-});
-
-describe("resolveBaseUrl", () => {
-  it("leaves the configured URL alone on the server", () => {
-    expect(resolveBaseUrl("http://localhost:8000", null)).toBe("http://localhost:8000");
-  });
-
-  it("leaves it alone when the page is on the same host", () => {
-    expect(resolveBaseUrl("http://localhost:8000", "localhost")).toBe("http://localhost:8000");
-  });
-
-  // Dev on a phone: the page came from the LAN, so localhost would be the phone.
-  it("borrows the page host when the base points at localhost", () => {
-    expect(resolveBaseUrl("http://localhost:8000", "192.168.1.23")).toBe(
-      "http://192.168.1.23:8000",
-    );
-    expect(resolveBaseUrl("http://127.0.0.1:8000/", "192.168.1.23")).toBe(
-      "http://192.168.1.23:8000",
-    );
-  });
-
-  it("never rewrites a real backend URL", () => {
-    expect(resolveBaseUrl("https://api.tuvi.example", "192.168.1.23")).toBe(
-      "https://api.tuvi.example",
-    );
   });
 });
 

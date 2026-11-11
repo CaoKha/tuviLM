@@ -112,7 +112,6 @@ export function useChartProfiles() {
     queryFn: () =>
       request("/api/v1/chart-profiles", {
         schema: listChartProfilesResponseSchema,
-        withOwner: true,
       }),
   });
 }
@@ -143,7 +142,6 @@ export function useCreateChartProfile() {
         method: "POST",
         body: createChartProfileRequestSchema.parse(input),
         schema: createChartProfileResponseSchema,
-        withOwner: true,
         idempotencyKey: profileIdempotencyKey(input.birth_info),
       }),
   });
@@ -163,7 +161,6 @@ export function useDeleteChartProfile() {
       request(`/api/v1/chart-profiles/${id}`, {
         method: "DELETE",
         schema: emptyResponseSchema,
-        withOwner: true,
       }),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: queryKeys.chartProfiles.all() });
@@ -182,7 +179,6 @@ export function useListSessions(profileId: string | null) {
     queryFn: () =>
       request(`/api/v1/chart-profiles/${profileId as string}/sessions`, {
         schema: listSessionsResponseSchema,
-        withOwner: true,
       }),
     enabled: profileId !== null,
   });
@@ -195,7 +191,6 @@ export function useGetSession(sessionId: string | null) {
     queryFn: () =>
       request(`/api/v1/sessions/${sessionId as string}`, {
         schema: getSessionResponseSchema,
-        withOwner: true,
       }),
     enabled: sessionId !== null,
   });
@@ -216,7 +211,6 @@ export function useCreateSession(profileId: string | null) {
         method: "POST",
         body: createSessionRequestSchema.parse({ title: null }),
         schema: createSessionResponseSchema,
-        withOwner: true,
         idempotencyKey: newIdempotencyKey(),
       });
     },

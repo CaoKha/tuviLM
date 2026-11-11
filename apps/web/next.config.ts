@@ -1,5 +1,7 @@
 import type { NextConfig } from "next";
 
+import { env } from "./src/config/env";
+
 const nextConfig: NextConfig = {
   devIndicators: false,
 
@@ -21,6 +23,20 @@ const nextConfig: NextConfig = {
    * the loader plays it, which defeats the prefetch. An hour is long enough
    * to cover a session and short enough that a replaced asset still lands.
    */
+  /**
+   * The browser calls `/api/*` on this site; Next forwards it to FastAPI.
+   * Same origin means the login and guest cookies are first-party, with no
+   * CORS. Works the same in `next dev` and on Vercel.
+   */
+  async rewrites() {
+    return [
+      {
+        source: "/api/:path*",
+        destination: `${env.API_ORIGIN.replace(/\/$/, "")}/api/:path*`,
+      },
+    ];
+  },
+
   async headers() {
     return [
       {
