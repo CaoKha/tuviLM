@@ -1,5 +1,6 @@
-//! Parity with the Python engine. Fixtures come from
-//! `scripts/gen_fixtures.py` (run against `src/refactored`).
+//! Parity with the old Python engine. The fixtures were made by that engine,
+//! which is now removed (see git history). They are the reference: change them
+//! only on purpose, and say why in the PR.
 
 use serde::Deserialize;
 use serde_json::Value;

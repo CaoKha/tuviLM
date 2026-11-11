@@ -1,4 +1,4 @@
-//! Tử Vi chart engine (Rust port of `src/refactored/`).
+//! Tử Vi chart engine. It started as a port of the old Python engine.
 //!
 //! Pure computation: no IO, no network, no database.
 //!
