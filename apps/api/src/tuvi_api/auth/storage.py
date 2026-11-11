@@ -12,7 +12,10 @@ from tuvi_api.auth.models import EmailTakenError, User
 
 
 def _utc_now() -> datetime:
-    return datetime.now(UTC)
+    # MongoDB stores milliseconds. Round here so a user returned from create_user
+    # equals the same user read back later.
+    now = datetime.now(UTC)
+    return now.replace(microsecond=(now.microsecond // 1000) * 1000)
 
 
 class UserDocument(Document):
