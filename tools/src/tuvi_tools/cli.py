@@ -391,9 +391,6 @@ def cmd_down(args: argparse.Namespace) -> int:
 def cmd_check(args: argparse.Namespace) -> int:
     root = repo_root()
     web = root / "apps" / "web"
-    # Node 25+ ships a global localStorage that shadows jsdom's in Vitest.
-    web_env = dict(os.environ)
-    web_env["NODE_OPTIONS"] = f"{web_env.get('NODE_OPTIONS', '')} --no-experimental-webstorage".strip()
 
     steps: list[tuple[str, list[str], Path, dict[str, str] | None]] = []
     if not args.web_only:
@@ -402,7 +399,7 @@ def cmd_check(args: argparse.Namespace) -> int:
         steps += [
             ("web typecheck", ["pnpm", "typecheck"], web, None),
             ("web lint", ["pnpm", "lint"], web, None),
-            ("web tests", ["pnpm", "test"], web, web_env),
+            ("web tests", ["pnpm", "test"], web, None),
         ]
 
     failed = [name for name, command, cwd, env in steps if run(command, cwd=cwd, env=env) != 0]
