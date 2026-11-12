@@ -52,3 +52,43 @@ ignore = [
     # Changing ValueError to TypeError would break callers that catch ValueError.
     "TRY004",
 ]
+
+[tool.pyright]
+include = ["packages", "apps/api/src", "tools/src"]
+pythonVersion = "3.12"
+venvPath = "."
+venv = ".venv"
+typeCheckingMode = "basic"
+# Files that had type errors when pyright was added. Their errors are hidden.
+# Fix a file, then remove it from this list.
+ignore = [
+    "apps/api/src/tuvi_api/accounts/routes.py",
+    "apps/api/src/tuvi_api/chat/routes.py",
+    "apps/api/src/tuvi_api/chat/storage/store.py",
+    "packages/tuvi-agent/src/tuvi_agent/book_index.py",
+    "packages/tuvi-agent/src/tuvi_agent/main.py",
+    "packages/tuvi-agent/src/tuvi_agent/tool/ban_menh/laso_foundation.py",
+    "packages/tuvi-agent/src/tuvi_agent/tool/cach_cuc/evaluator/scopes.py",
+    "packages/tuvi-agent/src/tuvi_agent/tool/cach_cuc/evaluator/star_brightness.py",
+    "packages/tuvi-agent/src/tuvi_agent/tool/thai_tue/vong_thai_tue.py",
+    "packages/tuvi-agent/src/tuvi_agent/workflow/personality/agent.py",
+    "packages/tuvi-agent/src/tuvi_agent/workflow/strength_weakness/agent.py",
+    "packages/tuvi-engine/src/tuvi_engine/assembly/period.py",
+    "packages/tuvi-engine/src/tuvi_engine/assembly/tu_hoa_phai.py",
+    "packages/tuvi-engine/src/tuvi_engine/components/repository.py",
+    "packages/tuvi-engine/src/tuvi_engine/context/natal.py",
+    "packages/tuvi-engine/src/tuvi_engine/la_so.py",
+    "packages/tuvi-engine/src/tuvi_engine/model/cung.py",
+    "packages/tuvi-engine/src/tuvi_engine/model/elementary.py",
+    "packages/tuvi-engine/src/tuvi_engine/model/period_layer_store.py",
+    "packages/tuvi-engine/src/tuvi_engine/model/tinh_ban.py",
+    "packages/tuvi-engine/src/tuvi_engine/placement/registry.py",
+    "packages/tuvi-engine/src/tuvi_engine/placement/rules/declarations/resolvers.py",
+    "packages/tuvi-engine/src/tuvi_engine/placement/rules/positions/absolute.py",
+    "packages/tuvi-engine/src/tuvi_engine/placement/rules/positions/relative.py",
+    "packages/tuvi-engine/src/tuvi_engine/placement/rules/registration.py",
+    "packages/tuvi-engine/src/tuvi_engine/view/builder.py",
+    "tools/src/tuvi_tools/cach_cuc/cach_cuc_editor.py",
+    "tools/src/tuvi_tools/workflow_cli/strength_weakness_report.py",
+    "tools/src/tuvi_tools/workflow_cli/view.py",
+]
