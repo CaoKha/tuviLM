@@ -23,10 +23,14 @@ def bootstrap_context(monkeypatch):
     users.update_one.return_value = SimpleNamespace(matched_count=1)
     sessions.delete_many.return_value = SimpleNamespace(deleted_count=2)
     client = MagicMock()
-    client.__enter__.return_value = {"auth_test": {"user": users, "auth_sessions": sessions}}
+    client.__enter__.return_value = {
+        "auth_test": {"user": users, "auth_sessions": sessions}
+    }
     factory = Mock(return_value=client)
     confirmation = Mock(return_value="  ADMIN@EXAMPLE.TEST  ")
-    settings = SimpleNamespace(auth=SimpleNamespace(mongo_uri=URI, database_name="auth_test"))
+    settings = SimpleNamespace(
+        auth=SimpleNamespace(mongo_uri=URI, database_name="auth_test")
+    )
     monkeypatch.setattr(bootstrap_admin, "MongoClient", factory)
     monkeypatch.setattr(bootstrap_admin, "get_settings", lambda: settings)
     monkeypatch.setattr("builtins.input", confirmation)
@@ -34,7 +38,11 @@ def bootstrap_context(monkeypatch):
     writes.attach_mock(sessions.delete_many, "revoke")
     writes.attach_mock(users.update_one, "promote")
     return SimpleNamespace(
-        users=users, sessions=sessions, factory=factory, confirmation=confirmation, writes=writes
+        users=users,
+        sessions=sessions,
+        factory=factory,
+        confirmation=confirmation,
+        writes=writes,
     )
 
 
@@ -44,7 +52,9 @@ def test_normalized_email_confirmation_revokes_sessions_before_role_only_update(
     context = bootstrap_context
     bootstrap_admin.main(ARGS)
 
-    context.factory.assert_called_once_with(URI, serverSelectionTimeoutMS=5000, w="majority")
+    context.factory.assert_called_once_with(
+        URI, serverSelectionTimeoutMS=5000, w="majority"
+    )
     context.users.find.assert_called_once_with(
         {"email": EMAIL}, {"email": 1, "role": 1}
     )
@@ -88,7 +98,9 @@ def test_refused_confirmation_or_nonunique_account_never_writes(bootstrap_contex
             context.confirmation.assert_not_called()
 
 
-def test_revocation_failure_never_promotes_and_hides_database_details(bootstrap_context):
+def test_revocation_failure_never_promotes_and_hides_database_details(
+    bootstrap_context,
+):
     context = bootstrap_context
     context.sessions.delete_many.side_effect = PyMongoError(f"Connection failed: {URI}")
     with pytest.raises(SystemExit) as error:

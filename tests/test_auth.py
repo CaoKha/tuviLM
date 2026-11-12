@@ -122,10 +122,13 @@ def _token(url: str) -> str:
     return parse_qs(urlsplit(url).query)["token"][0]
 
 
-async def _register(auth, email: str = "an@example.com", password: str = PASSWORD) -> str:
+async def _register(
+    auth, email: str = "an@example.com", password: str = PASSWORD
+) -> str:
     """Register and verify; returns the account id. The client keeps the session cookie."""
     response = await auth.client.post(
-        "/api/v1/auth/register", json={"email": email, "password": password, "name": "An"}
+        "/api/v1/auth/register",
+        json={"email": email, "password": password, "name": "An"},
     )
     assert response.status_code == 202
     verify = await auth.client.get(_link(auth.sent[-1]).removeprefix(BASE_URL))
@@ -256,7 +259,8 @@ async def test_wrong_password_and_unknown_email_give_the_same_error(auth) -> Non
     auth.client.cookies.clear()
 
     wrong = await auth.client.post(
-        "/api/v1/auth/login", json={"email": "an@example.com", "password": "wrong password"}
+        "/api/v1/auth/login",
+        json={"email": "an@example.com", "password": "wrong password"},
     )
     unknown = await auth.client.post(
         "/api/v1/auth/login", json={"email": "nobody@example.com", "password": PASSWORD}
@@ -333,7 +337,11 @@ async def test_better_auth_password_still_works_and_is_rehashed(auth) -> None:
     assert right.status_code == 200
     account = await auth.database["user"].find_one({"_id": user_id})
     assert account["password_hash"].startswith("$argon2")
-    assert (account["role"], account["plan"], account["balance"]) == ("admin", "full_unlock", 12)
+    assert (account["role"], account["plan"], account["balance"]) == (
+        "admin",
+        "full_unlock",
+        12,
+    )
     principal = await auth.client.get("/private")
     assert principal.json() == {
         "user_id": str(user_id),
@@ -387,7 +395,8 @@ async def test_password_reset_sets_a_new_password_and_ends_old_sessions(auth) ->
         "/api/v1/auth/login", json={"email": "an@example.com", "password": PASSWORD}
     )
     new = await auth.client.post(
-        "/api/v1/auth/login", json={"email": "an@example.com", "password": "mật khẩu mới 2026"}
+        "/api/v1/auth/login",
+        json={"email": "an@example.com", "password": "mật khẩu mới 2026"},
     )
     assert old.status_code == 401
     assert new.status_code == 200
@@ -398,7 +407,9 @@ async def test_password_reset_verifies_the_email(auth) -> None:
         "/api/v1/auth/register",
         json={"email": "an@example.com", "password": PASSWORD, "name": "An"},
     )
-    await auth.client.post("/api/v1/auth/forgot-password", json={"email": "an@example.com"})
+    await auth.client.post(
+        "/api/v1/auth/forgot-password", json={"email": "an@example.com"}
+    )
 
     await auth.client.post(
         "/api/v1/auth/reset-password",
@@ -456,7 +467,9 @@ async def test_google_callback_signs_in_and_checks_the_state(auth, monkeypatch) 
     assert OAUTH_STATE_COOKIE not in auth.client.cookies
 
 
-async def test_google_takes_over_an_unverified_account_without_its_password(auth) -> None:
+async def test_google_takes_over_an_unverified_account_without_its_password(
+    auth,
+) -> None:
     await auth.client.post(
         "/api/v1/auth/register",
         json={"email": "an@example.com", "password": PASSWORD, "name": "Squatter"},
@@ -519,7 +532,9 @@ async def test_invalid_persisted_account_access_is_unavailable(auth) -> None:
     assert response.json() == {"detail": "Account data unavailable."}
 
 
-async def test_me_reconciles_coin_holds_and_returns_updated_balance(auth, monkeypatch) -> None:
+async def test_me_reconciles_coin_holds_and_returns_updated_balance(
+    auth, monkeypatch
+) -> None:
     user_id = await _register(auth)
     holds = {"assistant-id": {"amount": 3, "session_id": "session-id"}}
     await auth.database["user"].update_one(
@@ -541,7 +556,9 @@ async def test_me_reconciles_coin_holds_and_returns_updated_balance(auth, monkey
     reconciler.assert_awaited_once_with(auth.database, user_id, holds, auth.chat_store)
 
 
-async def test_routes_without_coins_do_not_reconcile_coin_holds(auth, monkeypatch) -> None:
+async def test_routes_without_coins_do_not_reconcile_coin_holds(
+    auth, monkeypatch
+) -> None:
     user_id = await _register(auth)
     await auth.database["user"].update_one(
         {"_id": ObjectId(user_id)},
@@ -585,7 +602,9 @@ async def test_request_for_another_account_is_refused(auth) -> None:
     user_id = await _register(auth)
 
     same = await auth.client.get("/private", headers={"X-Expected-User-Id": user_id})
-    other = await auth.client.get("/private", headers={"X-Expected-User-Id": str(ObjectId())})
+    other = await auth.client.get(
+        "/private", headers={"X-Expected-User-Id": str(ObjectId())}
+    )
 
     assert same.status_code == 200
     assert other.status_code == 401
@@ -614,11 +633,19 @@ def test_emails_escape_the_name_and_carry_the_link() -> None:
     assert "Chào <b>An</b>," in message.text
     assert "&lt;b&gt;An&lt;/b&gt;" in message.html
     assert "<b>An</b>" not in message.html
-    assert 'href="https://thienhac.example/reset-password?token=abc&amp;x=1"' in message.html
-    assert "https://thienhac.example/assets/icons/android-chrome-192x192.png" in message.html
+    assert (
+        'href="https://thienhac.example/reset-password?token=abc&amp;x=1"'
+        in message.html
+    )
+    assert (
+        "https://thienhac.example/assets/icons/android-chrome-192x192.png"
+        in message.html
+    )
 
 
 def test_email_without_a_name_greets_generically() -> None:
-    message = verification_email(to="an@example.com", name="  ", url="https://x.example/v")
+    message = verification_email(
+        to="an@example.com", name="  ", url="https://x.example/v"
+    )
 
     assert message.text.startswith("Chào bạn,")

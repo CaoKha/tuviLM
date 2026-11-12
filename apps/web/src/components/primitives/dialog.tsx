@@ -134,10 +134,7 @@ export function Dialog({
         {/* The desktop drawer sits beside the content, so it drops the scrim
             rather than dimming a page the user is still reading. */}
         <RadixDialog.Overlay
-          className={cn(
-            "overlay-scrim fixed inset-0 z-50",
-            variant === "panel" && "lg:hidden",
-          )}
+          className={cn("overlay-scrim fixed inset-0 z-50", variant === "panel" && "lg:hidden")}
         />
         <RadixDialog.Content
           aria-modal="true"

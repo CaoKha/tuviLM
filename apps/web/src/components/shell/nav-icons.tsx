@@ -30,7 +30,10 @@ const PATHS: Record<NavIcon, React.ReactNode> = {
       <circle cx="12" cy="12" r="8.6" />
       <circle cx="12" cy="12" r="3.2" />
       <path d="M12 3.4v3.4M12 17.2v3.4M3.4 12h3.4M17.2 12h3.4" />
-      <path d="m6.6 6.6 2.2 2.2M15.2 15.2l2.2 2.2M17.4 6.6l-2.2 2.2M8.8 15.2l-2.2 2.2" strokeWidth="1" />
+      <path
+        d="m6.6 6.6 2.2 2.2M15.2 15.2l2.2 2.2M17.4 6.6l-2.2 2.2M8.8 15.2l-2.2 2.2"
+        strokeWidth="1"
+      />
     </>
   ),
   hoSo: (

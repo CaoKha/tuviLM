@@ -75,9 +75,7 @@ class MongoConversationHistoryStore:
         store = cls(
             mongo_client=mongo_client,
             database_name=settings.database_name,
-            stale_pending_after=timedelta(
-                seconds=settings.stale_pending_after_seconds
-            ),
+            stale_pending_after=timedelta(seconds=settings.stale_pending_after_seconds),
         )
         await store._initialize_storage()
         return store
@@ -93,22 +91,38 @@ class MongoConversationHistoryStore:
         profiles = await ChartProfileDocument.find_many_in_all(
             {"$or": [{"name_key": None}, {"display_name": {"$regex": r"^\s|\s$"}}]}
         ).to_list()
-        profiles = [profile for profile in profiles
-                    if profile.name_key is None or profile.display_name != profile.display_name.strip()]
-        profiles.sort(key=lambda profile: (_is_automatic_name(profile), profile.created_at, str(profile.id)))
+        profiles = [
+            profile
+            for profile in profiles
+            if profile.name_key is None
+            or profile.display_name != profile.display_name.strip()
+        ]
+        profiles.sort(
+            key=lambda profile: (
+                _is_automatic_name(profile),
+                profile.created_at,
+                str(profile.id),
+            )
+        )
         collection = self._mongo_client[self._database_name]["chart_profiles"]
         for profile in profiles:
             name = None if _is_automatic_name(profile) else profile.display_name.strip()
             while True:
                 if name is None:
                     name, _ = await _available_chart_name(
-                        profile.owner_id, profile.display_name,
-                        automatic=_is_automatic_name(profile), exclude_id=profile.id,
+                        profile.owner_id,
+                        profile.display_name,
+                        automatic=_is_automatic_name(profile),
+                        exclude_id=profile.id,
                     )
                 try:
                     await collection.update_one(
-                        {"_id": profile.id, "owner_id": profile.owner_id,
-                         "name_key": profile.name_key, "display_name": profile.display_name},
+                        {
+                            "_id": profile.id,
+                            "owner_id": profile.owner_id,
+                            "name_key": profile.name_key,
+                            "display_name": profile.display_name,
+                        },
                         {"$set": {"display_name": name, "name_key": _name_key(name)}},
                     )
                     break
@@ -154,7 +168,9 @@ class MongoConversationHistoryStore:
                 if existing.creation_request_fingerprint != fingerprint:
                     raise IdempotencyConflictError
                 if existing.deleted_at is not None:
-                    await self._mongo_client[self._database_name]["chart_profiles"].update_one(
+                    await self._mongo_client[self._database_name][
+                        "chart_profiles"
+                    ].update_one(
                         {"_id": existing.id, "owner_id": owner_id},
                         {"$set": {"deleted_at": None, "updated_at": utc_now()}},
                     )
@@ -180,7 +196,13 @@ class MongoConversationHistoryStore:
                     ChartProfileDocument.id == profile.id,
                     ChartProfileDocument.owner_id == owner_id,
                 ).update(
-                    Set({"display_name": name, "name_key": name_key, "updated_at": utc_now()}),
+                    Set(
+                        {
+                            "display_name": name,
+                            "name_key": name_key,
+                            "updated_at": utc_now(),
+                        }
+                    ),
                     response_type=UpdateResponse.NEW_DOCUMENT,
                 )
                 if updated is None:
@@ -248,7 +270,9 @@ class MongoConversationHistoryStore:
         session = await _get_session_for_owner(owner_id, session_id)
         await session.delete()
 
-    async def load_session_context(self, owner_id: str, session_id: str) -> SessionContext:
+    async def load_session_context(
+        self, owner_id: str, session_id: str
+    ) -> SessionContext:
         await _cleanup_stale_pending_messages(
             owner_id=owner_id,
             session_id=session_id,
@@ -303,14 +327,16 @@ class MongoConversationHistoryStore:
             ChatSessionDocument.id == session.id,
             _pending_assistant_message_filter(pair.assistant_message.id),
         ).update(
-            Pull({
-                ChatSessionDocument.messages: {
-                    "id": {"$in": [pair.user_message.id, pair.assistant_message.id]}
-                },
-                ChatSessionDocument.message_operations: {
-                    "assistant_message_id": pair.assistant_message.id
-                },
-            }),
+            Pull(
+                {
+                    ChatSessionDocument.messages: {
+                        "id": {"$in": [pair.user_message.id, pair.assistant_message.id]}
+                    },
+                    ChatSessionDocument.message_operations: {
+                        "assistant_message_id": pair.assistant_message.id
+                    },
+                }
+            ),
             Set({ChatSessionDocument.updated_at: utc_now()}),
         )
 
@@ -615,7 +641,7 @@ def _new_message_reservation(
         created_at=now,
         updated_at=now,
     )
-    operation=MessageOperationDocument(
+    operation = MessageOperationDocument(
         idempotency_key=idempotency_key,
         request_fingerprint=fingerprint,
         user_message_id=user_message.id,
@@ -717,20 +743,26 @@ def _is_automatic_name(profile: CreateChartProfileInput | ChartProfileDocument) 
 
 
 async def _available_chart_name(
-    owner_id: str, requested: str, *, automatic: bool = False,
+    owner_id: str,
+    requested: str,
+    *,
+    automatic: bool = False,
     exclude_id: PydanticObjectId | None = None,
 ) -> tuple[str, str]:
     profiles = await ChartProfileDocument.find_many_in_all(
-        ChartProfileDocument.owner_id == owner_id, {"_id": {"$ne": exclude_id}},
+        ChartProfileDocument.owner_id == owner_id,
+        {"_id": {"$ne": exclude_id}},
     ).to_list()
-    names = {profile.name_key or _name_key(profile.display_name) for profile in profiles}
+    names = {
+        profile.name_key or _name_key(profile.display_name) for profile in profiles
+    }
     base = requested.strip()
     for number in count(1):
         if automatic:
             candidate = f"Lá số {number}"
         else:
             suffix = "" if number == 1 else f" ({number})"
-            candidate = f"{base[:80 - len(suffix)].rstrip()}{suffix}"
+            candidate = f"{base[: 80 - len(suffix)].rstrip()}{suffix}"
         key = _name_key(candidate)
         if key not in names:
             return candidate, key

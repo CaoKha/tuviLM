@@ -233,8 +233,12 @@ def test_compiler_resolves_chained_specs_in_any_order():
         time=dt.datetime(1996, 12, 19, 6, 30),
         gender=Gender.MALE,
         specs={
-            component_c: RelativePositionSpec(component_b, lambda position: position + 1),
-            component_b: RelativePositionSpec(component_a, lambda position: position + 1),
+            component_c: RelativePositionSpec(
+                component_b, lambda position: position + 1
+            ),
+            component_b: RelativePositionSpec(
+                component_a, lambda position: position + 1
+            ),
             component_a: AbsolutePositionSpec(lambda _context: DiaChi.DAN),
         },
     )
@@ -357,7 +361,9 @@ def test_rule_group_resolves_chinh_tinh_graph():
     assert positions["liem_trinh"] == positions["tu_vi"] + 4
     assert positions["that_sat"] == positions["thien_phu"] + 6
     assert positions["thien_tuong"] == positions["pha_quan"] + 6
-    assert len({positions[component_id] for component_id in CHINH_TINH_COMPONENT_IDS.values()}) <= len(DiaChi)
+    assert len(
+        {positions[component_id] for component_id in CHINH_TINH_COMPONENT_IDS.values()}
+    ) <= len(DiaChi)
 
 
 def test_rule_group_resolves_thai_tue_ring_properties():
@@ -367,7 +373,9 @@ def test_rule_group_resolves_thai_tue_ring_properties():
     )
 
     assert set(THAI_TUE_COMPONENT_IDS.values()).issubset(positions)
-    assert {positions[component_id] for component_id in THAI_TUE_COMPONENT_IDS.values()} == set(DiaChi)
+    assert {
+        positions[component_id] for component_id in THAI_TUE_COMPONENT_IDS.values()
+    } == set(DiaChi)
     assert positions["thieu_duong"] == positions["thien_khong"]
     assert positions["quan_phuf"] == positions["long_tri"]
     assert positions["tu_phu"] == positions["nguyet_duc"]
@@ -394,7 +402,9 @@ def test_rule_group_resolves_loc_ton_ring_and_offsets():
 def test_rule_group_resolves_trang_sinh_circle_properties():
     time = dt.datetime(1996, 12, 19, 6, 30)
     trang_sinh_rule = next(
-        rule for rule in PHU_TINH_RULES if getattr(rule, "principal_id", "") == "trang_sinh"
+        rule
+        for rule in PHU_TINH_RULES
+        if getattr(rule, "principal_id", "") == "trang_sinh"
     )
     positions = _resolve_positions_with_rules(
         time=time, gender=Gender.MALE, rules=[trang_sinh_rule]

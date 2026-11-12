@@ -53,12 +53,18 @@ def test_top_level_cli_rejects_unknown_command():
 @pytest.mark.parametrize(
     ("arguments", "expected_model"),
     [
-        (["--model", "openrouter:qwen/qwen3.8-flash", "run", "input.yaml"],
-         "openrouter:qwen/qwen3.8-flash"),
-        (["run", "input.yaml", "--model", "openrouter:deepseek/deepseek-v4.1-flash"],
-         "openrouter:deepseek/deepseek-v4.1-flash"),
-        (["--model", "global-model", "run", "input.yaml", "--model", "run-model"],
-         "run-model"),
+        (
+            ["--model", "openrouter:qwen/qwen3.8-flash", "run", "input.yaml"],
+            "openrouter:qwen/qwen3.8-flash",
+        ),
+        (
+            ["run", "input.yaml", "--model", "openrouter:deepseek/deepseek-v4.1-flash"],
+            "openrouter:deepseek/deepseek-v4.1-flash",
+        ),
+        (
+            ["--model", "global-model", "run", "input.yaml", "--model", "run-model"],
+            "run-model",
+        ),
     ],
 )
 def test_main_forwards_model_to_workflow_parser(arguments, expected_model, monkeypatch):

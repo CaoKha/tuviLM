@@ -138,16 +138,16 @@ class PlacementRuleCompiler(PlacementRegistry):
                         anchor_position = seed[reference_id]
                         tr = spec.transform
                         specialized[component_id] = SpecializedAbsoluteSpec(
-                            position_fn=lambda p=anchor_position, fn=tr, ctx=context: fn(
-                                p, ctx
+                            position_fn=lambda p=anchor_position, fn=tr, ctx=context: (
+                                fn(p, ctx)
                             ),
                         )
                     else:
                         visit(reference_id)
                         specialized[component_id] = SpecializedRelativeSpec(
                             reference_id=reference_id,
-                            transform=lambda position, tr=spec.transform, ctx=context: tr(
-                                position, ctx
+                            transform=lambda position, tr=spec.transform, ctx=context: (
+                                tr(position, ctx)
                             ),
                         )
                     return

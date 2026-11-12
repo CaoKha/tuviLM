@@ -49,7 +49,15 @@ function Mascot({ size }: { size: number }) {
         <circle cx="86" cy="40" r="1.6" />
         <circle cx="74" cy="96" r="1.8" />
       </g>
-      <circle cx="82" cy="34" r="5.5" fill="none" stroke="var(--accent)" strokeWidth="1" opacity=".5" />
+      <circle
+        cx="82"
+        cy="34"
+        r="5.5"
+        fill="none"
+        stroke="var(--accent)"
+        strokeWidth="1"
+        opacity=".5"
+      />
     </svg>
   );
 }
@@ -77,9 +85,15 @@ export function CastingLoader({ title = "đang luận giải" }: { title?: strin
   return (
     <div className="flex min-h-dvh flex-col items-center justify-center gap-[26px] px-10 pt-[max(2.5rem,var(--safe-t))] pb-[max(2.5rem,var(--safe-b))]">
       <div className="relative h-[190px] w-[190px]">
-        <div className={`${styles.spin22} absolute inset-0 rounded-full border border-accent-glow opacity-40`} />
-        <div className={`${styles.spin14} absolute inset-[22px] rounded-full border border-accent-glow border-dashed opacity-40`} />
-        <div className={`${styles.spin6} absolute top-[-4px] left-1/2 ml-[-6px] h-[12px] w-[12px] origin-[50%_99px] rounded-full bg-accent shadow-[0_0_16px_var(--accent-glow)]`} />
+        <div
+          className={`${styles.spin22} absolute inset-0 rounded-full border border-accent-glow opacity-40`}
+        />
+        <div
+          className={`${styles.spin14} absolute inset-[22px] rounded-full border border-accent-glow border-dashed opacity-40`}
+        />
+        <div
+          className={`${styles.spin6} absolute top-[-4px] left-1/2 ml-[-6px] h-[12px] w-[12px] origin-[50%_99px] rounded-full bg-accent shadow-[0_0_16px_var(--accent-glow)]`}
+        />
         <div className="absolute inset-0 grid place-items-center">
           {showCrane ? (
             <video

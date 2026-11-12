@@ -126,7 +126,9 @@ async def lifespan(app: FastAPI):
                     "allow_fallbacks": settings.strength_weakness.allow_fallbacks,
                     "sort": settings.strength_weakness.provider_sort,
                 },
-                openrouter_reasoning={"effort": settings.strength_weakness.reasoning_effort},
+                openrouter_reasoning={
+                    "effort": settings.strength_weakness.reasoning_effort
+                },
             ),
         ),
         book_root=settings.book_root,
@@ -135,7 +137,9 @@ async def lifespan(app: FastAPI):
         agent_deps=agent_deps,
         conversation_history_store=conversation_history_store,
     )
-    auth_mongo = AsyncMongoClient(settings.auth.mongo_uri, serverSelectionTimeoutMS=5000)
+    auth_mongo = AsyncMongoClient(
+        settings.auth.mongo_uri, serverSelectionTimeoutMS=5000
+    )
     app.state.auth_database = auth_mongo[settings.auth.database_name]
     try:
         await MongoAuthStore(app.state.auth_database).ensure_indexes()

@@ -64,7 +64,9 @@ class RedeemCodeInput(BaseModel):
 
     code: Annotated[
         str,
-        StringConstraints(strip_whitespace=True, to_upper=True, min_length=1, max_length=64),
+        StringConstraints(
+            strip_whitespace=True, to_upper=True, min_length=1, max_length=64
+        ),
     ]
 
 

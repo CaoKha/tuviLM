@@ -21,8 +21,18 @@ pytestmark = pytest.mark.anyio
 MENH_CUC_RELATIONS = {"sinh_xuat", "sinh_nhap", "khac_xuat", "khac_nhap", "binh_hoa"}
 AM_DUONG_RELATIONS = {"thuan_ly", "nghich_ly"}
 DIA_CHI_SLUGS = {
-    "ty", "suu", "dan", "meo", "thin", "ti",
-    "ngo", "mui", "than", "dau", "tuat", "hoi",
+    "ty",
+    "suu",
+    "dan",
+    "meo",
+    "thin",
+    "ti",
+    "ngo",
+    "mui",
+    "than",
+    "dau",
+    "tuat",
+    "hoi",
 }
 NGU_HANH = {"Kim", "Mộc", "Thủy", "Hỏa", "Thổ"}
 

@@ -163,6 +163,10 @@ def _count_stars_related_to_anchor(
     """Count star ids that are represented in an anchor's meeting scope."""
     related_count = 0
     for star_id, positions in star_positions.items():
-        if count_anchor_self and star_id == anchor_id or any(position in scope_positions for position in positions):
+        if (
+            count_anchor_self
+            and star_id == anchor_id
+            or any(position in scope_positions for position in positions)
+        ):
             related_count += 1
     return related_count

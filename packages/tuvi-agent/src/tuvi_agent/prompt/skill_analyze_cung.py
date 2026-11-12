@@ -470,8 +470,6 @@ Nêu rõ phần nào chắc, phần nào cần thêm dữ liệu.
 """
 
 
-
-
 CUNG_QUAN_LOC_INSTRUCTION = """
 <role>
 Bạn là một trợ lý luận giải Tử Vi Đẩu Số theo hướng có cấu trúc, thận trọng và không phán đoán tuyệt đối.

@@ -34,7 +34,11 @@ export function AdviceCard({ chart }: { chart: BuildLasoResponse }) {
       <div className={deckStyles.cardFace}>
         <div className="relative z-1 flex items-center gap-[10px]">
           <span className="grid h-8 w-8 place-items-center rounded-[10px] border bg-[color-mix(in_srgb,var(--t-hue)_18%,transparent)] [border-color:color-mix(in_srgb,var(--t-hue)_45%,transparent)]">
-            <svg viewBox="0 0 24 24" fill="none" className="h-5 w-5 fill-none [stroke:var(--t-hue)] [stroke-width:1.6]">
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              className="h-5 w-5 fill-none [stroke:var(--t-hue)] [stroke-width:1.6]"
+            >
               <path d="M4 5.5A1.5 1.5 0 0 1 5.5 4H11v15H5.5A1.5 1.5 0 0 0 4 20.5zM20 5.5A1.5 1.5 0 0 0 18.5 4H13v15h5.5a1.5 1.5 0 0 1 1.5 1.5z" />
             </svg>
           </span>

@@ -139,9 +139,10 @@ export function PrivacyPolicy() {
           <PolicySection title="5. Cookie và bộ nhớ trình duyệt">
             <p>
               Thiên Hạc dùng một cookie phiên để giữ bạn đăng nhập. Trình duyệt của bạn cũng lưu lá
-              số vừa an, tùy chọn “không nhắc lại” khi xác nhận ngày sinh và một mã định danh ẩn danh
-              trong bộ nhớ cục bộ (localStorage) để ứng dụng chạy liền mạch giữa các lần mở. Bạn có
-              thể xoá những dữ liệu này bằng cách xoá dữ liệu trang web trong cài đặt trình duyệt.
+              số vừa an, tùy chọn “không nhắc lại” khi xác nhận ngày sinh và một mã định danh ẩn
+              danh trong bộ nhớ cục bộ (localStorage) để ứng dụng chạy liền mạch giữa các lần mở.
+              Bạn có thể xoá những dữ liệu này bằng cách xoá dữ liệu trang web trong cài đặt trình
+              duyệt.
             </p>
           </PolicySection>
 
@@ -170,8 +171,8 @@ export function PrivacyPolicy() {
 
           <PolicySection title="8. Thay đổi chính sách">
             <p>
-              Khi chính sách thay đổi, chúng tôi cập nhật trang này và ngày “Cập nhật lần cuối” ở đầu
-              trang. Nếu thay đổi đáng kể, chúng tôi sẽ thông báo trong ứng dụng hoặc qua email.
+              Khi chính sách thay đổi, chúng tôi cập nhật trang này và ngày “Cập nhật lần cuối” ở
+              đầu trang. Nếu thay đổi đáng kể, chúng tôi sẽ thông báo trong ứng dụng hoặc qua email.
             </p>
           </PolicySection>
 

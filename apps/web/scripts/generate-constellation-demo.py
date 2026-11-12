@@ -78,7 +78,12 @@ def load_content():
 
 def portrait(path, alpha=0.52):
     png = subprocess.check_output(
-        ["rsvg-convert", "--height", str(ART_SIZE), str(ROOT / "public" / path.lstrip("/"))]
+        [
+            "rsvg-convert",
+            "--height",
+            str(ART_SIZE),
+            str(ROOT / "public" / path.lstrip("/")),
+        ]
     )
     image = Image.open(io.BytesIO(png)).convert("RGBA")
     image.thumbnail((ART_SIZE, ART_SIZE), Image.Resampling.LANCZOS)
@@ -98,8 +103,20 @@ def position(point):
     return (ART_LEFT + point[0] * ART_SIZE / 100, ART_TOP + point[1] * ART_SIZE / 100)
 
 
-def render_frame(base, shape, schedule, wave, pulse_cycle_ms, pulse_phases, name, number, total,
-                 frame, font, small_font):
+def render_frame(
+    base,
+    shape,
+    schedule,
+    wave,
+    pulse_cycle_ms,
+    pulse_phases,
+    name,
+    number,
+    total,
+    frame,
+    font,
+    small_font,
+):
     time = frame * FRAME_MS
     wave_time = time % wave["cycleMs"]
     image = base.copy()
@@ -124,11 +141,16 @@ def render_frame(base, shape, schedule, wave, pulse_cycle_ms, pulse_phases, name
             end_progress = 1
         x1, y1 = position(points[start])
         x2, y2 = position(points[end])
-        line_draw.line((x1 + (x2 - x1) * start_progress,
-                        y1 + (y2 - y1) * start_progress,
-                        x1 + (x2 - x1) * end_progress,
-                        y1 + (y2 - y1) * end_progress),
-                       fill=(229, 219, 188, 166), width=2)
+        line_draw.line(
+            (
+                x1 + (x2 - x1) * start_progress,
+                y1 + (y2 - y1) * start_progress,
+                x1 + (x2 - x1) * end_progress,
+                y1 + (y2 - y1) * end_progress,
+            ),
+            fill=(229, 219, 188, 166),
+            width=2,
+        )
     image.alpha_composite(lines)
 
     halos = Image.new("RGBA", image.size)
@@ -136,30 +158,49 @@ def render_frame(base, shape, schedule, wave, pulse_cycle_ms, pulse_phases, name
     cores = Image.new("RGBA", image.size)
     core_draw = ImageDraw.Draw(cores)
     for index, point in enumerate(points):
-        pulse = (1 - math.cos(2 * math.pi * ((time + pulse_phases[index]) / pulse_cycle_ms))) / 2
+        pulse = (
+            1 - math.cos(2 * math.pi * ((time + pulse_phases[index]) / pulse_cycle_ms))
+        ) / 2
         x, y = position(point)
         power = point[2] if len(point) > 2 else 1
         radius = 7.4 * power
-        halo_draw.ellipse((x - radius, y - radius, x + radius, y + radius),
-                          fill=(232, 199, 118, round(255 * (0.04 + 0.88 * pulse))))
+        halo_draw.ellipse(
+            (x - radius, y - radius, x + radius, y + radius),
+            fill=(232, 199, 118, round(255 * (0.04 + 0.88 * pulse))),
+        )
         core_radius = 2.8 * power
-        core_draw.ellipse((x - core_radius - 0.8, y - core_radius - 0.8,
-                           x + core_radius + 0.8, y + core_radius + 0.8),
-                          fill=(218, 176, 93, round(255 * (0.16 + 0.84 * pulse))))
-        core_draw.ellipse((x - core_radius, y - core_radius,
-                           x + core_radius, y + core_radius),
-                          fill=(255, 253, 237, round(255 * (0.16 + 0.84 * pulse))))
+        core_draw.ellipse(
+            (
+                x - core_radius - 0.8,
+                y - core_radius - 0.8,
+                x + core_radius + 0.8,
+                y + core_radius + 0.8,
+            ),
+            fill=(218, 176, 93, round(255 * (0.16 + 0.84 * pulse))),
+        )
+        core_draw.ellipse(
+            (x - core_radius, y - core_radius, x + core_radius, y + core_radius),
+            fill=(255, 253, 237, round(255 * (0.16 + 0.84 * pulse))),
+        )
     image.alpha_composite(halos.filter(ImageFilter.GaussianBlur(5)))
     image.alpha_composite(cores)
 
     draw = ImageDraw.Draw(image)
     bounds = draw.textbbox((0, 0), name, font=font)
-    draw.text(((SIZE - (bounds[2] - bounds[0])) / 2, 430), name,
-              fill=(245, 235, 211), font=font)
+    draw.text(
+        ((SIZE - (bounds[2] - bounds[0])) / 2, 430),
+        name,
+        fill=(245, 235, 211),
+        font=font,
+    )
     count = f"{number:02d} / {total:02d}"
     bounds = draw.textbbox((0, 0), count, font=small_font)
-    draw.text(((SIZE - (bounds[2] - bounds[0])) / 2, 456), count,
-              fill=(172, 163, 147), font=small_font)
+    draw.text(
+        ((SIZE - (bounds[2] - bounds[0])) / 2, 456),
+        count,
+        fill=(172, 163, 147),
+        font=small_font,
+    )
 
     # A short dip at each cut makes the loop read as separate reveals.
     fade = min(1, (frame + 1) / 2, (FRAMES_PER_GOD - frame) / 2)
@@ -178,19 +219,44 @@ def main():
     for number, key in enumerate(NAMES, 1):
         base = backdrop.copy()
         art = portrait(content["ghosts"][key], 1 if key == "thamlang" else 0.52)
-        base.alpha_composite(art, (ART_LEFT + (ART_SIZE - art.width) // 2,
-                                   ART_TOP + (ART_SIZE - art.height) // 2))
+        base.alpha_composite(
+            art,
+            (
+                ART_LEFT + (ART_SIZE - art.width) // 2,
+                ART_TOP + (ART_SIZE - art.height) // 2,
+            ),
+        )
         shape = content["shapes"][key]
         schedule = content["schedules"][key]
         pulse_phases = content["pulsePhases"][key]
         for frame in range(FRAMES_PER_GOD):
-            frames.append(render_frame(base, shape, schedule, content["wave"],
-                                       content["starPulseCycleMs"], pulse_phases, NAMES[key],
-                                       number, len(NAMES), frame, font, small_font))
+            frames.append(
+                render_frame(
+                    base,
+                    shape,
+                    schedule,
+                    content["wave"],
+                    content["starPulseCycleMs"],
+                    pulse_phases,
+                    NAMES[key],
+                    number,
+                    len(NAMES),
+                    frame,
+                    font,
+                    small_font,
+                )
+            )
         print(f"Rendered {number:02d}/{len(NAMES)}: {key}")
     OUTPUT.parent.mkdir(parents=True, exist_ok=True)
-    frames[0].save(OUTPUT, save_all=True, append_images=frames[1:],
-                   duration=FRAME_MS, loop=0, optimize=True, disposal=2)
+    frames[0].save(
+        OUTPUT,
+        save_all=True,
+        append_images=frames[1:],
+        duration=FRAME_MS,
+        loop=0,
+        optimize=True,
+        disposal=2,
+    )
     print(f"Saved {OUTPUT}")
 
 

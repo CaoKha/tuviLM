@@ -49,9 +49,7 @@ describe("resolveAccent", () => {
   });
 
   it("falls back to neutral when one star of a pair is unrecognised", () => {
-    expect(resolveAccent({ stars: ["tuvi", "saola"] })).toEqual(
-      resolveAccent({ stars: [] }),
-    );
+    expect(resolveAccent({ stars: ["tuvi", "saola"] })).toEqual(resolveAccent({ stars: [] }));
   });
 
   it("never returns a raw colour value", () => {

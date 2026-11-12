@@ -269,7 +269,9 @@ async def session_chat_stream(
                     confirmed=False,
                 )
             except Exception:
-                logger.exception("Failed to refund rejected chat; hold will be reconciled.")
+                logger.exception(
+                    "Failed to refund rejected chat; hold will be reconciled."
+                )
         raise
 
     return _ChatStreamingResponse(
@@ -389,7 +391,10 @@ class _ChatStreamingResponse(StreamingResponse):
         super().__init__(
             stream,
             media_type="text/event-stream",
-            headers={"Cache-Control": "no-cache, no-transform", "X-Accel-Buffering": "no"},
+            headers={
+                "Cache-Control": "no-cache, no-transform",
+                "X-Accel-Buffering": "no",
+            },
         )
         self._stream = stream
         self._cleanup = cleanup
@@ -458,6 +463,8 @@ async def _stream_session_chat_events(
             msg = _serialize_agent_event(event)
             if msg is not None:
                 yield msg
+
+
 def _build_la_so(birth_info: BirthInfo) -> LaSo:
     solar_dt = datetime(
         year=birth_info.year,

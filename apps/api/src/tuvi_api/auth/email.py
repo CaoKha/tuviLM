@@ -36,7 +36,12 @@ async def send_email(
     development reaches the logging branch.
     """
     if not settings.email_enabled:
-        logger.info("[email] To: %s\nSubject: %s\n\n%s", message.to, message.subject, message.text)
+        logger.info(
+            "[email] To: %s\nSubject: %s\n\n%s",
+            message.to,
+            message.subject,
+            message.text,
+        )
         return
     owns_client = client is None
     http = client or httpx.AsyncClient(timeout=10)
@@ -56,7 +61,9 @@ async def send_email(
         if owns_client:
             await http.aclose()
     if response.status_code >= 300:
-        raise RuntimeError(f"Resend rejected the email ({response.status_code}): {response.text}")
+        raise RuntimeError(
+            f"Resend rejected the email ({response.status_code}): {response.text}"
+        )
 
 
 async def send_email_logged(settings: AuthSettings, message: EmailMessage) -> None:
@@ -141,12 +148,25 @@ def _auth_email(
 ) -> EmailMessage:
     greeting = f"Chào {name.strip()}," if name.strip() else "Chào bạn,"
     text = "\n".join(
-        [greeting, "", intro, "", f"{action}: {url}", "", expiry, footnote, "", "— Thiên Hạc"]
+        [
+            greeting,
+            "",
+            intro,
+            "",
+            f"{action}: {url}",
+            "",
+            expiry,
+            footnote,
+            "",
+            "— Thiên Hạc",
+        ]
     )
     href = escape(url)
     # The link is always absolute, so the logo is served by the app that opens it.
     parts = urlsplit(url)
-    logo = escape(f"{parts.scheme}://{parts.netloc}/assets/icons/android-chrome-192x192.png")
+    logo = escape(
+        f"{parts.scheme}://{parts.netloc}/assets/icons/android-chrome-192x192.png"
+    )
     element_stars = "&nbsp;&nbsp;".join(
         f'<span style="color:{colour}">&#10022;</span>' for colour in _ELEMENT_COLOURS
     )

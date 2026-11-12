@@ -65,7 +65,13 @@ def _record(document: dict[str, Any]) -> UserRecord:
     )
 
 
-_USER_FIELDS = {"email": 1, "name": 1, "emailVerified": 1, "role": 1, "password_hash": 1}
+_USER_FIELDS = {
+    "email": 1,
+    "name": 1,
+    "emailVerified": 1,
+    "role": 1,
+    "password_hash": 1,
+}
 
 
 class MongoAuthStore:
@@ -152,7 +158,9 @@ class MongoAuthStore:
             {"$set": {"emailVerified": True, "updatedAt": utc_now()}},
         )
 
-    async def upsert_google_user(self, *, google_sub: str, email: str, name: str) -> UserRecord:
+    async def upsert_google_user(
+        self, *, google_sub: str, email: str, name: str
+    ) -> UserRecord:
         """Find the account by Google id, else link by (verified) email, else create it."""
         now = utc_now()
         document = await self._db[USERS].find_one_and_update(
@@ -167,7 +175,11 @@ class MongoAuthStore:
             )
             if existing is not None:
                 update: dict[str, Any] = {
-                    "$set": {"google_sub": google_sub, "emailVerified": True, "updatedAt": now}
+                    "$set": {
+                        "google_sub": google_sub,
+                        "emailVerified": True,
+                        "updatedAt": now,
+                    }
                 }
                 if existing.get("emailVerified") is not True:
                     # Nobody proved they own this email before. Drop the password
@@ -194,7 +206,9 @@ class MongoAuthStore:
 
     # Sessions
 
-    async def create_session(self, *, user_id: str, token_hash: str, expires_at: datetime) -> None:
+    async def create_session(
+        self, *, user_id: str, token_hash: str, expires_at: datetime
+    ) -> None:
         await self._db[SESSIONS].insert_one(
             {
                 "user_id": ObjectId(user_id),
@@ -229,7 +243,9 @@ class MongoAuthStore:
         expires_at: datetime,
     ) -> None:
         # A new link replaces the earlier ones for the same purpose.
-        await self._db[TOKENS].delete_many({"user_id": ObjectId(user_id), "purpose": purpose})
+        await self._db[TOKENS].delete_many(
+            {"user_id": ObjectId(user_id), "purpose": purpose}
+        )
         await self._db[TOKENS].insert_one(
             {
                 "user_id": ObjectId(user_id),

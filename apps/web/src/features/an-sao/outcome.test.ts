@@ -4,7 +4,9 @@ import type { BuildLasoResponse } from "@/lib/api/schemas";
 
 import { outcomeFromChart } from "./outcome";
 
-function chartWith(cung: { position: string; role: string | null; chinh_tinh: string[] }[]): BuildLasoResponse {
+function chartWith(
+  cung: { position: string; role: string | null; chinh_tinh: string[] }[],
+): BuildLasoResponse {
   return {
     id: "1996041510M",
     summary: "",

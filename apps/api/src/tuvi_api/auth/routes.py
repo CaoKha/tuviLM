@@ -148,7 +148,9 @@ async def register(
     limiter: Limiter,
 ) -> dict[str, str]:
     """Create the account and email a verification link. No session until verified."""
-    limiter.check(f"register:{normalize_email(payload.email)}", limit=5, window_seconds=600)
+    limiter.check(
+        f"register:{normalize_email(payload.email)}", limit=5, window_seconds=600
+    )
     try:
         user = await store.create_user(
             email=payload.email,
@@ -156,7 +158,9 @@ async def register(
             password_hash=await run_in_threadpool(hash_password, payload.password),
         )
     except EmailTakenError as exc:
-        raise HTTPException(status_code=409, detail="Email is already registered.") from exc
+        raise HTTPException(
+            status_code=409, detail="Email is already registered."
+        ) from exc
     await _send_verification(user, background, store, settings)
     return {"status": "verification_sent"}
 
@@ -169,7 +173,9 @@ async def login(
     settings: Settings,
     limiter: Limiter,
 ) -> UserResponse:
-    limiter.check(f"login:{normalize_email(payload.email)}", limit=10, window_seconds=300)
+    limiter.check(
+        f"login:{normalize_email(payload.email)}", limit=10, window_seconds=300
+    )
     user = await store.find_by_email(payload.email)
     if not await _password_matches(user, payload.password, store):
         raise HTTPException(status_code=401, detail="Wrong email or password.")
@@ -200,7 +206,9 @@ async def resend_verification(
     limiter: Limiter,
 ) -> dict[str, str]:
     """Always 202, so the answer does not reveal whether the email has an account."""
-    limiter.check(f"verify:{normalize_email(payload.email)}", limit=3, window_seconds=600)
+    limiter.check(
+        f"verify:{normalize_email(payload.email)}", limit=3, window_seconds=600
+    )
     user = await store.find_by_email(payload.email)
     if user is not None and not user.email_verified:
         await _send_verification(user, background, store, settings)
@@ -232,7 +240,9 @@ async def forgot_password(
     limiter: Limiter,
 ) -> dict[str, str]:
     """Always 202, so the answer does not reveal whether the email has an account."""
-    limiter.check(f"reset:{normalize_email(payload.email)}", limit=3, window_seconds=600)
+    limiter.check(
+        f"reset:{normalize_email(payload.email)}", limit=3, window_seconds=600
+    )
     user = await store.find_by_email(payload.email)
     if user is not None:
         token = await _new_link_token(user, "reset_password", store, settings)
@@ -248,11 +258,15 @@ async def forgot_password(
 @router.post("/reset-password", status_code=204)
 async def reset_password(payload: ResetPasswordRequest, store: Store) -> Response:
     user_id = await store.consume_token(
-        token_hash=hash_token(payload.token), purpose="reset_password", now=datetime.now(UTC)
+        token_hash=hash_token(payload.token),
+        purpose="reset_password",
+        now=datetime.now(UTC),
     )
     if user_id is None or await store.get_user(user_id) is None:
         raise HTTPException(status_code=400, detail="INVALID_TOKEN")
-    await store.set_password(user_id, await run_in_threadpool(hash_password, payload.password))
+    await store.set_password(
+        user_id, await run_in_threadpool(hash_password, payload.password)
+    )
     # The link reached this person's inbox, so the email is theirs.
     await store.mark_email_verified(user_id)
     await store.delete_user_sessions(user_id)
@@ -264,7 +278,9 @@ async def google_start(settings: Settings) -> Response:
     if not settings.google_enabled:
         raise HTTPException(status_code=404, detail="Google sign-in is not configured.")
     state = secrets.token_urlsafe(24)
-    response = RedirectResponse(google.authorize_url(settings, state=state), status_code=302)
+    response = RedirectResponse(
+        google.authorize_url(settings, state=state), status_code=302
+    )
     response.set_cookie(
         OAUTH_STATE_COOKIE,
         state,
@@ -286,7 +302,9 @@ async def google_callback(
     state: str | None = None,
 ) -> Response:
     expected_state = request.cookies.get(OAUTH_STATE_COOKIE)
-    failure = RedirectResponse(f"{settings.public_url}/login?error=google", status_code=302)
+    failure = RedirectResponse(
+        f"{settings.public_url}/login?error=google", status_code=302
+    )
     if not settings.google_enabled or not code or not state or not expected_state:
         return failure
     if not secrets.compare_digest(state, expected_state):
@@ -313,7 +331,9 @@ async def google_callback(
     return response
 
 
-async def _password_matches(user: UserRecord | None, password: str, store: MongoAuthStore) -> bool:
+async def _password_matches(
+    user: UserRecord | None, password: str, store: MongoAuthStore
+) -> bool:
     # Hashing takes tens of ms of CPU; in a thread it does not stall other requests.
     if user is None:
         await run_in_threadpool(verify_password, password, _DUMMY_PASSWORD_HASH)
@@ -333,7 +353,10 @@ async def _password_matches(user: UserRecord | None, password: str, store: Mongo
 
 
 async def _new_link_token(
-    user: UserRecord, purpose: TokenPurpose, store: MongoAuthStore, settings: AuthSettings
+    user: UserRecord,
+    purpose: TokenPurpose,
+    store: MongoAuthStore,
+    settings: AuthSettings,
 ) -> str:
     token = new_token()
     await store.create_token(

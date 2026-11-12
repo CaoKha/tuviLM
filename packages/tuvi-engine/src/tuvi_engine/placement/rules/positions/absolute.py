@@ -99,4 +99,3 @@ def position_by_thien_can(
     mapping: ThienCanPositionMap,
 ) -> AbsolutePositionResolver:
     return lambda context: mapping[context.thien_can]
-

@@ -142,7 +142,8 @@ def build_tinh_cach_b3_b4_context(la_so: LaSo) -> str:
                 ]
             ),
             "Cung xung chiếu Mệnh:\n" + _format_cung_at(la_so, xung_position),
-            "Cung tam hợp Mệnh:\n" + "\n\n".join(
+            "Cung tam hợp Mệnh:\n"
+            + "\n\n".join(
                 _format_cung_at(la_so, position) for position in tam_hop_positions
             ),
         ]

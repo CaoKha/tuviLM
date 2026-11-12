@@ -45,9 +45,8 @@ def build_period_layer_id(
             start_age=context.age_range.start_age,
             end_age=context.age_range.end_age,
         )
-    if (
-        kind is PeriodKind.LUU_NIEN_DAI_HAN
-        and isinstance(context, LuuNienDaiHanContext)
+    if kind is PeriodKind.LUU_NIEN_DAI_HAN and isinstance(
+        context, LuuNienDaiHanContext
     ):
         return LuuNienDaiHanLayerId(year=context.year)
     raise TypeError(f"Period kind {kind!r} does not match context {context!r}.")
@@ -74,8 +73,7 @@ def build_period_layer(
     return PlacementLayer.from_component_positions(
         id=build_period_layer_id(kind, context),
         positions={
-            component_id: resolved_positions[component_id]
-            for component_id in scope
+            component_id: resolved_positions[component_id] for component_id in scope
         },
         focus_position=context.focus_position,
     )

@@ -40,9 +40,7 @@ class PlacementEngine:
             spec = self._rules.specs[component_id]
             if isinstance(spec, SpecializedRelativeSpec):
                 reference_id = spec.reference_id
-                reference_position = self._resolve_dependency_chain(
-                    reference_id
-                )
+                reference_position = self._resolve_dependency_chain(reference_id)
                 position = spec.transform(reference_position)
             elif isinstance(spec, SpecializedAbsoluteSpec):
                 position = spec.position_fn()

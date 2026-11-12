@@ -77,7 +77,13 @@
   inset: 0;
   margin: auto;
   border-radius: 999px;
-  background: linear-gradient(transparent, currentColor 24%, white 50%, currentColor 76%, transparent);
+  background: linear-gradient(
+    transparent,
+    currentColor 24%,
+    white 50%,
+    currentColor 76%,
+    transparent
+  );
 }
 
 .orbitTwinkle::before {
@@ -86,7 +92,14 @@
 
 .orbitTwinkle::after {
   height: 1px;
-  background: linear-gradient(90deg, transparent, currentColor 24%, white 50%, currentColor 76%, transparent);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    currentColor 24%,
+    white 50%,
+    currentColor 76%,
+    transparent
+  );
 }
 
 .orbitTwinkle:nth-child(1) {

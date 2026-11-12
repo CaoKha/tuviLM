@@ -63,7 +63,9 @@ async def exchange_code(
             },
         )
         if token_response.status_code != 200:
-            raise GoogleAuthError(f"token exchange failed: {token_response.status_code}")
+            raise GoogleAuthError(
+                f"token exchange failed: {token_response.status_code}"
+            )
         access_token = token_response.json().get("access_token")
         if not access_token:
             raise GoogleAuthError("token response has no access_token")
@@ -84,4 +86,6 @@ async def exchange_code(
     # Accounts are linked by email, so only a verified email is accepted.
     if info.get("email_verified") is not True:
         raise GoogleAuthError("Google email is not verified")
-    return GoogleIdentity(sub=info["sub"], email=info["email"], display_name=info.get("name"))
+    return GoogleIdentity(
+        sub=info["sub"], email=info["email"], display_name=info.get("name")
+    )

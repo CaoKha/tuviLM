@@ -121,9 +121,12 @@ async def reserve_capability_coins(
     if access.plan == "full_unlock":
         return None
     if chart_key in user.get("capability_holds", {}):
-        raise HTTPException(409, "Capability analysis already in progress for this chart.")
+        raise HTTPException(
+            409, "Capability analysis already in progress for this chart."
+        )
     raise HTTPException(
-        402, f"Not enough coins. Capability analysis costs {CAPABILITY_REPORT_COST} coins."
+        402,
+        f"Not enough coins. Capability analysis costs {CAPABILITY_REPORT_COST} coins.",
     )
 
 

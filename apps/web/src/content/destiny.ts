@@ -26,8 +26,7 @@ export const VO_CHINH_DIEU_KEY = "vochinhdieu";
 
 const VO_CHINH_DIEU_ENTRY: DestinyEntry = {
   archetype: "Người Tự Định Hình",
-  mantra:
-    "Mệnh trống không phải khoảng trống — đó là khoảng trời để ta tự định nghĩa mình là ai.",
+  mantra: "Mệnh trống không phải khoảng trống — đó là khoảng trời để ta tự định nghĩa mình là ai.",
 };
 
 export const DESTINY_ENTRIES: Record<string, DestinyEntry> = {

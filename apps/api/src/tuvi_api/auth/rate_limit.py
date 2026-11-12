@@ -32,5 +32,7 @@ class RateLimiter:
             self._forget_idle(now, window_seconds)
 
     def _forget_idle(self, now: float, window_seconds: float) -> None:
-        for key in [k for k, v in self._hits.items() if not v or v[-1] <= now - window_seconds]:
+        for key in [
+            k for k, v in self._hits.items() if not v or v[-1] <= now - window_seconds
+        ]:
             del self._hits[key]

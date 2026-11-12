@@ -29,9 +29,7 @@ class ComponentRepository:
     _ban_menh_adapter = TypeAdapter(list[BanMenh])
 
     def __init__(self, catalog_dir: Path | None = None) -> None:
-        self._catalog_dir = (
-            catalog_dir or Path(__file__).resolve().parent / "data"
-        )
+        self._catalog_dir = catalog_dir or Path(__file__).resolve().parent / "data"
         self._components = self._load_components()
 
     def __contains__(self, component_id: str) -> bool:

@@ -83,7 +83,11 @@ interface SessionBody {
 }
 
 function useSession() {
-  const snapshot = useSyncExternalStore(subscribe, () => state, () => SERVER_STATE);
+  const snapshot = useSyncExternalStore(
+    subscribe,
+    () => state,
+    () => SERVER_STATE,
+  );
   useEffect(() => {
     if (state.session === undefined) void refreshSession();
   }, []);
@@ -137,7 +141,9 @@ export const authClient = {
     async social({ provider }: { provider: "google" }): Promise<AuthResult> {
       if (state.session === undefined) await refreshSession();
       if (!state.googleEnabled) {
-        return { error: { status: 404, code: "PROVIDER_NOT_FOUND", message: "Provider not found" } };
+        return {
+          error: { status: 404, code: "PROVIDER_NOT_FOUND", message: "Provider not found" },
+        };
       }
       // A full page load, not router.push: the API answers with a redirect to Google.
       // eslint-disable-next-line @next/next/no-location-assign-relative-destination

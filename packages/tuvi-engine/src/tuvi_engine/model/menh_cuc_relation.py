@@ -60,7 +60,7 @@ class MenhCucRelation(BaseModel):
                 label="Cục khắc mệnh",
                 relation_type=MenhCucRelationType.KHAC_NHAP,
                 ngu_hanh_menh=ngu_hanh_menh,
-                ngu_hanh_cuc=ngu_hanh_cuc   ,
+                ngu_hanh_cuc=ngu_hanh_cuc,
                 direction="cục -> mệnh",
                 description=f"Ngũ hành cục ({ngu_hanh_cuc.value}) khắc ngũ hành mệnh ({ngu_hanh_menh.value})",
             )

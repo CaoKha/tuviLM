@@ -193,7 +193,4 @@ def _payload_for_1984_hour(hour: DiaChi) -> dict[str, object]:
 
 
 def _combined_group_text(group: dict[str, object]) -> str:
-    return " ".join(
-        str(group[field])
-        for field in ("overview", "reading_lens", "trap")
-    )
+    return " ".join(str(group[field]) for field in ("overview", "reading_lens", "trap"))

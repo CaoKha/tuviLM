@@ -1104,11 +1104,15 @@ def skip_remediated_entry(cc_id: str) -> None:
 def sync_current_entry_modified_state(cc_id: str, current_cach_cuc: dict) -> None:
     was_modified = cc_id in st.session_state.modified_ids
     baseline = baseline_cach_cuc_for_entry(cc_id)
-    if baseline is None or current_cach_cuc != baseline or (
-        cc_id in st.session_state.modified_ids
-        and cc_id not in st.session_state.export_entries_by_id
-        and st.session_state.entries.get(cc_id, {}).get("import_notes")
-        and cc_id not in st.session_state.skipped_remediated_ids
+    if (
+        baseline is None
+        or current_cach_cuc != baseline
+        or (
+            cc_id in st.session_state.modified_ids
+            and cc_id not in st.session_state.export_entries_by_id
+            and st.session_state.entries.get(cc_id, {}).get("import_notes")
+            and cc_id not in st.session_state.skipped_remediated_ids
+        )
     ):
         mark_entry_modified(cc_id)
     else:

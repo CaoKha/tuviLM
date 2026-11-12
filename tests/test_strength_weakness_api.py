@@ -28,10 +28,21 @@ from tuvi_api.chat.models import BirthInfo
 pytestmark = pytest.mark.anyio
 
 URL = "/api/v1/laso/strength-weakness"
-BIRTH = {"calendar": "solar", "year": 1990, "month": 5, "day": 15, "hour": 10, "gender": "M"}
+BIRTH = {
+    "calendar": "solar",
+    "year": 1990,
+    "month": 5,
+    "day": 15,
+    "hour": 10,
+    "gender": "M",
+}
 PROFILE = CapabilityProfile(
     tong_quan="Tổng quan",
-    diem_manh=[StrengthFinding(nang_luc_id="quyet_doan", mo_ta="Mô tả", giai_thich="Giải thích")],
+    diem_manh=[
+        StrengthFinding(
+            nang_luc_id="quyet_doan", mo_ta="Mô tả", giai_thich="Giải thích"
+        )
+    ],
 )
 
 
@@ -69,7 +80,10 @@ async def analysis(monkeypatch):
     run = AsyncMock(return_value=PROFILE)
     monkeypatch.setattr(routes, "run_strength_weakness_agent", run)
     monkeypatch.setattr(
-        routes.app.state, "api_state", SimpleNamespace(agent_deps=base_deps), raising=False
+        routes.app.state,
+        "api_state",
+        SimpleNamespace(agent_deps=base_deps),
+        raising=False,
     )
     monkeypatch.setattr(routes.app.state, "auth_database", database, raising=False)
     monkeypatch.setitem(routes.app.dependency_overrides, require_user, test_user)
@@ -92,8 +106,13 @@ async def analysis(monkeypatch):
         await mongo.close()
 
 
-@pytest.mark.parametrize("birth", [BIRTH, {**BIRTH, "year": 1995, "month": 8, "day": 12, "hour": 14, "gender": "F"}])
-async def test_analysis_charges_once_per_chart_and_reuses_the_saved_report(analysis, birth):
+@pytest.mark.parametrize(
+    "birth",
+    [BIRTH, {**BIRTH, "year": 1995, "month": 8, "day": 12, "hour": 14, "gender": "F"}],
+)
+async def test_analysis_charges_once_per_chart_and_reuses_the_saved_report(
+    analysis, birth
+):
     first = await analysis.client.post(URL, json=birth)
     second = await analysis.client.post(URL, json=birth)
 
@@ -132,7 +151,8 @@ async def test_failed_analysis_refunds_the_coins(analysis):
 
 async def test_full_unlock_gets_the_analysis_without_coins(analysis):
     await analysis.database["user"].update_one(
-        {"_id": ObjectId(analysis.user_id)}, {"$set": {"plan": "full_unlock", "balance": 0}}
+        {"_id": ObjectId(analysis.user_id)},
+        {"$set": {"plan": "full_unlock", "balance": 0}},
     )
 
     response = await analysis.client.post(URL, json=BIRTH)
@@ -142,7 +162,9 @@ async def test_full_unlock_gets_the_analysis_without_coins(analysis):
 
 
 async def test_analysis_requires_sign_in(analysis):
-    response = await analysis.client.post(URL, json=BIRTH, headers={"Authorization": ""})
+    response = await analysis.client.post(
+        URL, json=BIRTH, headers={"Authorization": ""}
+    )
 
     assert response.status_code == 401
     analysis.run.assert_not_called()
@@ -156,8 +178,12 @@ async def test_invalid_date_is_rejected_before_charging(analysis):
     assert await _account(analysis) == {"balance": CAPABILITY_REPORT_COST, "holds": {}}
 
 
-async def test_running_analysis_blocks_a_second_charge_until_its_hold_is_stale(analysis):
-    hold_path = f"capability_holds.{capability_chart_key(BirthInfo.model_validate(BIRTH))}"
+async def test_running_analysis_blocks_a_second_charge_until_its_hold_is_stale(
+    analysis,
+):
+    hold_path = (
+        f"capability_holds.{capability_chart_key(BirthInfo.model_validate(BIRTH))}"
+    )
     await analysis.database["user"].update_one(
         {"_id": ObjectId(analysis.user_id)},
         {
