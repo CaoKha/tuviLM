@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from dataclasses import dataclass, field
-from typing import Iterable
+from collections.abc import Iterable
+from dataclasses import dataclass
 
 from tuvi_engine.assembly.natal import build_natal_tinh_ban
 from tuvi_engine.assembly.period import build_period_layer, build_period_layer_id
@@ -15,7 +15,7 @@ from tuvi_engine.context.natal import NatalContext
 from tuvi_engine.context.period import PeriodKind, build_period_context
 from tuvi_engine.model.cung import Cung
 from tuvi_engine.model.elementary import DiaChi
-from tuvi_engine.model.layer import LayerId, NATAL_LAYER_ID, PlacementLayer
+from tuvi_engine.model.layer import NATAL_LAYER_ID, LayerId, PlacementLayer
 from tuvi_engine.model.menh_cuc_relation import MenhCucRelation
 from tuvi_engine.model.period_focus import DaiHanFocusMap
 from tuvi_engine.model.prior import LaSoPrior
@@ -36,7 +36,7 @@ class LaSo:
         cls,
         prior: LaSoPrior,
         catalog: ComponentRepository | None = None,
-    ) -> "LaSo":
+    ) -> LaSo:
         natal_context = NatalContext.from_prior(prior)
         components_repository = catalog or get_default_repository()
         return cls(

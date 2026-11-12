@@ -6,6 +6,7 @@ from types import SimpleNamespace
 
 import pytest
 
+from tests.fixtures.laso_priors import FIXTURE_PRIOR_A
 from tuvi_agent.deps import TuviAgentDeps
 from tuvi_agent.skills import get_cung_analyze_skill, read_book_tuvi_tan_bien
 from tuvi_agent.tool.ban_menh.laso_foundation import get_laso_foundation
@@ -27,8 +28,6 @@ from tuvi_agent.tool.thai_tue.vong_thai_tue import get_vong_thai_tue
 from tuvi_agent.workflow.personality.input.tanbien import get_personality_evidence
 from tuvi_engine.components.definitions.cung_role import Role
 from tuvi_engine.la_so import LaSo
-from tests.fixtures.laso_priors import FIXTURE_PRIOR_A
-
 
 BOOK_ROOT = Path("data/tuvitanbien_chunking_compact/part_2")
 

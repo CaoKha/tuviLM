@@ -21,7 +21,6 @@ from tuvi_api.accounts.models import (
 )
 from tuvi_api.auth.dependencies import ReconciledUser, require_admin
 
-
 router = APIRouter(prefix="/api/v1")
 
 

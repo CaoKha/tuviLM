@@ -12,8 +12,8 @@ from tuvi_engine.model.elementary import (
     DiaChi,
     ThienCan,
 )
-from tuvi_engine.model.prior import Gender
 from tuvi_engine.model.layer import LayerKind
+from tuvi_engine.model.prior import Gender
 
 
 class LayeredComponentView(BaseModel):

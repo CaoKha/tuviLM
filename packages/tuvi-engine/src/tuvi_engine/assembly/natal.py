@@ -1,28 +1,27 @@
 from __future__ import annotations
 
+from collections.abc import Mapping
 from dataclasses import dataclass
-from typing import Mapping
 
 from tuvi_engine.components.definitions.cung_role import Role
-from tuvi_engine.model.elementary import DiaChi
 from tuvi_engine.context.natal import NatalContext
-from tuvi_engine.model.period_focus import (
-    PeriodFocusMaps,
-    build_dai_han_focus_map,
-    build_tieu_han_focus_map,
-)
 from tuvi_engine.model.cung import CungId, derive_cung_thien_can
-from tuvi_engine.placement.bundle import get_default_placement_rule_compiler
-from tuvi_engine.placement.compiler import PlacementRuleCompiler
-from tuvi_engine.placement.engine import PlacementEngine
+from tuvi_engine.model.elementary import DiaChi
 from tuvi_engine.model.layer import (
     NATAL_LAYER_ID,
     STRUCTURAL_COMPONENT_IDS,
     PlacementLayer,
 )
-from tuvi_engine.placement.registry import ComponentId
+from tuvi_engine.model.period_focus import (
+    PeriodFocusMaps,
+    build_dai_han_focus_map,
+    build_tieu_han_focus_map,
+)
 from tuvi_engine.model.tinh_ban import TinhBan
-
+from tuvi_engine.placement.bundle import get_default_placement_rule_compiler
+from tuvi_engine.placement.compiler import PlacementRuleCompiler
+from tuvi_engine.placement.engine import PlacementEngine
+from tuvi_engine.placement.registry import ComponentId
 
 _ROLE_BY_ID = {role.value: role for role in Role}
 

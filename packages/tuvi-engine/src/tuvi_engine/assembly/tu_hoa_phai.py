@@ -1,16 +1,15 @@
 from __future__ import annotations
 
-from typing import Mapping
+from collections.abc import Mapping
 
-from tuvi_engine.model.elementary import DiaChi
 from tuvi_engine.context.tu_hoa_phai import TuHoaPhaiContext
 from tuvi_engine.model.cung import CungId
+from tuvi_engine.model.elementary import DiaChi
+from tuvi_engine.model.layer import PlacementLayer, TuHoaPhaiLayerId
 from tuvi_engine.placement.bundle import get_default_placement_rule_compiler
 from tuvi_engine.placement.compiler import PlacementRuleCompiler
 from tuvi_engine.placement.engine import PlacementEngine
-from tuvi_engine.model.layer import PlacementLayer, TuHoaPhaiLayerId
 from tuvi_engine.placement.scopes import TU_HOA_PHAI_SCOPE
-from tuvi_engine.placement.registry import ComponentId
 
 
 def build_tu_hoa_phai_layers(

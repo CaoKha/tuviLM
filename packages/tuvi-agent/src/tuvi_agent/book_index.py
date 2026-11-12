@@ -1,9 +1,9 @@
 from __future__ import annotations
 
 import dataclasses as dc
-from collections import Counter
 import difflib
 import re
+from collections import Counter
 from pathlib import Path
 
 from pydantic import BaseModel, Field
@@ -162,7 +162,7 @@ class BookIndexNode(BaseModel):
     level: int
     breadcrumb: str
     summary: str | None = None
-    children: list["BookIndexNode"] = Field(default_factory=list)
+    children: list[BookIndexNode] = Field(default_factory=list)
 
 
 class BookIndexResult(BaseModel):

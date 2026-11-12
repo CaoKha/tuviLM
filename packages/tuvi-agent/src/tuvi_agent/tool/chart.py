@@ -11,10 +11,11 @@ from tuvi_engine.la_so import LaSo
 from tuvi_engine.model.elementary import CircleDirection, DiaChi
 from tuvi_engine.placement.transforms import (
     get_tam_hop as transform_tam_hop,
+)
+from tuvi_engine.placement.transforms import (
     get_xung_chieu as transform_xung_chieu,
 )
 from tuvi_engine.view.builder import build_cung_view
-
 
 _logger = logging.getLogger(__name__)
 

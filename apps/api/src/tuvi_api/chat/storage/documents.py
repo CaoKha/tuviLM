@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from datetime import UTC, datetime
+from typing import ClassVar
 
 from beanie import DocumentWithSoftDelete
 from pydantic import BaseModel, Field
@@ -27,7 +28,7 @@ class ChartProfileDocument(DocumentWithSoftDelete):
 
     class Settings:
         name = "chart_profiles"
-        indexes = [
+        indexes: ClassVar[list[IndexModel]] = [
             IndexModel([("owner_id", ASCENDING)]),
             IndexModel(
                 [("owner_id", ASCENDING), ("name_key", ASCENDING)],
@@ -68,7 +69,7 @@ class ChatSessionDocument(DocumentWithSoftDelete):
 
     class Settings:
         name = "sessions"
-        indexes = [
+        indexes: ClassVar[list[IndexModel]] = [
             IndexModel([("chart_profile_id", ASCENDING)]),
             IndexModel(
                 [

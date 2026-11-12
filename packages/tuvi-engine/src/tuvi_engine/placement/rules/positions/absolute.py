@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Mapping
+from collections.abc import Mapping
 
 from tuvi_engine.context.protocol import PlacementContext
 from tuvi_engine.model.elementary import DiaChi, NguHanh, ThienCan

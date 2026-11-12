@@ -9,7 +9,6 @@ from pydantic_ai.messages import ModelMessage
 from tuvi_agent.book_index import BookIndex
 from tuvi_engine.la_so import LaSo
 
-
 # The book files are not in git. The path is relative to the working directory
 # (the repo root in development, /app in the container).
 DEFAULT_BOOK_ROOT = Path("data") / "tuvitanbien_chunking"

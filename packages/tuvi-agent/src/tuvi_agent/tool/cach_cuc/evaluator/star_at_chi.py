@@ -2,17 +2,17 @@
 
 from __future__ import annotations
 
-from typing import Iterable
+from collections.abc import Iterable
 
 from tuvi_agent.tool.cach_cuc.evaluator.context import CachCucMatchContext
 from tuvi_agent.tool.cach_cuc.evaluator.match_types import MatchOutcome
-from tuvi_agent.tool.cach_cuc.models import Mode, StarAtChiCondition
 from tuvi_agent.tool.cach_cuc.evaluator.star_utils import (
     _match_count,
     _resolve_group_stars,
     _roles_for_positions,
     _star_positions_at_any_chi,
 )
+from tuvi_agent.tool.cach_cuc.models import Mode, StarAtChiCondition
 from tuvi_engine.model.elementary import DiaChi
 
 

@@ -9,7 +9,6 @@ from typing import Literal, get_args
 from tuvi_engine.components.definitions.cung_role import Role
 from tuvi_engine.placement.registry import ComponentId
 
-
 SAO_LUU_IDS: frozenset[ComponentId] = frozenset(
     {
         "thai_tue",

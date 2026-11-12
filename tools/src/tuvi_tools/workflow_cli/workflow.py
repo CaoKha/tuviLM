@@ -272,7 +272,7 @@ async def run_workflow_batch(
             workflow_output = await definition.run(agent, deps, usage)
             result["output"] = _serialize_workflow_output(workflow_output)
             succeeded += 1
-        except Exception as exc:  # Preserve other profiles after one model failure.
+        except Exception as exc:  # noqa: BLE001 - keep other profiles after one failure
             result["error"] = {
                 "type": type(exc).__name__,
                 "message": str(exc),
@@ -399,7 +399,7 @@ def main(
     except KeyboardInterrupt:
         print(f"Interrupted. Completed results remain in {output_path}.")
         return 130
-    except Exception as exc:
+    except Exception as exc:  # noqa: BLE001 - report any error and exit non-zero
         print(f"error: {type(exc).__name__}: {exc}", file=sys.stderr)
         if output_path.exists():
             print(f"Partial results remain in {output_path}.", file=sys.stderr)

@@ -7,7 +7,14 @@ import secrets
 from datetime import UTC, datetime, timedelta
 from typing import Annotated
 
-from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Request, Response
+from fastapi import (
+    APIRouter,
+    BackgroundTasks,
+    Depends,
+    HTTPException,
+    Request,
+    Response,
+)
 from fastapi.concurrency import run_in_threadpool
 from fastapi.responses import RedirectResponse
 from pydantic import BaseModel, Field, field_validator
@@ -24,7 +31,11 @@ from tuvi_api.auth.dependencies import (
     get_rate_limiter,
     set_session_cookie,
 )
-from tuvi_api.auth.email import reset_password_email, send_email_logged, verification_email
+from tuvi_api.auth.email import (
+    reset_password_email,
+    send_email_logged,
+    verification_email,
+)
 from tuvi_api.auth.passwords import (
     hash_password,
     hash_token,

@@ -10,6 +10,7 @@ from pydantic import ValidationError
 from pydantic_ai import ModelRetry
 from pydantic_ai.models.test import TestModel
 
+from tests.fixtures.laso_priors import FIXTURE_PRIOR_A
 from tuvi_agent.book_index import SectionContent
 from tuvi_agent.deps import TuviAgentDeps
 from tuvi_agent.main import build_tuvi_agent
@@ -26,7 +27,6 @@ from tuvi_agent.workflow.strength_weakness.input.tanbien import prepare_capabili
 from tuvi_engine.components.definitions.cung_role import Role
 from tuvi_engine.la_so import LaSo
 from tuvi_engine.model.prior import Gender, LaSoPrior
-from tests.fixtures.laso_priors import FIXTURE_PRIOR_A
 
 
 class RecordingBook:

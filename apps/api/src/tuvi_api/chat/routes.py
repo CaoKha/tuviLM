@@ -2,8 +2,9 @@ from __future__ import annotations
 
 import json
 import logging
+from collections.abc import AsyncIterator, Awaitable, Callable
 from datetime import datetime
-from typing import Any, AsyncIterator, Awaitable, Callable
+from typing import Any
 
 import anyio
 from fastapi import APIRouter, Header, Request, Response
@@ -18,10 +19,20 @@ from pydantic_ai import (
     TextPart,
     TextPartDelta,
 )
-from pydantic_ai.messages import ModelMessage, ModelRequest, ModelResponse, UserPromptPart
+from pydantic_ai.messages import (
+    ModelMessage,
+    ModelRequest,
+    ModelResponse,
+    UserPromptPart,
+)
 from starlette.types import Receive, Scope, Send
 
-from tuvi_api.accounts.billing import CHAT_MESSAGE_COST, reserve_chat_coins, settle_chat_coins
+from tuvi_agent.deps import TuviAgentDeps
+from tuvi_api.accounts.billing import (
+    CHAT_MESSAGE_COST,
+    reserve_chat_coins,
+    settle_chat_coins,
+)
 from tuvi_api.auth.dependencies import CurrentUser, ReconciledUser
 from tuvi_api.chat.contracts import ConversationHistoryStore, NotFoundError
 from tuvi_api.chat.models import (
@@ -48,10 +59,8 @@ from tuvi_api.schemas import (
     SessionChatStreamRequest,
     UpdateChartProfileRequest,
 )
-from tuvi_agent.deps import TuviAgentDeps
 from tuvi_engine.la_so import LaSo
 from tuvi_engine.model.prior import Gender, LaSoPrior
-
 
 logger = logging.getLogger(__name__)
 
@@ -496,7 +505,7 @@ def _json_safe(value: Any) -> Any:
 
     try:
         return jsonable_encoder(value)
-    except Exception:
+    except Exception:  # noqa: BLE001 - any value must still be logged
         return repr(value)
 
 
@@ -511,14 +520,14 @@ def _get_tool_args(part: Any) -> Any:
     if callable(args_as_dict):
         try:
             return args_as_dict()
-        except Exception:
+        except Exception:  # noqa: BLE001, S110 - fall back to the next format
             pass
 
     args_as_json_str = getattr(part, "args_as_json_str", None)
     if callable(args_as_json_str):
         try:
             return args_as_json_str()
-        except Exception:
+        except Exception:  # noqa: BLE001, S110 - fall back to the next format
             pass
 
     return _get_field(part, "args")

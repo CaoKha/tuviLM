@@ -104,7 +104,7 @@ def mongo_is_replica_set() -> bool | None:
             serverSelectionTimeoutMS=2000,
         ) as client:
             return bool(client.admin.command("hello").get("setName"))
-    except Exception:
+    except Exception:  # noqa: BLE001 - any failure means "unknown"
         return None
 
 
@@ -157,7 +157,9 @@ def docker_command(*, use_sudo: bool) -> list[str] | None:
     if use_sudo:
         return ["sudo", "docker"]
 
-    probe = subprocess.run(["docker", "info"], capture_output=True, text=True)
+    probe = subprocess.run(
+        ["docker", "info"], capture_output=True, text=True, check=False
+    )
     if probe.returncode == 0:
         return ["docker"]
 

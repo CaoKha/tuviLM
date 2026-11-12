@@ -1,22 +1,22 @@
 from __future__ import annotations
 
+from collections.abc import Callable, Iterable
 from dataclasses import dataclass, field
 from functools import cached_property
-from typing import Callable, Iterable
 
 from tuvi_engine.components.definitions.cung_role import Role
+from tuvi_engine.model.cung import Cung, CungId, LayeredComponent
 from tuvi_engine.model.elementary import DiaChi
+from tuvi_engine.model.layer import (
+    NATAL_LAYER_ID,
+    LayerId,
+    PeriodLayerId,
+    PlacementLayer,
+)
 from tuvi_engine.model.period_focus import (
     DaiHanFocusMap,
     PeriodFocusMaps,
-    TieuHanFocusMap
-)
-from tuvi_engine.model.cung import Cung, CungId, LayeredComponent
-from tuvi_engine.model.layer import (
-    LayerId,
-    NATAL_LAYER_ID,
-    PeriodLayerId,
-    PlacementLayer,
+    TieuHanFocusMap,
 )
 from tuvi_engine.model.period_layer_store import PeriodLayerStore
 from tuvi_engine.placement.registry import ComponentId
@@ -56,9 +56,10 @@ class TinhBan:
         component_id: ComponentId,
         layer_id: LayerId = NATAL_LAYER_ID,
     ) -> DiaChi | None:
-        if layer_id == NATAL_LAYER_ID:
-            if position := self.natal_role_positions.get(component_id):
-                return position
+        if layer_id == NATAL_LAYER_ID and (
+            position := self.natal_role_positions.get(component_id)
+        ):
+            return position
         return self.layer(layer_id).position_of(component_id)
 
     def components_at(

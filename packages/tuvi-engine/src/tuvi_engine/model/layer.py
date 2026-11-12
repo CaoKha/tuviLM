@@ -1,8 +1,9 @@
 from __future__ import annotations
 
+from collections.abc import Mapping
 from dataclasses import dataclass
 from enum import StrEnum
-from typing import Mapping, TypeAlias
+from typing import TypeAlias
 
 from tuvi_engine.components.definitions.cung_role import Role
 from tuvi_engine.model.elementary import DiaChi
@@ -96,7 +97,7 @@ class PlacementLayer:
         id: LayerId,
         positions: Mapping[ComponentId, DiaChi],
         focus_position: DiaChi | None = None,
-    ) -> "PlacementLayer":
+    ) -> PlacementLayer:
         by_component = dict(positions)
         by_position: dict[DiaChi, set[ComponentId]] = {}
         for component_id, dia_chi in by_component.items():

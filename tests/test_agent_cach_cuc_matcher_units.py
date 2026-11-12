@@ -30,8 +30,8 @@ from tuvi_agent.tool.cach_cuc.models import (
     CachCucData,
     Role,
     StarBrightnessCondition,
-    StarWithPalaceCondition,
     StarsMeetingCondition,
+    StarWithPalaceCondition,
 )
 from tuvi_engine.components.definitions.sao import ChinhPhuTinh
 from tuvi_engine.model.cung import Cung, LayeredComponent

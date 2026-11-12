@@ -63,17 +63,12 @@ class _MinimalLaSo:
             for role, position in self._role_positions.items()
             if role != Role.CUNG_THAN.value
         }
-        component_ids = tuple(
-            component_id
-            for component_id, position in self._star_positions.items()
-            if position == dia_chi
-        )
         return Cung(
             dia_chi=dia_chi,
             thien_can=ThienCan.GIAP,
             natal_role=role_by_position.get(dia_chi, Role.MENH),
             is_cung_than=dia_chi == self._role_positions[Role.CUNG_THAN.value],
-            components=tuple(),
+            components=(),
         )
 
 

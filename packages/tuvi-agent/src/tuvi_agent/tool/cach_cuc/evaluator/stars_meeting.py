@@ -2,17 +2,17 @@
 
 from __future__ import annotations
 
-from typing import Iterable
+from collections.abc import Iterable
 
 from tuvi_agent.tool.cach_cuc.evaluator.context import CachCucMatchContext
 from tuvi_agent.tool.cach_cuc.evaluator.match_types import MatchOutcome
-from tuvi_agent.tool.cach_cuc.models import StarsMeetingCondition
 from tuvi_agent.tool.cach_cuc.evaluator.scopes import positions_for_scope
 from tuvi_agent.tool.cach_cuc.evaluator.star_utils import (
     _match_count,
     _resolve_group_stars,
     _roles_for_positions,
 )
+from tuvi_agent.tool.cach_cuc.models import StarsMeetingCondition
 from tuvi_engine.model.elementary import DiaChi
 
 
@@ -163,8 +163,6 @@ def _count_stars_related_to_anchor(
     """Count star ids that are represented in an anchor's meeting scope."""
     related_count = 0
     for star_id, positions in star_positions.items():
-        if count_anchor_self and star_id == anchor_id:
-            related_count += 1
-        elif any(position in scope_positions for position in positions):
+        if count_anchor_self and star_id == anchor_id or any(position in scope_positions for position in positions):
             related_count += 1
     return related_count

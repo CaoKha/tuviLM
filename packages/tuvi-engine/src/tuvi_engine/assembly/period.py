@@ -6,9 +6,6 @@ from tuvi_engine.context.period import (
     PeriodKind,
     TieuHanContext,
 )
-from tuvi_engine.placement.bundle import get_default_placement_rule_compiler
-from tuvi_engine.placement.compiler import PlacementRuleCompiler
-from tuvi_engine.placement.engine import PlacementEngine
 from tuvi_engine.model.layer import (
     DaiHanLayerId,
     LuuNienDaiHanLayerId,
@@ -16,14 +13,16 @@ from tuvi_engine.model.layer import (
     PlacementLayer,
     TieuHanLayerId,
 )
+from tuvi_engine.model.tinh_ban import TinhBan
+from tuvi_engine.placement.bundle import get_default_placement_rule_compiler
+from tuvi_engine.placement.compiler import PlacementRuleCompiler
+from tuvi_engine.placement.engine import PlacementEngine
+from tuvi_engine.placement.registry import ComponentId
 from tuvi_engine.placement.scopes import (
     DAI_HAN_SCOPE,
     LUU_NIEN_DAI_HAN_SCOPE,
     TIEU_HAN_SCOPE,
 )
-from tuvi_engine.placement.registry import ComponentId
-from tuvi_engine.model.tinh_ban import TinhBan
-
 
 PERIOD_SCOPE_BY_KIND: dict[PeriodKind, frozenset[ComponentId]] = {
     PeriodKind.TIEU_HAN: TIEU_HAN_SCOPE,

@@ -4,6 +4,8 @@ from types import SimpleNamespace
 
 import pytest
 from pydantic_ai.messages import ModelRequest, UserPromptPart
+
+from tests.fixtures.laso_priors import FIXTURE_PRIOR_A
 from tuvi_agent.deps import TuviAgentDeps
 from tuvi_agent.main import build_tuvi_agent
 from tuvi_agent.workflow.personality import (
@@ -27,8 +29,6 @@ from tuvi_agent.workflow.personality.output import (
     OPTIONAL_AVOID_EVIDENCE_INSTRUCTION,
 )
 from tuvi_engine.la_so import LaSo
-from tests.fixtures.laso_priors import FIXTURE_PRIOR_A
-
 
 pytestmark = pytest.mark.anyio
 

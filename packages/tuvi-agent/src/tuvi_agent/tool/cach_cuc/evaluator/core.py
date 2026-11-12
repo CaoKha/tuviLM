@@ -7,6 +7,15 @@ from tuvi_agent.tool.cach_cuc.evaluator.match_types import (
     MatchOutcome,
     merge_related_roles,
 )
+from tuvi_agent.tool.cach_cuc.evaluator.scopes import positions_for_scope
+from tuvi_agent.tool.cach_cuc.evaluator.star_conditions import (
+    _match_only_chinh_tinh,
+    _match_star_at_chi,
+    _match_star_brightness,
+    _match_stars_meeting_outcome,
+    _match_supported_stars,
+    _star_at_any_chi,
+)
 from tuvi_agent.tool.cach_cuc.models import (
     AllCondition,
     AnyCondition,
@@ -21,17 +30,8 @@ from tuvi_agent.tool.cach_cuc.models import (
     Role,
     StarAtChiCondition,
     StarBrightnessCondition,
-    StarWithPalaceCondition,
     StarsMeetingCondition,
-)
-from tuvi_agent.tool.cach_cuc.evaluator.scopes import positions_for_scope
-from tuvi_agent.tool.cach_cuc.evaluator.star_conditions import (
-    _match_only_chinh_tinh,
-    _match_star_at_chi,
-    _match_star_brightness,
-    _match_stars_meeting_outcome,
-    _match_supported_stars,
-    _star_at_any_chi,
+    StarWithPalaceCondition,
 )
 from tuvi_engine.model.prior import Gender as PriorGender
 

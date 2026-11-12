@@ -17,6 +17,7 @@ import streamlit as st
 import yaml
 from pydantic import ValidationError
 
+import tuvi_engine
 from tuvi_tools.cach_cuc.condition_models import (
     Brightness,
     CachCuc,
@@ -27,8 +28,6 @@ from tuvi_tools.cach_cuc.condition_models import (
     Scope,
     ThienCan,
 )
-
-import tuvi_engine
 
 STARS_PATH = Path(tuvi_engine.__file__).resolve().parent / "components/data/sao.json"
 DEFAULT_EXPORT_FILENAME = "cach_cuc_reviewed.yaml"
@@ -901,10 +900,13 @@ def render_node(
                 st.error(f"Invalid YAML: {exc}")
             else:
                 node["raw"] = parsed
-                if isinstance(parsed, dict) and parsed.get("type") in CONDITION_TYPES:
-                    if st.button("Convert raw to form", key=f"{key}_convert_raw"):
-                        parent_list[index] = dict_to_node(parsed, normalize=False)
-                        st.rerun()
+                if (
+                    isinstance(parsed, dict)
+                    and parsed.get("type") in CONDITION_TYPES
+                    and st.button("Convert raw to form", key=f"{key}_convert_raw")
+                ):
+                    parent_list[index] = dict_to_node(parsed, normalize=False)
+                    st.rerun()
         elif node["_kind"] == "not":
             children = node.setdefault("children", [])
             if children:
@@ -1102,9 +1104,7 @@ def skip_remediated_entry(cc_id: str) -> None:
 def sync_current_entry_modified_state(cc_id: str, current_cach_cuc: dict) -> None:
     was_modified = cc_id in st.session_state.modified_ids
     baseline = baseline_cach_cuc_for_entry(cc_id)
-    if baseline is None or current_cach_cuc != baseline:
-        mark_entry_modified(cc_id)
-    elif (
+    if baseline is None or current_cach_cuc != baseline or (
         cc_id in st.session_state.modified_ids
         and cc_id not in st.session_state.export_entries_by_id
         and st.session_state.entries.get(cc_id, {}).get("import_notes")

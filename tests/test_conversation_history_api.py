@@ -11,10 +11,11 @@ import httpx
 import pytest
 from beanie import PydanticObjectId
 from fastapi import HTTPException, Request
+from pydantic_ai import PartStartEvent, TextPart
 from pymongo import AsyncMongoClient
 from pymongo.errors import ServerSelectionTimeoutError
-from pydantic_ai import PartStartEvent, TextPart
 
+from tuvi_agent.deps import TuviAgentDeps
 from tuvi_api.auth.dependencies import Principal, require_reconciled_user, require_user
 from tuvi_api.chat.contracts import (
     ConversationHistoryStore,
@@ -26,8 +27,8 @@ from tuvi_api.chat.contracts import (
 from tuvi_api.chat.models import (
     BirthInfo,
     ChartProfile,
-    ChatMessageStatus,
     ChatMessage,
+    ChatMessageStatus,
     ChatRole,
     ChatSession,
     ChatSessionSummary,
@@ -44,8 +45,6 @@ from tuvi_api.chat.storage.documents import (
 from tuvi_api.chat.storage.mappers import chart_profile_from_document
 from tuvi_api.chat.storage.store import MongoConversationHistoryStore
 from tuvi_api.main import ApiState, app
-from tuvi_agent.deps import TuviAgentDeps
-
 
 pytestmark = pytest.mark.anyio
 

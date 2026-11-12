@@ -6,7 +6,6 @@ from typing import Any
 
 import yaml
 
-
 MIN_SUPPORTED_YEAR = 1800
 MAX_SUPPORTED_YEAR = 2199
 

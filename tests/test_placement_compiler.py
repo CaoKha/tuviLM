@@ -28,9 +28,9 @@ def test_compiler_validation_moves_to_rules_constructor():
         "child",
         RelativePositionSpec("missing_parent", lambda p: p),
     )
-    from tuvi_engine.context.natal import NatalContext
     import datetime as dt
 
+    from tuvi_engine.context.natal import NatalContext
     from tuvi_engine.model.prior import Gender, LaSoPrior
 
     ctx = NatalContext.from_prior(

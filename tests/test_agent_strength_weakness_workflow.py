@@ -17,6 +17,7 @@ from pydantic_ai.messages import (
 from pydantic_ai.models.function import FunctionModel
 from pydantic_ai.usage import RunUsage
 
+from tests.fixtures.laso_priors import FIXTURE_PRIOR_A
 from tuvi_agent.book_index import BookIndex, SectionContent
 from tuvi_agent.deps import TuviAgentDeps
 from tuvi_agent.workflow.strength_weakness import (
@@ -38,7 +39,6 @@ from tuvi_engine.components.definitions.cung_role import Role
 from tuvi_engine.la_so import LaSo
 from tuvi_engine.model.elementary import DiaChi
 from tuvi_engine.model.layer import NATAL_LAYER_ID
-from tests.fixtures.laso_priors import FIXTURE_PRIOR_A
 
 
 def _referenced_sections(value):

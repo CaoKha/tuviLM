@@ -20,7 +20,6 @@ from tuvi_agent.prompt.skill_analyze_cung import (
 )
 from tuvi_engine.components.definitions.cung_role import Role
 
-
 _logger = logging.getLogger(__name__)
 
 

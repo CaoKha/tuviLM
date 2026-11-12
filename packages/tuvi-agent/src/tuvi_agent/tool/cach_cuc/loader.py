@@ -1,13 +1,12 @@
 from __future__ import annotations
 
-from functools import cache
 import logging
+from functools import cache
 from pathlib import Path
 
 import yaml
 
 from tuvi_agent.tool.cach_cuc.models import CachCucData, SourceKind
-
 
 _logger = logging.getLogger(__name__)
 

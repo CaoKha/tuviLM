@@ -15,6 +15,17 @@ from pydantic_ai.models.openrouter import OpenRouterModelSettings
 from pymongo import AsyncMongoClient
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
+from tuvi_agent.deps import TuviAgentDeps
+from tuvi_agent.main import build_tuvi_agent
+from tuvi_agent.tool.ban_menh.laso_foundation import build_laso_foundation_payload
+from tuvi_agent.workflow.personality.agent import build_personality_agent
+from tuvi_agent.workflow.strength_weakness.agent import (
+    build_strength_weakness_agent,
+    run_strength_weakness_agent,
+)
+from tuvi_agent.workflow.strength_weakness.output import (
+    CapabilityProfile,
+)
 from tuvi_api._parse import to_cung_payload_map
 from tuvi_api.accounts.capability import (
     capability_chart_key,
@@ -24,11 +35,13 @@ from tuvi_api.accounts.capability import (
     save_capability_report,
     settle_capability_coins,
 )
-from tuvi_api.accounts.routes import router as accounts_router
 from tuvi_api.accounts.redeem_codes import (
     ensure_redeem_code_indexes,
+)
+from tuvi_api.accounts.redeem_codes import (
     router as redeem_codes_router,
 )
+from tuvi_api.accounts.routes import router as accounts_router
 from tuvi_api.auth.dependencies import Principal, ReconciledUser
 from tuvi_api.auth.rate_limit import RateLimiter
 from tuvi_api.auth.routes import router as auth_router
@@ -59,17 +72,6 @@ from tuvi_api.schemas import (
     PreviewLasoResponse,
 )
 from tuvi_api.settings import get_settings
-from tuvi_agent.deps import TuviAgentDeps
-from tuvi_agent.main import build_tuvi_agent
-from tuvi_agent.tool.ban_menh.laso_foundation import build_laso_foundation_payload
-from tuvi_agent.workflow.personality.agent import build_personality_agent
-from tuvi_agent.workflow.strength_weakness.agent import (
-    build_strength_weakness_agent,
-    run_strength_weakness_agent,
-)
-from tuvi_agent.workflow.strength_weakness.output import (
-    CapabilityProfile,
-)
 from tuvi_engine.cau_phu import (
     CauPhuNotFoundError,
     get_cau_phu,

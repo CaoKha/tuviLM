@@ -19,7 +19,6 @@ from tuvi_api.accounts.redeem_codes import ensure_redeem_code_indexes, router
 from tuvi_api.auth.dependencies import Principal, require_user
 from tuvi_api.chat.models import ChatMessageStatus
 
-
 pytestmark = pytest.mark.anyio
 ADMIN_HEADERS = {"Authorization": "Bearer admin"}
 CREATE_PATH = "/api/v1/admin/redeem-codes"

@@ -11,7 +11,6 @@ from tuvi_engine.model.elementary import DiaChi
 from tuvi_engine.model.layer import NATAL_LAYER_ID
 from tuvi_engine.placement.registry import ComponentId
 
-
 _logger = logging.getLogger(__name__)
 
 

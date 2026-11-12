@@ -1,10 +1,10 @@
 from __future__ import annotations
 
 from tuvi_engine.context.period import PeriodKind
-from tuvi_engine.model.cung import Cung
 from tuvi_engine.la_so import LaSo
-from tuvi_engine.model.layer import NATAL_LAYER_ID
+from tuvi_engine.model.cung import Cung
 from tuvi_engine.model.elementary import DiaChi
+from tuvi_engine.model.layer import NATAL_LAYER_ID
 from tuvi_engine.view.models import (
     CungView,
     DaiHanFocusView,

@@ -1,10 +1,11 @@
 from __future__ import annotations
 
+from collections.abc import Callable, Iterable, Mapping
 from dataclasses import dataclass
-from typing import Callable, Iterable, Mapping, Protocol, Set
+from typing import Protocol
 
-from tuvi_engine.model.elementary import DiaChi
 from tuvi_engine.context.protocol import PlacementContext
+from tuvi_engine.model.elementary import DiaChi
 from tuvi_engine.placement.registry import (
     AbsolutePositionSpec,
     ComponentId,
@@ -84,7 +85,7 @@ class PlacementRuleCompiler(PlacementRegistry):
         self,
         context: PlacementContext,
         *,
-        scope: Set[ComponentId] | None = None,
+        scope: set[ComponentId] | None = None,
         seed: Mapping[ComponentId, DiaChi] | None = None,
     ) -> SpecializedPlacementRules:
         """Compile registered placement specs for one context.
@@ -104,7 +105,7 @@ class PlacementRuleCompiler(PlacementRegistry):
         self,
         *,
         context: PlacementContext,
-        scope: Set[ComponentId],
+        scope: set[ComponentId],
         seed: Mapping[ComponentId, DiaChi],
     ) -> SpecializedPlacementSpecMap:
         specialized: SpecializedPlacementSpecMap = {}

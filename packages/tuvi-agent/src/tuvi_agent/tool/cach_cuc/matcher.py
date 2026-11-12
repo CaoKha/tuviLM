@@ -36,7 +36,6 @@ from tuvi_agent.tool.cach_cuc.models import (
 )
 from tuvi_engine.la_so import LaSo
 
-
 _logger = logging.getLogger(__name__)
 
 

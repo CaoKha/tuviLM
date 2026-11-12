@@ -1,9 +1,10 @@
 import inspect
+from collections.abc import Callable
 from dataclasses import dataclass, field
-from typing import Callable, Protocol
+from typing import Protocol
 
-from tuvi_engine.model.elementary import DiaChi
 from tuvi_engine.context.protocol import PlacementContext
+from tuvi_engine.model.elementary import DiaChi
 
 ComponentId = str
 

@@ -13,7 +13,6 @@ from pydantic import (
     model_validator,
 )
 
-
 Plan = Literal["normal", "full_unlock"]
 Balance = Annotated[int, Field(strict=True, ge=0, le=9_007_199_254_740_991)]
 

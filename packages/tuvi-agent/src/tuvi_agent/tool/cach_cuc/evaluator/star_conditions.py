@@ -19,7 +19,6 @@ from tuvi_agent.tool.cach_cuc.evaluator.stars_meeting import (
     _match_stars_meeting_outcome,
 )
 
-
 __all__ = [
     "_match_count",
     "_match_only_chinh_tinh",

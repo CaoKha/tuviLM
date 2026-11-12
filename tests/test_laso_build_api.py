@@ -6,15 +6,14 @@ from datetime import datetime
 import httpx
 import pytest
 
+from tests.test_conversation_history_api import FakeConversationHistoryStore
+from tuvi_agent.deps import TuviAgentDeps
 from tuvi_api._parse import to_cung_payload_map
 from tuvi_api.main import ApiState, app
 from tuvi_api.schemas import BuildLasoResponse
-from tuvi_agent.deps import TuviAgentDeps
 from tuvi_engine.la_so import LaSo
 from tuvi_engine.model.prior import Gender, LaSoPrior
 from tuvi_engine.view.builder import build_laso_view
-from tests.test_conversation_history_api import FakeConversationHistoryStore
-
 
 pytestmark = pytest.mark.anyio
 

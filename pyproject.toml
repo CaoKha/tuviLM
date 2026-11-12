@@ -19,6 +19,8 @@ dependencies = [
 dev = [
     "pytest>=8.3.5,<9",
     "httpx>=0.27",
+    "ruff>=0.17.5",
+    "pyright>=1.1.414",
 ]
 
 [tool.uv]
@@ -36,3 +38,17 @@ tuvi-tools = { workspace = true }
 [tool.pytest.ini_options]
 pythonpath = ["."]
 testpaths = ["tests"]
+
+[tool.ruff]
+target-version = "py312"
+# Workspace packages are first-party code for import sorting.
+src = [".", "packages/*/src", "apps/api/src", "tools/src"]
+
+[tool.ruff.lint]
+ignore = [
+    # `type X = ...` makes a TypeAliasType, which pydantic and isinstance() treat
+    # differently from a plain alias.
+    "UP040",
+    # Changing ValueError to TypeError would break callers that catch ValueError.
+    "TRY004",
+]

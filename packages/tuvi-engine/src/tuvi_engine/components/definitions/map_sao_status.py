@@ -1,6 +1,5 @@
-from tuvi_engine.model.elementary import DiaChi
 from tuvi_engine.components.definitions.sao import Status
-
+from tuvi_engine.model.elementary import DiaChi
 
 # Source : https://hocvienlyso.org/14-chinh-tinh.html
 MAP_SAO_STATUS: dict[str, dict[DiaChi, Status]] = {

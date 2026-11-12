@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from pydantic import ConfigDict
+
 from tuvi_engine.components.definitions.elementary import ComponentBase
 from tuvi_engine.model.elementary import NguHanh
 
@@ -50,7 +52,7 @@ def compute_ban_menh_id(year: int) -> str:
 
 
 class BanMenh(ComponentBase):
-    model_config = {"frozen": True}
+    model_config = ConfigDict(frozen=True)
 
     ngu_hanh: NguHanh
     description: str

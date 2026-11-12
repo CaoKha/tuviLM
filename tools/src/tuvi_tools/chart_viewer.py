@@ -9,7 +9,6 @@ from tuvi_engine.model.prior import Gender, LaSoPrior
 from tuvi_engine.view.builder import build_laso_view
 from tuvi_engine.view.streamlit_adapter import render_laso_view_html
 
-
 st.sidebar.header("Ngày sinh theo lịch dương")
 
 date = st.sidebar.number_input("Ngày sinh:", min_value=1, max_value=31, value=4)

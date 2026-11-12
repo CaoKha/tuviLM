@@ -1,8 +1,8 @@
 from tuvi_engine.components.definitions.map_sao_status import MAP_SAO_STATUS
 from tuvi_engine.components.definitions.sao import (
     ChinhPhuTinh,
-    TuHoa,
     TuanTriet,
+    TuHoa,
     VongTrangSinh,
 )
 from tuvi_engine.model.elementary import DiaChi

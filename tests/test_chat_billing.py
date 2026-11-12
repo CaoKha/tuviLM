@@ -12,6 +12,7 @@ from fastapi import HTTPException, Request
 from pymongo import AsyncMongoClient
 from pymongo.errors import ServerSelectionTimeoutError
 
+from tuvi_agent.deps import TuviAgentDeps
 from tuvi_api.accounts.billing import (
     CHAT_MESSAGE_COST,
     reconcile_chat_coins,
@@ -25,12 +26,10 @@ from tuvi_api.chat.models import (
     CreateChartProfileInput,
     CreateSessionInput,
 )
-from tuvi_api.chat.storage.store import MongoConversationHistoryStore
 from tuvi_api.chat.routes import session_chat_stream
+from tuvi_api.chat.storage.store import MongoConversationHistoryStore
 from tuvi_api.main import ApiState, app
 from tuvi_api.schemas import SessionChatStreamRequest
-from tuvi_agent.deps import TuviAgentDeps
-
 
 pytestmark = pytest.mark.anyio
 

@@ -11,7 +11,6 @@ from tuvi_engine.la_so import LaSo
 from tuvi_engine.model.elementary import DiaChi
 from tuvi_engine.model.layer import NATAL_LAYER_ID
 
-
 STAR_ALIASES: dict[str, tuple[str, ...]] = {
     "tuan": ("tuan_1", "tuan_2"),
     "triet": ("triet_1", "triet_2"),
