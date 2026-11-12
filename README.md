@@ -122,14 +122,28 @@ tests/                          Python tests
 ## Tests
 
 ```bash
-uv run tuvi check     # Python tests + web typecheck, lint and tests
+uv run tuvi check     # lint, format, typecheck and tests (the CI checks)
+uv run ruff format .  # fix Python formatting
+pnpm --dir apps/web format   # fix web formatting
 ```
+
+`tuvi check` runs these checks:
+
+| Part   | Lint                    | Format                        | Typecheck        | Tests        |
+| ------ | ----------------------- | ----------------------------- | ---------------- | ------------ |
+| Python | `ruff check`            | `ruff format --check`         | `pyright`        | `pytest`     |
+| Web    | `pnpm lint` (eslint)    | `pnpm format:check` (prettier) | `pnpm typecheck` | `pnpm test`  |
 
 Tests that need MongoDB are skipped when it is not running. Start it with
 `uv run tuvi up` or `docker compose up -d --wait` to run them. The redeem code
 tests need the replica set from `docker-compose.yaml`.
 
-There is no CI. Run the checks before you open a PR.
+CI (`.github/workflows/ci.yml`) runs the same checks on each pull request and
+on each push to `main`. CI starts MongoDB, so all the tests run there.
+
+Pyright does not report errors in the files in `[tool.pyright].ignore` in
+`pyproject.toml`. These files had type errors when pyright was added. When
+you fix the type errors in a file, remove the file from the list.
 
 ## How to contribute
 

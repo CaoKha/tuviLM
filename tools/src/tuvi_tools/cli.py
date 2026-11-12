@@ -3,7 +3,7 @@
 uv run tuvi setup     install deps and create local env files
 uv run tuvi up        MongoDB (Docker) + API on :8000 + web on :3000
 uv run tuvi down      stop MongoDB (data is kept)
-uv run tuvi check     Python tests + web typecheck, lint and tests
+uv run tuvi check     lint, format, typecheck and tests (the CI checks)
 uv run tuvi editor    Streamlit cách cục rule editor
 uv run tuvi viewer    Streamlit chart viewer
 """
@@ -419,22 +419,27 @@ def cmd_down(args: argparse.Namespace) -> int:
 
 
 def cmd_check(args: argparse.Namespace) -> int:
+    """Run the same checks as CI (.github/workflows/ci.yml)."""
     root = repo_root()
     web = root / "apps" / "web"
 
-    steps: list[tuple[str, list[str], Path, dict[str, str] | None]] = []
+    steps: list[tuple[str, list[str], Path]] = []
     if not args.web_only:
-        steps.append(("python tests", ["uv", "run", "pytest", "-q"], root, None))
+        steps += [
+            ("python lint", ["uv", "run", "ruff", "check", "."], root),
+            ("python format", ["uv", "run", "ruff", "format", "--check", "."], root),
+            ("python typecheck", ["uv", "run", "pyright"], root),
+            ("python tests", ["uv", "run", "pytest", "-q"], root),
+        ]
     if not args.python_only:
         steps += [
-            ("web typecheck", ["pnpm", "typecheck"], web, None),
-            ("web lint", ["pnpm", "lint"], web, None),
-            ("web tests", ["pnpm", "test"], web, None),
+            ("web typecheck", ["pnpm", "typecheck"], web),
+            ("web lint", ["pnpm", "lint"], web),
+            ("web format", ["pnpm", "format:check"], web),
+            ("web tests", ["pnpm", "test"], web),
         ]
 
-    failed = [
-        name for name, command, cwd, env in steps if run(command, cwd=cwd, env=env) != 0
-    ]
+    failed = [name for name, command, cwd in steps if run(command, cwd=cwd) != 0]
     if failed:
         return fail("failed: " + ", ".join(failed))
     say("all checks passed")
@@ -497,7 +502,9 @@ def build_parser() -> argparse.ArgumentParser:
     )
     down.set_defaults(func=cmd_down)
 
-    check = commands.add_parser("check", help="run tests, typecheck and lint")
+    check = commands.add_parser(
+        "check", help="run lint, format, typecheck and tests (the CI checks)"
+    )
     side = check.add_mutually_exclusive_group()
     side.add_argument("--python-only", action="store_true")
     side.add_argument("--web-only", action="store_true")
