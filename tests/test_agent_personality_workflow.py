@@ -38,9 +38,7 @@ def _analysis() -> str:
 
 
 def test_composite_input_tool_builds_complete_contract():
-    ctx = SimpleNamespace(
-        deps=TuviAgentDeps(la_so=LaSo.from_prior(FIXTURE_PRIOR_A))
-    )
+    ctx = SimpleNamespace(deps=TuviAgentDeps(la_so=LaSo.from_prior(FIXTURE_PRIOR_A)))
     evidence = get_personality_evidence(ctx)
 
     assert evidence.foundation.ban_menh.name
@@ -87,10 +85,7 @@ def test_personality_workflow_registers_input_and_output_instruction():
     assert luan_tinh_cach_skill() in input_definition.instructions
     assert "## Bước" not in "\n".join(input_definition.instructions)
     assert output_instruction.output_type is str
-    assert (
-        "Bạn tự nhiên dễ phản ứng theo hướng nào?"
-        in output_instruction.instruction
-    )
+    assert "Bạn tự nhiên dễ phản ứng theo hướng nào?" in output_instruction.instruction
     assert "Người này" not in output_instruction.instruction
     assert "Họ đang" not in output_instruction.instruction
     assert "Chân dung kể chuyện" in output_instruction.instruction
@@ -134,9 +129,7 @@ async def test_run_personality_workflow_makes_one_plain_text_synthesis_call():
 
     agent = FakeAgent()
     deps = TuviAgentDeps(la_so=LaSo.from_prior(FIXTURE_PRIOR_A))
-    history = [
-        ModelRequest(parts=[UserPromptPart(content="Câu hỏi trước.")])
-    ]
+    history = [ModelRequest(parts=[UserPromptPart(content="Câu hỏi trước.")])]
 
     result = await run_personality_workflow(
         agent=agent,
@@ -167,9 +160,7 @@ async def test_workflow_tool_returns_model_text_unchanged():
             self.message_history = message_history
             return SimpleNamespace(output=_analysis())
 
-    history = [
-        ModelRequest(parts=[UserPromptPart(content="Câu hỏi trước.")])
-    ]
+    history = [ModelRequest(parts=[UserPromptPart(content="Câu hỏi trước.")])]
     personality_agent = FakeAgent()
     deps = TuviAgentDeps(
         personality_agent=personality_agent,

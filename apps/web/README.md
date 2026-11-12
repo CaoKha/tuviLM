@@ -52,15 +52,15 @@ Never commit the downloaded credentials JSON.
 
 ## Commands
 
-| Command | What it does |
-| --- | --- |
-| `pnpm dev` | Dev server (Turbopack) |
-| `pnpm build` | Production build |
-| `pnpm start` | Serve the build |
-| `pnpm lint` | ESLint |
-| `pnpm typecheck` | `tsc --noEmit` |
-| `pnpm format` | Prettier write |
-| `pnpm test` | Vitest |
+| Command          | What it does           |
+| ---------------- | ---------------------- |
+| `pnpm dev`       | Dev server (Turbopack) |
+| `pnpm build`     | Production build       |
+| `pnpm start`     | Serve the build        |
+| `pnpm lint`      | ESLint                 |
+| `pnpm typecheck` | `tsc --noEmit`         |
+| `pnpm format`    | Prettier write         |
+| `pnpm test`      | Vitest                 |
 
 ## Design source of truth
 

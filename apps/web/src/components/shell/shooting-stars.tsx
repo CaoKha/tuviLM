@@ -39,25 +39,28 @@ export function ShootingStars() {
     let timer: ReturnType<typeof setTimeout>;
 
     const schedule = () => {
-      timer = setTimeout(() => {
-        if (!document.hidden) {
-          const shot: Shot = {
-            id: nextId++,
-            sx: between(-6, 52),
-            sy: between(2, 44),
-            angle: between(14, 42),
-            length: between(74, 148),
-            distance: between(240, 460),
-            duration: between(1.05, 1.9),
-          };
-          setShots((current) => [...current, shot]);
-          setTimeout(
-            () => setShots((current) => current.filter((s) => s.id !== shot.id)),
-            shot.duration * 1000 + 180,
-          );
-        }
-        schedule();
-      }, between(5200, 15000));
+      timer = setTimeout(
+        () => {
+          if (!document.hidden) {
+            const shot: Shot = {
+              id: nextId++,
+              sx: between(-6, 52),
+              sy: between(2, 44),
+              angle: between(14, 42),
+              length: between(74, 148),
+              distance: between(240, 460),
+              duration: between(1.05, 1.9),
+            };
+            setShots((current) => [...current, shot]);
+            setTimeout(
+              () => setShots((current) => current.filter((s) => s.id !== shot.id)),
+              shot.duration * 1000 + 180,
+            );
+          }
+          schedule();
+        },
+        between(5200, 15000),
+      );
     };
 
     schedule();

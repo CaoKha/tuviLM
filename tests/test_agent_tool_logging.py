@@ -32,7 +32,9 @@ from tuvi_engine.la_so import LaSo
 BOOK_ROOT = Path("data/tuvitanbien_chunking_compact/part_2")
 
 
-@pytest.mark.skipif(not BOOK_ROOT.is_dir(), reason=f"book files are missing: {BOOK_ROOT}")
+@pytest.mark.skipif(
+    not BOOK_ROOT.is_dir(), reason=f"book files are missing: {BOOK_ROOT}"
+)
 def test_agent_tools_log_start_and_compact_completion_metadata(caplog):
     caplog.set_level(logging.INFO, logger="tuvi_agent")
     la_so = LaSo.from_prior(FIXTURE_PRIOR_A)

@@ -15,7 +15,9 @@ def main(argv: list[str] | None = None) -> None:
     parser = argparse.ArgumentParser(
         description="Grant administrator access to an existing account."
     )
-    parser.add_argument("--email", required=True, help="The email registered to the account.")
+    parser.add_argument(
+        "--email", required=True, help="The email registered to the account."
+    )
     args = parser.parse_args(argv)
     email = args.email.strip().lower()
     if not email:
@@ -28,7 +30,9 @@ def main(argv: list[str] | None = None) -> None:
         ) as client:
             database = client[settings.database_name]
             users = list(
-                database["user"].find({"email": email}, {"email": 1, "role": 1}).limit(2)
+                database["user"]
+                .find({"email": email}, {"email": 1, "role": 1})
+                .limit(2)
             )
             if not users:
                 raise SystemExit("No account matches this email. Register first.")
@@ -47,9 +51,11 @@ def main(argv: list[str] | None = None) -> None:
             print(f"Database: {settings.database_name}")
             print(f"Account: {user['email']} ({user_id})")
             try:
-                confirmation = input(
-                    "Type the email above to grant administrator access: "
-                ).strip().lower()
+                confirmation = (
+                    input("Type the email above to grant administrator access: ")
+                    .strip()
+                    .lower()
+                )
             except (EOFError, KeyboardInterrupt):
                 raise SystemExit("Cancelled. Nothing changed.") from None
             if confirmation != email:
@@ -62,15 +68,21 @@ def main(argv: list[str] | None = None) -> None:
                 {"$set": {"role": "admin", "updatedAt": datetime.now(UTC)}},
             )
             if updated.matched_count != 1:
-                raise SystemExit("Account changed during confirmation. Check its role before retrying.")
-            print(f"Administrator access granted. Revoked {revoked.deleted_count} sessions.")
+                raise SystemExit(
+                    "Account changed during confirmation. Check its role before retrying."
+                )
+            print(
+                f"Administrator access granted. Revoked {revoked.deleted_count} sessions."
+            )
             print("Sign in again, then open /admin/redeem-codes.")
     except PyMongoError:
         raise SystemExit(
             "Database operation failed. Check the account role before retrying."
         ) from None
     except KeyboardInterrupt:
-        raise SystemExit("Interrupted. Check the account role before retrying.") from None
+        raise SystemExit(
+            "Interrupted. Check the account role before retrying."
+        ) from None
 
 
 if __name__ == "__main__":

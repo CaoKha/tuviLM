@@ -121,6 +121,7 @@ def test_tinh_ban_period_layer_cache_is_lru_by_layer_kind():
                 positions={"thai_tue": context.focus_position},
                 focus_position=context.focus_position,
             )
+
         return _build
 
     first_layer_id = TieuHanLayerId(2026)

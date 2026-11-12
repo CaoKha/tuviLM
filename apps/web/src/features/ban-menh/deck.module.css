@@ -139,8 +139,8 @@
     gap: 20px;
     padding-inline: calc(50% - 134px);
     height: calc(
-      268px * var(--card-ratio) * var(--focus-scale) + var(--aura-headroom) +
-        var(--aura-headroom) + 14px
+      268px * var(--card-ratio) * var(--focus-scale) + var(--aura-headroom) + var(--aura-headroom) +
+        14px
     );
   }
 

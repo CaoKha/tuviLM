@@ -11,8 +11,10 @@ from tuvi_api.settings import ApiSettings
 
 def test_strength_weakness_defaults_to_deepseek_on_openrouter(monkeypatch) -> None:
     for name in (
-        "STRENGTH_WEAKNESS__MODEL", "STRENGTH_WEAKNESS__PROVIDER",
-        "STRENGTH_WEAKNESS__ALLOW_FALLBACKS", "STRENGTH_WEAKNESS__PROVIDER_SORT",
+        "STRENGTH_WEAKNESS__MODEL",
+        "STRENGTH_WEAKNESS__PROVIDER",
+        "STRENGTH_WEAKNESS__ALLOW_FALLBACKS",
+        "STRENGTH_WEAKNESS__PROVIDER_SORT",
         "STRENGTH_WEAKNESS__REASONING_EFFORT",
     ):
         monkeypatch.delenv(name, raising=False)
@@ -25,7 +27,9 @@ def test_strength_weakness_defaults_to_deepseek_on_openrouter(monkeypatch) -> No
     assert settings.strength_weakness.reasoning_effort == "low"
 
 
-def test_strength_weakness_model_can_be_overridden_in_env_or_dotenv(monkeypatch, tmp_path) -> None:
+def test_strength_weakness_model_can_be_overridden_in_env_or_dotenv(
+    monkeypatch, tmp_path
+) -> None:
     monkeypatch.delenv("STRENGTH_WEAKNESS__MODEL", raising=False)
     env_file = tmp_path / ".env"
     env_file.write_text("STRENGTH_WEAKNESS__MODEL=openrouter:qwen/qwen3.7-max\n")
@@ -35,10 +39,15 @@ def test_strength_weakness_model_can_be_overridden_in_env_or_dotenv(monkeypatch,
     assert settings.strength_weakness.allow_fallbacks is True
 
     monkeypatch.setenv("STRENGTH_WEAKNESS__MODEL", "openrouter:qwen/qwen3.8-flash")
-    assert ApiSettings(_env_file=env_file).strength_weakness.model == "openrouter:qwen/qwen3.8-flash"
+    assert (
+        ApiSettings(_env_file=env_file).strength_weakness.model
+        == "openrouter:qwen/qwen3.8-flash"
+    )
 
 
-def test_strength_weakness_routing_can_be_overridden_in_env_or_dotenv(monkeypatch, tmp_path) -> None:
+def test_strength_weakness_routing_can_be_overridden_in_env_or_dotenv(
+    monkeypatch, tmp_path
+) -> None:
     for suffix in ("PROVIDER", "ALLOW_FALLBACKS", "PROVIDER_SORT", "REASONING_EFFORT"):
         monkeypatch.delenv(f"STRENGTH_WEAKNESS__{suffix}", raising=False)
     env_file = tmp_path / ".env"
@@ -65,12 +74,20 @@ def test_strength_weakness_routing_can_be_overridden_in_env_or_dotenv(monkeypatc
     assert settings.strength_weakness.reasoning_effort == "low"
 
 
-@pytest.mark.parametrize("model_name,provider,effort,allow_fallbacks,sort", [
-    ("deepseek/deepseek-v4.1-flash", "together", "low", True, "latency"),
-    ("qwen/qwen3.7-max", "alibaba", "high", False, "throughput"),
-])
+@pytest.mark.parametrize(
+    "model_name,provider,effort,allow_fallbacks,sort",
+    [
+        ("deepseek/deepseek-v4.1-flash", "together", "low", True, "latency"),
+        ("qwen/qwen3.7-max", "alibaba", "high", False, "throughput"),
+    ],
+)
 def test_api_uses_strength_weakness_routing_settings(
-    monkeypatch, model_name, provider, effort, allow_fallbacks, sort,
+    monkeypatch,
+    model_name,
+    provider,
+    effort,
+    allow_fallbacks,
+    sort,
 ) -> None:
     from tuvi_api import main
 
@@ -88,7 +105,9 @@ def test_api_uses_strength_weakness_routing_settings(
     )
     monkeypatch.setattr(main, "get_settings", lambda: settings)
     store = SimpleNamespace(close=AsyncMock())
-    monkeypatch.setattr(main.MongoConversationHistoryStore, "connect", AsyncMock(return_value=store))
+    monkeypatch.setattr(
+        main.MongoConversationHistoryStore, "connect", AsyncMock(return_value=store)
+    )
     app = SimpleNamespace(state=SimpleNamespace())
 
     async def initialize():
@@ -100,7 +119,9 @@ def test_api_uses_strength_weakness_routing_settings(
             assert model.model_name == model_name
             assert model.base_url == "https://openrouter.ai/api/v1/"
             assert agent.model_settings["openrouter_provider"] == {
-                "order": [provider], "allow_fallbacks": allow_fallbacks, "sort": sort,
+                "order": [provider],
+                "allow_fallbacks": allow_fallbacks,
+                "sort": sort,
             }
             assert agent.model_settings["openrouter_reasoning"] == {"effort": effort}
             assert deps.require_agent().model.system == "openrouter"

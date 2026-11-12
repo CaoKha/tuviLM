@@ -218,7 +218,9 @@ export const TimePicker = forwardRef<HTMLDivElement, TimePickerProps>(function T
             <strong
               className={cn(
                 "font-display text-[20px] leading-[1.1] font-semibold",
-                value === null ? "text-ink" : "text-accent [text-shadow:0_0_12px_var(--accent-glow)]",
+                value === null
+                  ? "text-ink"
+                  : "text-accent [text-shadow:0_0_12px_var(--accent-glow)]",
               )}
             >
               {value === null ? "Chọn giờ" : `${hour12} ${meridiem}`}

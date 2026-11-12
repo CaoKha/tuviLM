@@ -13,7 +13,9 @@ from tuvi_engine.la_so import LaSo
 from tuvi_engine.model.layer import NATAL_LAYER_ID
 
 DEFAULT_CAU_PHU_PATH = (
-    Path(__file__).resolve().parent / "data" / "cung_menh_phu_luc_bat_v3_tieu_de_moi.json"
+    Path(__file__).resolve().parent
+    / "data"
+    / "cung_menh_phu_luc_bat_v3_tieu_de_moi.json"
 )
 
 type CaseKey = tuple[str, tuple[str, ...], bool, bool]

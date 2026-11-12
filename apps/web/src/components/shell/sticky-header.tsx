@@ -54,9 +54,7 @@ export function StickyHeader({
         {title}
       </h2>
       {subtitle ? (
-        <p className="mt-[7px] max-w-[54ch] text-[13.5px] leading-normal text-muted">
-          {subtitle}
-        </p>
+        <p className="mt-[7px] max-w-[54ch] text-[13.5px] leading-normal text-muted">{subtitle}</p>
       ) : null}
     </div>
   );

@@ -182,7 +182,10 @@ def test_unreported_thinking_tokens_are_unknown():
     from tuvi_tools.workflow_cli.workflow import _usage_metrics
 
     assert _usage_metrics(RunUsage(), 0)["thinking_tokens"] is None
-    assert _usage_metrics(RunUsage(details={"reasoning_tokens": 0}), 0)["thinking_tokens"] == 0
+    assert (
+        _usage_metrics(RunUsage(details={"reasoning_tokens": 0}), 0)["thinking_tokens"]
+        == 0
+    )
 
 
 @pytest.mark.parametrize(

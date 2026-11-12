@@ -51,7 +51,9 @@ async def billing_context(monkeypatch):
 
     database_name = f"tuvilm_chat_billing_test_{uuid4().hex}"
     database = mongo[database_name]
-    store = MongoConversationHistoryStore(mongo_client=mongo, database_name=database_name)
+    store = MongoConversationHistoryStore(
+        mongo_client=mongo, database_name=database_name
+    )
     await store._initialize_storage()
     user_id = str(ObjectId())
     await database["user"].insert_one(
@@ -74,7 +76,9 @@ async def billing_context(monkeypatch):
     monkeypatch.setattr(
         app.state,
         "api_state",
-        ApiState(agent_deps=TuviAgentDeps(book_root=""), conversation_history_store=store),
+        ApiState(
+            agent_deps=TuviAgentDeps(book_root=""), conversation_history_store=store
+        ),
         raising=False,
     )
     monkeypatch.setattr(app.state, "auth_database", database, raising=False)
@@ -133,12 +137,16 @@ async def test_insufficient_balance_does_not_start_ai(billing_context) -> None:
 
     with pytest.raises(HTTPException) as caught:
         await session_chat_stream(
-            session_id, SessionChatStreamRequest(content="Question?"),
-            Request({"type": "http", "app": app}), Principal(user_id=user_id, balance=100),
+            session_id,
+            SessionChatStreamRequest(content="Question?"),
+            Request({"type": "http", "app": app}),
+            Principal(user_id=user_id, balance=100),
             idempotency_key="message-1",
         )
     assert caught.value.status_code == 402
-    assert (await store.load_session_context(user_id, session_id)).session.messages == previous
+    assert (
+        await store.load_session_context(user_id, session_id)
+    ).session.messages == previous
     await _assert_balance(database, user_id, 2)
 
     await _set_access(database, user_id, balance=3)
@@ -150,7 +158,9 @@ async def test_insufficient_balance_does_not_start_ai(billing_context) -> None:
     await _assert_balance(database, user_id, 0)
 
 
-async def test_failed_ai_refunds_once_and_failed_replay_is_free(billing_context) -> None:
+async def test_failed_ai_refunds_once_and_failed_replay_is_free(
+    billing_context,
+) -> None:
     client, database, store, user_id, session_id = billing_context
     calls = 0
 
@@ -253,7 +263,9 @@ async def test_concurrent_chats_in_different_sessions_allow_only_one_payment(
     await _assert_balance(database, user_id, 0)
     for response, target in zip(responses, (session_id, second_session_id)):
         context = await store.load_session_context(user_id, target)
-        assert len(context.session.messages) == (2 if response.status_code == 200 else 0)
+        assert len(context.session.messages) == (
+            2 if response.status_code == 200 else 0
+        )
 
 
 async def test_disconnect_event_while_ai_is_blocked_refunds(billing_context) -> None:
@@ -295,7 +307,9 @@ async def test_disconnect_event_while_ai_is_blocked_refunds(billing_context) -> 
     await _assert_balance(database, user_id, 6)
 
 
-async def test_deleting_session_while_streaming_keeps_the_charge(billing_context) -> None:
+async def test_deleting_session_while_streaming_keeps_the_charge(
+    billing_context,
+) -> None:
     _, database, store, user_id, session_id = billing_context
 
     async def deleting_streamer(**kwargs):
@@ -325,7 +339,9 @@ async def test_deleting_session_while_streaming_keeps_the_charge(billing_context
     await _assert_balance(database, user_id, 3)
 
 
-async def test_reconcile_keeps_the_charge_for_a_deleted_session(billing_context) -> None:
+async def test_reconcile_keeps_the_charge_for_a_deleted_session(
+    billing_context,
+) -> None:
     _, database, store, user_id, session_id = billing_context
     await _reserve_pair(database, store, user_id, session_id)
     await store.delete_session(user_id, session_id)
@@ -347,7 +363,10 @@ async def _create_session(store, user_id: str) -> str:
         idempotency_key=str(uuid4()),
     )
     session = await store.create_session(
-        user_id, profile.id, CreateSessionInput(title="Career"), idempotency_key=str(uuid4())
+        user_id,
+        profile.id,
+        CreateSessionInput(title="Career"),
+        idempotency_key=str(uuid4()),
     )
     return session.id
 
@@ -355,7 +374,10 @@ async def _create_session(store, user_id: str) -> str:
 async def _chat(client, user_id: str, session_id: str, *, idempotency_key="message-1"):
     return await client.post(
         f"/api/v1/sessions/{session_id}/chat/stream",
-        headers={"Authorization": f"Bearer {user_id}", "Idempotency-Key": idempotency_key},
+        headers={
+            "Authorization": f"Bearer {user_id}",
+            "Idempotency-Key": idempotency_key,
+        },
         json={"content": "Question?"},
     )
 
@@ -368,7 +390,9 @@ async def _set_access(database, user_id: str, **fields) -> None:
     await database["user"].update_one({"_id": ObjectId(user_id)}, {"$set": fields})
 
 
-async def _assert_balance(database, user_id: str, balance: int, hold_count: int = 0) -> None:
+async def _assert_balance(
+    database, user_id: str, balance: int, hold_count: int = 0
+) -> None:
     account = await _account(database, user_id)
     assert account["balance"] == balance
     assert len(account.get("chat_holds", {})) == hold_count

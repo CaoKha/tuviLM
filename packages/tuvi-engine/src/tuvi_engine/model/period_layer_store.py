@@ -70,8 +70,7 @@ class PeriodLayerStore:
         layer = build_fn()
         if layer.id != layer_id:
             raise ValueError(
-                f"Built layer id {layer.id!r} does not match requested "
-                f"{layer_id!r}."
+                f"Built layer id {layer.id!r} does not match requested {layer_id!r}."
             )
         evicted_layer_id = self.cache.remember(layer_id)
         self.layers[layer_id] = layer

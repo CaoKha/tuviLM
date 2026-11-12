@@ -13,10 +13,14 @@ export function MarkdownBody({ body }: { body: string }) {
     ul: ({ children }) => <ul className="mb-2 list-disc space-y-0.5 pl-5">{children}</ul>,
     ol: ({ children }) => <ol className="mb-2 list-decimal space-y-0.5 pl-5">{children}</ol>,
     h1: ({ children }) => (
-      <h1 className="mt-3 mb-1.5 font-display text-[1.1em] font-semibold text-accent">{children}</h1>
+      <h1 className="mt-3 mb-1.5 font-display text-[1.1em] font-semibold text-accent">
+        {children}
+      </h1>
     ),
     h2: ({ children }) => (
-      <h2 className="mt-3 mb-1.5 font-display text-[1.05em] font-semibold text-accent">{children}</h2>
+      <h2 className="mt-3 mb-1.5 font-display text-[1.05em] font-semibold text-accent">
+        {children}
+      </h2>
     ),
     h3: ({ children }) => (
       <h3 className="mt-2.5 mb-1 font-display text-[1em] font-semibold text-accent">{children}</h3>
@@ -28,7 +32,9 @@ export function MarkdownBody({ body }: { body: string }) {
       <pre className="mb-2 overflow-x-auto rounded-xl bg-glass p-2 text-[0.85em]">{children}</pre>
     ),
     blockquote: ({ children }) => (
-      <blockquote className="my-2 border-l-2 border-accent pl-3 italic text-muted">{children}</blockquote>
+      <blockquote className="my-2 border-l-2 border-accent pl-3 italic text-muted">
+        {children}
+      </blockquote>
     ),
     strong: ({ children }) => <strong className="font-semibold">{children}</strong>,
     em: ({ children }) => <em className="italic">{children}</em>,

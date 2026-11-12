@@ -36,7 +36,10 @@ class RecordingBook:
     def read_section(self, section_id):
         self.reads.append(section_id)
         return SectionContent(
-            id=section_id, title="Tham chiếu", breadcrumb="Sách", content="Nội dung sách"
+            id=section_id,
+            title="Tham chiếu",
+            breadcrumb="Sách",
+            content="Nội dung sách",
         )
 
 
@@ -45,7 +48,13 @@ def test_evidence_contains_foundation_and_supporting_palaces():
     evidence = build_strength_weakness_evidence(chart)
     positions = {palace.position for palace in evidence.palaces}
     menh = chart.tinh_ban.menh_position
-    assert {menh, menh + 4, menh + 6, menh + 8, chart.tinh_ban.than_position} <= positions
+    assert {
+        menh,
+        menh + 4,
+        menh + 6,
+        menh + 8,
+        chart.tinh_ban.than_position,
+    } <= positions
     assert {Role.PHUC_DUC, Role.TAT_ACH} <= {palace.role for palace in evidence.palaces}
     assert evidence.tu_hoa
     assert all(item.target_star_id for item in evidence.tu_hoa)
@@ -59,7 +68,9 @@ def test_evidence_contains_foundation_and_supporting_palaces():
 def test_profile_rejects_unknown_and_duplicate_capabilities():
     with pytest.raises(ValidationError):
         StrengthFinding(nang_luc_id="unknown", mo_ta="Mô tả", giai_thich="Giải thích")
-    finding = StrengthFinding(nang_luc_id="quyet_doan", mo_ta="Mô tả", giai_thich="Giải thích")
+    finding = StrengthFinding(
+        nang_luc_id="quyet_doan", mo_ta="Mô tả", giai_thich="Giải thích"
+    )
     with pytest.raises(ValidationError, match="unique"):
         CapabilityProfile(tong_quan="Tổng quan", diem_manh=[finding, finding])
     assert finding.model_dump()["nang_luc"]
@@ -84,12 +95,18 @@ def test_tu_hoa_reads_generic_and_menh_than_sections(
     prior = LaSoPrior.from_solar_day(datetime(year, 5, 15, hour), Gender.MALE)
     chart = LaSo.from_prior(prior)
     evidence = build_strength_weakness_evidence(chart)
-    transformation = next(item for item in evidence.tu_hoa if item.component_id == component_id)
+    transformation = next(
+        item for item in evidence.tu_hoa if item.component_id == component_id
+    )
     position = (
-        chart.tinh_ban.menh_position if role == Role.MENH else chart.tinh_ban.than_position
+        chart.tinh_ban.menh_position
+        if role == Role.MENH
+        else chart.tinh_ban.than_position
     )
     assert transformation.position == position
-    references = {(ref.section_id, ref.scope) for ref in transformation.meaning_references}
+    references = {
+        (ref.section_id, ref.scope) for ref in transformation.meaning_references
+    }
     assert (generic_section, "generic") in references
     assert ("4.2.23", f"role:{role.value}") in references
 
@@ -116,14 +133,18 @@ def test_agent_receives_prepared_evidence_and_book_before_running():
             return SimpleNamespace(output=profile)
 
     agent = RecordingAgent()
-    result = asyncio.run(run_strength_weakness_agent(
-        agent=agent, deps=deps, request="Phân tích năng lực", usage="shared usage"
-    ))
+    result = asyncio.run(
+        run_strength_weakness_agent(
+            agent=agent, deps=deps, request="Phân tích năng lực", usage="shared usage"
+        )
+    )
     assert result is profile
     deps.strength_weakness_agent = agent
-    rendered = asyncio.run(run_strength_weakness_workflow(
-        SimpleNamespace(deps=deps, usage="shared usage"), "Phân tích năng lực"
-    ))
+    rendered = asyncio.run(
+        run_strength_weakness_workflow(
+            SimpleNamespace(deps=deps, usage="shared usage"), "Phân tích năng lực"
+        )
+    )
     assert rendered == render_capability_profile(profile)
     assert "Chưa có đủ căn cứ" in rendered
 

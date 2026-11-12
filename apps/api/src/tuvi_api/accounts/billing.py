@@ -57,7 +57,9 @@ async def reserve_chat_coins(
         access = AccountAccess.model_validate(user)
     except ValidationError as exc:
         raise HTTPException(503, "Account data unavailable.") from exc
-    if access.plan == "full_unlock" or assistant_message_id in user.get("chat_holds", {}):
+    if access.plan == "full_unlock" or assistant_message_id in user.get(
+        "chat_holds", {}
+    ):
         return
     raise HTTPException(402, "Not enough coins. AI chat costs 3 coins per message.")
 
@@ -107,7 +109,8 @@ async def reconcile_chat_coins(
                 if message is not None and message.status == ChatMessageStatus.PENDING:
                     continue
                 confirmed = (
-                    message is not None and message.status == ChatMessageStatus.CONFIRMED
+                    message is not None
+                    and message.status == ChatMessageStatus.CONFIRMED
                 )
             await settle_chat_coins(
                 database, user_id, assistant_message_id, confirmed=confirmed

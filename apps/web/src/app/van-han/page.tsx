@@ -9,7 +9,11 @@ import { StickyHeader } from "@/components/shell/sticky-header";
 export default function Page() {
   return (
     <ScreenPad>
-      <StickyHeader eyebrow="Vận hạn 2026" title="Đường sao năm nay" subtitle="Mở từng lĩnh vực để xem tinh tú đang xoay vần thế nào." />
+      <StickyHeader
+        eyebrow="Vận hạn 2026"
+        title="Đường sao năm nay"
+        subtitle="Mở từng lĩnh vực để xem tinh tú đang xoay vần thế nào."
+      />
       <p className="text-[13.5px] text-muted">Màn hình này sẽ được dựng ở thay đổi tiếp theo.</p>
     </ScreenPad>
   );

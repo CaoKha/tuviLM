@@ -103,8 +103,18 @@ MenhCucRelationKey = Literal[
 ]
 AmDuongRelationKey = Literal["thuan_ly", "nghich_ly"]
 DiaChiKey = Literal[
-    "ty", "suu", "dan", "meo", "thin", "ti",
-    "ngo", "mui", "than", "dau", "tuat", "hoi",
+    "ty",
+    "suu",
+    "dan",
+    "meo",
+    "thin",
+    "ti",
+    "ngo",
+    "mui",
+    "than",
+    "dau",
+    "tuat",
+    "hoi",
 ]
 NguHanhKey = Literal["Kim", "Mộc", "Thủy", "Hỏa", "Thổ"]
 

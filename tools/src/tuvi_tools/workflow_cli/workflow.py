@@ -34,7 +34,10 @@ from tuvi_engine.model.prior import Gender, LaSoPrior
 DEFAULT_MODEL = "openrouter:qwen/qwen3.7-max"
 # The book files are not in git. Resolved from the repo root (tools are installed editable).
 DEFAULT_BOOK_ROOT = (
-    Path(__file__).resolve().parents[4] / "data" / "tuvitanbien_chunking_compact" / "part_2"
+    Path(__file__).resolve().parents[4]
+    / "data"
+    / "tuvitanbien_chunking_compact"
+    / "part_2"
 )
 
 
@@ -283,7 +286,9 @@ async def run_workflow_batch(
         result["metrics"] = _usage_metrics(usage, perf_counter() - profile_started)
         total_usage.incr(usage)
         results.append(result)
-        document["metrics"] = _usage_metrics(total_usage, perf_counter() - batch_started)
+        document["metrics"] = _usage_metrics(
+            total_usage, perf_counter() - batch_started
+        )
         _write_output(output_path, document)
 
     document["completed_at"] = (
@@ -324,7 +329,7 @@ def choose_workflow(
 def build_parser(*, prog: str | None = None) -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog=prog,
-        description="Run one Tử Vi agent workflow for every profile in a YAML file."
+        description="Run one Tử Vi agent workflow for every profile in a YAML file.",
     )
     parser.add_argument(
         "input",

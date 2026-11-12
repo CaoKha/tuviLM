@@ -9,9 +9,7 @@ def mirror_across(position: DiaChi, axis: tuple[DiaChi, DiaChi]) -> DiaChi:
     """Mirror a position across an axis defined by opposite DiaChi."""
     axis_start, axis_end = axis
     if axis_start + 6 != axis_end:
-        raise ValueError(
-            "Mirror axis must be defined by opposite DiaChi positions."
-        )
+        raise ValueError("Mirror axis must be defined by opposite DiaChi positions.")
     return DiaChi.from_index(2 * axis_start.index - position.index)
 
 

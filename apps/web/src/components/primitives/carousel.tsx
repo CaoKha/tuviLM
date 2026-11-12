@@ -41,9 +41,7 @@ const CarouselContext = createContext<{ active: number; setActive: (index: numbe
 export function Carousel({ children }: { children: ReactNode }) {
   const [active, setActive] = useState(0);
   return (
-    <CarouselContext.Provider value={{ active, setActive }}>
-      {children}
-    </CarouselContext.Provider>
+    <CarouselContext.Provider value={{ active, setActive }}>{children}</CarouselContext.Provider>
   );
 }
 
@@ -137,13 +135,7 @@ export function CarouselItem({
   );
 }
 
-export function CarouselDots({
-  count,
-  className,
-}: {
-  count: number;
-  className?: string;
-}) {
+export function CarouselDots({ count, className }: { count: number; className?: string }) {
   const { active } = useContext(CarouselContext);
   return (
     <div className={className} aria-hidden="true">

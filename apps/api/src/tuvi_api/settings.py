@@ -16,9 +16,9 @@ class StrengthWeaknessSettings(BaseModel):
     provider: str = "together"
     allow_fallbacks: bool = True
     provider_sort: Literal["latency", "throughput", "price"] = "latency"
-    reasoning_effort: Literal[
-        "none", "minimal", "low", "medium", "high", "xhigh"
-    ] = "low"
+    reasoning_effort: Literal["none", "minimal", "low", "medium", "high", "xhigh"] = (
+        "low"
+    )
 
 
 class ApiSettings(BaseSettings):

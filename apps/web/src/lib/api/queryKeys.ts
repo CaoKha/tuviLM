@@ -21,8 +21,7 @@ export const queryKeys = {
      */
     chart: (id: string) => ["laso", "chart", id] as const,
     /** "idle" keeps the disabled query's key inside this module too. */
-    preview: (birth: PreviewLasoRequest | null) =>
-      ["laso", "preview", birth ?? "idle"] as const,
+    preview: (birth: PreviewLasoRequest | null) => ["laso", "preview", birth ?? "idle"] as const,
     build: (birth: BirthInfo) => ["laso", "build", birth] as const,
     saoLuu: (observation: BirthInfo) => ["laso", "saoLuu", observation] as const,
   },

@@ -102,9 +102,7 @@ def _register_absolute_formula(
         raise TypeError(f"Invalid absolute formula declaration: {declaration!r}")
     registry.register_component_lazy(
         declaration.component_id,
-        AbsolutePositionSpec(
-            resolvers.resolve_absolute_formula(declaration.formula)
-        ),
+        AbsolutePositionSpec(resolvers.resolve_absolute_formula(declaration.formula)),
     )
 
 
@@ -335,6 +333,7 @@ def _position_by_dia_chi_groups(
             for group in groups
         }
     )
+
 
 def _parse_tu_hoa_mapping(
     raw_mapping: dict[str, dict[str, str]],

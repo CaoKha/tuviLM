@@ -34,9 +34,7 @@ export function SegmentedControl<T extends string>({
             className={cn(
               "cursor-pointer rounded-full px-3 py-[9px] text-[13px] font-semibold",
               "transition-[background,color,box-shadow] duration-200",
-              active
-                ? "accent-gradient text-bg-0"
-                : "glass text-muted hover:text-ink",
+              active ? "accent-gradient text-bg-0" : "glass text-muted hover:text-ink",
             )}
           >
             {option.label}

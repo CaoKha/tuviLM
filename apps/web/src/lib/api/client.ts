@@ -2,7 +2,6 @@ import type { z } from "zod";
 
 import { ApiErrorException } from "@/lib/http/errors";
 
-
 /**
  * The only place in the application that talks to the FastAPI backend.
  *
@@ -113,7 +112,9 @@ export async function request<T>(path: string, options: RequestOptions<T>): Prom
  * The account this page was loaded for. The API refuses the request if the
  * session cookie belongs to someone else, e.g. after a sign-in in another tab.
  */
-export function expectedUserHeader(expectedUserId: string | null | undefined): Record<string, string> {
+export function expectedUserHeader(
+  expectedUserId: string | null | undefined,
+): Record<string, string> {
   return expectedUserId ? { "X-Expected-User-Id": expectedUserId } : {};
 }
 

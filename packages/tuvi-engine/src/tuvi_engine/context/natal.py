@@ -72,14 +72,8 @@ class NatalContext:
     def van_direction(self) -> CircleDirection:
         return (
             CircleDirection.CW
-            if (
-                self.prior.gender == Gender.MALE
-                and self.am_duong == LuongNghi.DUONG
-            )
-            or (
-                self.prior.gender == Gender.FEMALE
-                and self.am_duong == LuongNghi.AM
-            )
+            if (self.prior.gender == Gender.MALE and self.am_duong == LuongNghi.DUONG)
+            or (self.prior.gender == Gender.FEMALE and self.am_duong == LuongNghi.AM)
             else CircleDirection.CCW
         )
 
@@ -88,4 +82,4 @@ class NatalContext:
         return _get_cuc(self.prior, self.menh_position)
 
     def age(self, year: int) -> int:
-        return year - self.prior.year + 1 # tuổi mụ
+        return year - self.prior.year + 1  # tuổi mụ

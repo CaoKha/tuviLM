@@ -75,9 +75,6 @@ export const ADVICE_ENTRIES: Record<AdviceKey, AdviceEntry> = {
   },
 };
 
-export function adviceFor(
-  relation: MenhCucRelation,
-  polarity: AmDuongRelation,
-): AdviceEntry {
+export function adviceFor(relation: MenhCucRelation, polarity: AmDuongRelation): AdviceEntry {
   return ADVICE_ENTRIES[`${relation}:${polarity}`];
 }

@@ -66,9 +66,7 @@ def test_mirror_across_axis_expected_mapping(
         for position in DiaChi
     ],
 )
-def test_mirror_across_is_involution(
-    position: DiaChi, axis: tuple[DiaChi, DiaChi]
-):
+def test_mirror_across_is_involution(position: DiaChi, axis: tuple[DiaChi, DiaChi]):
     assert mirror_across(mirror_across(position, axis), axis) == position
 
 
@@ -161,7 +159,5 @@ def test_get_luc_hai():
         ],
     ],
 )
-def test_get_tam_hop(
-    direction: CircleDirection, position: DiaChi, expected: DiaChi
-):
+def test_get_tam_hop(direction: CircleDirection, position: DiaChi, expected: DiaChi):
     assert get_tam_hop(position, direction) == expected

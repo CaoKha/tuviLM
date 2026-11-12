@@ -64,9 +64,7 @@ def _run_cach_cuc_tool(filtered_roles: object) -> object:
 
 
 def test_agent_accepts_json_encoded_filtered_roles() -> None:
-    assert _run_cach_cuc_tool(json.dumps(["menh"])) == _run_cach_cuc_tool(
-        [Role.MENH]
-    )
+    assert _run_cach_cuc_tool(json.dumps(["menh"])) == _run_cach_cuc_tool([Role.MENH])
 
 
 def test_agent_accepts_double_json_encoded_filtered_roles() -> None:

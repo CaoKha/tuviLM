@@ -1,11 +1,11 @@
 """`tuvi`: run the TuviLM stack and checks from the repo root.
 
-    uv run tuvi setup     install deps and create local env files
-    uv run tuvi up        MongoDB (Docker) + API on :8000 + web on :3000
-    uv run tuvi down      stop MongoDB (data is kept)
-    uv run tuvi check     Python tests + web typecheck, lint and tests
-    uv run tuvi editor    Streamlit cách cục rule editor
-    uv run tuvi viewer    Streamlit chart viewer
+uv run tuvi setup     install deps and create local env files
+uv run tuvi up        MongoDB (Docker) + API on :8000 + web on :3000
+uv run tuvi down      stop MongoDB (data is kept)
+uv run tuvi check     Python tests + web typecheck, lint and tests
+uv run tuvi editor    Streamlit cách cục rule editor
+uv run tuvi viewer    Streamlit chart viewer
 """
 
 from __future__ import annotations
@@ -152,7 +152,9 @@ def docker_command(*, use_sudo: bool) -> list[str] | None:
 
     Returns None, after printing what to do, when Docker cannot be used.
     """
-    if not require("docker", "Install Docker, or run your own MongoDB on :27017 and pass --no-db."):
+    if not require(
+        "docker", "Install Docker, or run your own MongoDB on :27017 and pass --no-db."
+    ):
         return None
     if use_sudo:
         return ["sudo", "docker"]
@@ -166,11 +168,15 @@ def docker_command(*, use_sudo: bool) -> list[str] | None:
     error = (probe.stderr or probe.stdout).lower()
     if "permission denied" in error:
         say(DOCKER_PERMISSION_HELP)
-        if shutil.which("sudo") and ask_yes_no("Run the docker command with sudo this time?"):
+        if shutil.which("sudo") and ask_yes_no(
+            "Run the docker command with sudo this time?"
+        ):
             return ["sudo", "docker"]
         return None
     if "cannot connect" in error or "is the docker daemon running" in error:
-        say("the Docker daemon is not running. Start it (Linux: sudo systemctl start docker),")
+        say(
+            "the Docker daemon is not running. Start it (Linux: sudo systemctl start docker),"
+        )
         say("or run your own MongoDB on :27017 and pass --no-db.")
         return None
     say(f"docker does not work: {(probe.stderr or probe.stdout).strip()}")
@@ -279,7 +285,10 @@ def run_services(services: list[Service]) -> int:
 
 
 def run(command: list[str], *, cwd: Path, env: dict[str, str] | None = None) -> int:
-    say(f"$ {' '.join(command)}" + (f"   (in {cwd.name}/)" if cwd != repo_root() else ""))
+    say(
+        f"$ {' '.join(command)}"
+        + (f"   (in {cwd.name}/)" if cwd != repo_root() else "")
+    )
     return subprocess.call(command, cwd=cwd, env=env)
 
 
@@ -291,7 +300,9 @@ def cmd_setup(_: argparse.Namespace) -> int:
     if not require("pnpm", PNPM_HINT):
         return 1
     if shutil.which("docker") is None:
-        say("note: Docker is not installed. `tuvi up` needs it, or your own MongoDB and --no-db.")
+        say(
+            "note: Docker is not installed. `tuvi up` needs it, or your own MongoDB and --no-db."
+        )
 
     if run(["uv", "sync"], cwd=root) != 0:
         return fail("uv sync failed")
@@ -329,11 +340,16 @@ def cmd_up(args: argparse.Namespace) -> int:
             if docker is None:
                 return 1
             # --wait returns once the health check passes: the replica set is ready.
-            if run([*docker, "compose", "up", "-d", "--wait", "mongodb"], cwd=root) != 0:
+            if (
+                run([*docker, "compose", "up", "-d", "--wait", "mongodb"], cwd=root)
+                != 0
+            ):
                 return fail("could not start MongoDB with docker compose")
             if not wait_for_port(MONGO_PORT, timeout=60):
                 return fail(f"MongoDB did not open port {MONGO_PORT} within 60 s")
-            down = "uv run tuvi down --sudo" if docker[0] == "sudo" else "uv run tuvi down"
+            down = (
+                "uv run tuvi down --sudo" if docker[0] == "sudo" else "uv run tuvi down"
+            )
             say(f"MongoDB is up on :{MONGO_PORT} (stop it with: {down})")
 
     if "OPENROUTER_API_KEY" not in env:
@@ -347,9 +363,19 @@ def cmd_up(args: argparse.Namespace) -> int:
             Service(
                 "api",
                 [
-                    sys.executable, "-m", "uvicorn", "tuvi_api.main:app",
-                    "--reload", "--reload-dir", "apps/api/src", "--reload-dir", "packages",
-                    "--host", args.host, "--port", str(API_PORT),
+                    sys.executable,
+                    "-m",
+                    "uvicorn",
+                    "tuvi_api.main:app",
+                    "--reload",
+                    "--reload-dir",
+                    "apps/api/src",
+                    "--reload-dir",
+                    "packages",
+                    "--host",
+                    args.host,
+                    "--port",
+                    str(API_PORT),
                 ],
                 cwd=root,
                 env=env,
@@ -378,7 +404,9 @@ def cmd_up(args: argparse.Namespace) -> int:
     if not services:
         return fail("nothing to run")
     if not args.api_only:
-        say(f"open http://localhost:{WEB_PORT}  (API docs: http://localhost:{API_PORT}/docs)")
+        say(
+            f"open http://localhost:{WEB_PORT}  (API docs: http://localhost:{API_PORT}/docs)"
+        )
     return run_services(services)
 
 
@@ -404,7 +432,9 @@ def cmd_check(args: argparse.Namespace) -> int:
             ("web tests", ["pnpm", "test"], web, None),
         ]
 
-    failed = [name for name, command, cwd, env in steps if run(command, cwd=cwd, env=env) != 0]
+    failed = [
+        name for name, command, cwd, env in steps if run(command, cwd=cwd, env=env) != 0
+    ]
     if failed:
         return fail("failed: " + ", ".join(failed))
     say("all checks passed")
@@ -440,13 +470,17 @@ def build_parser() -> argparse.ArgumentParser:
     )
     commands = parser.add_subparsers(dest="command", required=True)
 
-    commands.add_parser("setup", help="install deps and create local env files").set_defaults(
-        func=cmd_setup
-    )
+    commands.add_parser(
+        "setup", help="install deps and create local env files"
+    ).set_defaults(func=cmd_setup)
 
     up = commands.add_parser("up", help="start MongoDB, the API and the web app")
-    up.add_argument("--no-db", action="store_true", help="do not start MongoDB with Docker")
-    up.add_argument("--sudo", action="store_true", help="run the docker command with sudo")
+    up.add_argument(
+        "--no-db", action="store_true", help="do not start MongoDB with Docker"
+    )
+    up.add_argument(
+        "--sudo", action="store_true", help="run the docker command with sudo"
+    )
     only = up.add_mutually_exclusive_group()
     only.add_argument("--api-only", action="store_true", help="start only the API")
     only.add_argument("--web-only", action="store_true", help="start only the web app")
@@ -458,7 +492,9 @@ def build_parser() -> argparse.ArgumentParser:
     up.set_defaults(func=cmd_up)
 
     down = commands.add_parser("down", help="stop MongoDB (data is kept)")
-    down.add_argument("--sudo", action="store_true", help="run the docker command with sudo")
+    down.add_argument(
+        "--sudo", action="store_true", help="run the docker command with sudo"
+    )
     down.set_defaults(func=cmd_down)
 
     check = commands.add_parser("check", help="run tests, typecheck and lint")
@@ -470,7 +506,9 @@ def build_parser() -> argparse.ArgumentParser:
     commands.add_parser("editor", help="Streamlit cách cục rule editor").set_defaults(
         func=cmd_editor
     )
-    commands.add_parser("viewer", help="Streamlit chart viewer").set_defaults(func=cmd_viewer)
+    commands.add_parser("viewer", help="Streamlit chart viewer").set_defaults(
+        func=cmd_viewer
+    )
     return parser
 
 

@@ -42,7 +42,9 @@ async def redeem_client():
         token = request.headers.get("Authorization", "")
         if token == "Bearer admin":
             return Principal(user_id=str(ObjectId()), role="admin")
-        if token.startswith("Bearer ") and token[7:] in [str(user_id) for user_id in USER_IDS]:
+        if token.startswith("Bearer ") and token[7:] in [
+            str(user_id) for user_id in USER_IDS
+        ]:
             return Principal(user_id=token[7:])
         raise HTTPException(401, "Authentication required.")
 
@@ -54,7 +56,9 @@ async def redeem_client():
     pending_reply = SimpleNamespace(id="reply", status=ChatMessageStatus.PENDING)
     store = SimpleNamespace(
         load_session_context=AsyncMock(
-            return_value=SimpleNamespace(session=SimpleNamespace(messages=[pending_reply]))
+            return_value=SimpleNamespace(
+                session=SimpleNamespace(messages=[pending_reply])
+            )
         )
     )
     app.state.api_state = SimpleNamespace(conversation_history_store=store)
@@ -98,7 +102,10 @@ async def redeem(client, code, user_id=USER_IDS[0]):
 
 async def test_creation_requires_admin_and_redemption_requires_login(redeem_client):
     client, database = redeem_client
-    for headers, status in [({}, 401), ({"Authorization": f"Bearer {USER_IDS[0]}"}, 403)]:
+    for headers, status in [
+        ({}, 401),
+        ({"Authorization": f"Bearer {USER_IDS[0]}"}, 403),
+    ]:
         response = await client.post(CREATE_PATH, headers=headers, json={})
         assert response.status_code == status
     response = await client.post(REDEEM_PATH, json={"code": "UNKNOWN"})
@@ -135,7 +142,9 @@ async def test_creation_validates_rewards_and_expiry_and_installs_ttl(redeem_cli
     assert await database["redeem_codes"].count_documents({}) == 1
 
 
-async def test_per_account_code_credits_each_account_once_under_concurrency(redeem_client):
+async def test_per_account_code_credits_each_account_once_under_concurrency(
+    redeem_client,
+):
     client, database = redeem_client
     code = (await create_code(client))["code"]
     responses = await asyncio.gather(
@@ -167,11 +176,14 @@ async def test_missing_and_expired_codes_cannot_credit_coins(redeem_client):
     client, database = redeem_client
     code = (await create_code(client))["code"]
     await database["redeem_codes"].update_one(
-        {"_id": code}, {"$set": {"expires_at": datetime.now(UTC) - timedelta(seconds=1)}}
+        {"_id": code},
+        {"$set": {"expires_at": datetime.now(UTC) - timedelta(seconds=1)}},
     )
     for token in ("UNKNOWN", code):
         assert (await redeem(client, token)).status_code == 404
-    assert (await database["user"].find_one({"_id": USER_IDS[0]})).get("balance", 0) == 0
+    assert (await database["user"].find_one({"_id": USER_IDS[0]})).get(
+        "balance", 0
+    ) == 0
 
 
 async def test_failed_credit_rolls_back_code_claim_and_can_be_retried(redeem_client):
@@ -185,7 +197,10 @@ async def test_failed_credit_rolls_back_code_claim_and_can_be_retried(redeem_cli
         response = await redeem(client, code)
         assert response.status_code == 409
         if access["chat_holds"]:
-            assert response.json()["detail"] == "Chat coins are reserved. Try again when the reply finishes."
+            assert (
+                response.json()["detail"]
+                == "Chat coins are reserved. Try again when the reply finishes."
+            )
         account = await database["user"].find_one({"_id": USER_IDS[0]})
         document = await database["redeem_codes"].find_one({"_id": code})
         assert account["balance"] == access["balance"]
@@ -196,12 +211,18 @@ async def test_failed_credit_rolls_back_code_claim_and_can_be_retried(redeem_cli
         assert (await redeem(client, code)).status_code == 200
 
 
-async def test_database_failure_does_not_credit_or_consume_code(redeem_client, monkeypatch):
+async def test_database_failure_does_not_credit_or_consume_code(
+    redeem_client, monkeypatch
+):
     client, database = redeem_client
     code = (await create_code(client, "single_use"))["code"]
     monkeypatch.setattr(
-        AsyncCollection, "find_one_and_update", AsyncMock(side_effect=PyMongoError("Unavailable"))
+        AsyncCollection,
+        "find_one_and_update",
+        AsyncMock(side_effect=PyMongoError("Unavailable")),
     )
     assert (await redeem(client, code)).status_code == 503
-    assert (await database["user"].find_one({"_id": USER_IDS[0]})).get("balance", 0) == 0
+    assert (await database["user"].find_one({"_id": USER_IDS[0]})).get(
+        "balance", 0
+    ) == 0
     assert (await database["redeem_codes"].find_one({"_id": code}))["redeemed_by"] == []

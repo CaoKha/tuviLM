@@ -46,7 +46,11 @@ export function LuckCard({ chart }: { chart: BuildLasoResponse }) {
       <div className={deckStyles.cardFace}>
         <div className="relative z-1 flex items-center gap-[10px]">
           <span className="grid h-8 w-8 place-items-center rounded-[10px] border bg-[color-mix(in_srgb,var(--t-hue)_18%,transparent)] [border-color:color-mix(in_srgb,var(--t-hue)_45%,transparent)]">
-            <svg viewBox="0 0 24 24" fill="none" className="h-5 w-5 fill-none [stroke:var(--t-hue)] [stroke-width:1.6]">
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              className="h-5 w-5 fill-none [stroke:var(--t-hue)] [stroke-width:1.6]"
+            >
               <path d="M12 3l2.4 5.3L20 9l-4 4 1 6-5-3-5 3 1-6-4-4 5.6-.7z" />
             </svg>
           </span>

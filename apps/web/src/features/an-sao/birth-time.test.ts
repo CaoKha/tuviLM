@@ -4,10 +4,7 @@ import { canhGioOf, toApiBirthTime } from "./birth-time";
 
 describe("toApiBirthTime", () => {
   it("maps a mid-block time to the canh-giờ midpoint", () => {
-    const result = toApiBirthTime(
-      { year: 1995, month: 3, day: 15 },
-      { hour12: 7, meridiem: "AM" },
-    );
+    const result = toApiBirthTime({ year: 1995, month: 3, day: 15 }, { hour12: 7, meridiem: "AM" });
 
     expect(result).toEqual({ ok: true, value: { year: 1995, month: 3, day: 15, hour: 8 } });
   });

@@ -12,9 +12,7 @@
     "Tý": {
       "position": "Tý",
       "role": "Huynh Đệ",
-      "chinh_tinh": [
-        "Tham Lang (Hãm)"
-      ],
+      "chinh_tinh": ["Tham Lang (Hãm)"],
       "phu_tinh": [
         {
           "name": "Hỏa Tinh",
@@ -37,9 +35,7 @@
           "element": "Kim"
         }
       ],
-      "tuhoa": [
-        "Hóa Quyền"
-      ],
+      "tuhoa": ["Hóa Quyền"],
       "trang_sinh": "Mộ",
       "is_tuan": false,
       "is_triet": false,
@@ -61,10 +57,7 @@
     "Sửu": {
       "position": "Sửu",
       "role": "Mệnh",
-      "chinh_tinh": [
-        "Cự Môn (Hãm)",
-        "Thiên Đồng (Hãm)"
-      ],
+      "chinh_tinh": ["Cự Môn (Hãm)", "Thiên Đồng (Hãm)"],
       "phu_tinh": [
         {
           "name": "Hoa Cái",
@@ -103,10 +96,7 @@
     "Dần": {
       "position": "Dần",
       "role": "Phụ Mẫu",
-      "chinh_tinh": [
-        "Thiên Tướng (Miếu)",
-        "Vũ Khúc (Miếu)"
-      ],
+      "chinh_tinh": ["Thiên Tướng (Miếu)", "Vũ Khúc (Miếu)"],
       "phu_tinh": [
         {
           "name": "Đẩu Quân",
@@ -159,9 +149,7 @@
           "element": "Mộc"
         }
       ],
-      "tuhoa": [
-        "Hóa Lộc"
-      ],
+      "tuhoa": ["Hóa Lộc"],
       "trang_sinh": "Bệnh",
       "is_tuan": false,
       "is_triet": false,
@@ -178,10 +166,7 @@
     "Mão": {
       "position": "Mão",
       "role": "Phúc Đức",
-      "chinh_tinh": [
-        "Thái Dương (Miếu)",
-        "Thiên Lương (Miếu)"
-      ],
+      "chinh_tinh": ["Thái Dương (Miếu)", "Thiên Lương (Miếu)"],
       "phu_tinh": [
         {
           "name": "Ân Quang",
@@ -214,9 +199,7 @@
           "element": "Hỏa"
         }
       ],
-      "tuhoa": [
-        "Hóa Khoa"
-      ],
+      "tuhoa": ["Hóa Khoa"],
       "trang_sinh": "Suy",
       "is_tuan": false,
       "is_triet": false,
@@ -227,9 +210,7 @@
     "Thìn": {
       "position": "Thìn",
       "role": "Điền Trạch",
-      "chinh_tinh": [
-        "Thất Sát (Hãm)"
-      ],
+      "chinh_tinh": ["Thất Sát (Hãm)"],
       "phu_tinh": [
         {
           "name": "Thanh Long",
@@ -264,9 +245,7 @@
     "Tị": {
       "position": "Tị",
       "role": "Quan Lộc",
-      "chinh_tinh": [
-        "Thiên Cơ (Miếu)"
-      ],
+      "chinh_tinh": ["Thiên Cơ (Miếu)"],
       "phu_tinh": [
         {
           "name": "Đà La",
@@ -316,9 +295,7 @@
     "Ngọ": {
       "position": "Ngọ",
       "role": "Nô Bộc",
-      "chinh_tinh": [
-        "Tử Vi (Miếu)"
-      ],
+      "chinh_tinh": ["Tử Vi (Miếu)"],
       "phu_tinh": [
         {
           "name": "Bác Sĩ",
@@ -421,9 +398,7 @@
           "element": "Kim"
         }
       ],
-      "tuhoa": [
-        "Hóa Kỵ"
-      ],
+      "tuhoa": ["Hóa Kỵ"],
       "trang_sinh": "Mộc Dục",
       "is_tuan": true,
       "is_triet": false,
@@ -434,9 +409,7 @@
     "Thân": {
       "position": "Thân",
       "role": "Tật Ách",
-      "chinh_tinh": [
-        "Phá Quân (Hãm)"
-      ],
+      "chinh_tinh": ["Phá Quân (Hãm)"],
       "phu_tinh": [
         {
           "name": "Địa Không",
@@ -560,10 +533,7 @@
     "Tuất": {
       "position": "Tuất",
       "role": "Tử Tức",
-      "chinh_tinh": [
-        "Liêm Trinh (Miếu)",
-        "Thiên Phủ (Miếu)"
-      ],
+      "chinh_tinh": ["Liêm Trinh (Miếu)", "Thiên Phủ (Miếu)"],
       "phu_tinh": [
         {
           "name": "Bệnh Phù",
@@ -607,9 +577,7 @@
     "Hợi": {
       "position": "Hợi",
       "role": "Phu Thê",
-      "chinh_tinh": [
-        "Thái Âm (Miếu)"
-      ],
+      "chinh_tinh": ["Thái Âm (Miếu)"],
       "phu_tinh": [
         {
           "name": "Bát Toạ",

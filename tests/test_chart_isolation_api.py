@@ -72,10 +72,10 @@ def _assert_matches_birth(path: str, response: httpx.Response, birth: dict) -> N
         }
 
 
-@pytest.mark.parametrize(
-    "path", ["/api/v1/laso/cau-phu", "/api/v1/laso/build_sao_luu"]
-)
-async def test_chart_details_use_birth_without_an_earlier_build(api_client, path) -> None:
+@pytest.mark.parametrize("path", ["/api/v1/laso/cau-phu", "/api/v1/laso/build_sao_luu"])
+async def test_chart_details_use_birth_without_an_earlier_build(
+    api_client, path
+) -> None:
     app.state.api_state.agent_deps.la_so = None
     response = await api_client.post(path, json=_request_payload(path, BIRTH_A))
 
@@ -83,9 +83,7 @@ async def test_chart_details_use_birth_without_an_earlier_build(api_client, path
     assert app.state.api_state.agent_deps.la_so is None
 
 
-@pytest.mark.parametrize(
-    "path", ["/api/v1/laso/cau-phu", "/api/v1/laso/build_sao_luu"]
-)
+@pytest.mark.parametrize("path", ["/api/v1/laso/cau-phu", "/api/v1/laso/build_sao_luu"])
 async def test_concurrent_chart_details_are_isolated(api_client, path) -> None:
     shared_chart = app.state.api_state.agent_deps.la_so
     births = (BIRTH_A, BIRTH_B, BIRTH_A, BIRTH_B)
@@ -99,9 +97,7 @@ async def test_concurrent_chart_details_are_isolated(api_client, path) -> None:
     assert app.state.api_state.agent_deps.la_so is shared_chart
 
 
-@pytest.mark.parametrize(
-    "path", ["/api/v1/laso/cau-phu", "/api/v1/laso/build_sao_luu"]
-)
+@pytest.mark.parametrize("path", ["/api/v1/laso/cau-phu", "/api/v1/laso/build_sao_luu"])
 async def test_chart_details_require_birth_data(api_client, path) -> None:
     response = await api_client.post(path, json={})
 

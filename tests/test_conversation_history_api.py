@@ -113,7 +113,9 @@ async def mongo_store():
 
     previous_api_state = getattr(app.state, "api_state", None)
     app.state.api_state = ApiState(
-        agent_deps=getattr(previous_api_state, "agent_deps", TuviAgentDeps(book_root="")),
+        agent_deps=getattr(
+            previous_api_state, "agent_deps", TuviAgentDeps(book_root="")
+        ),
         conversation_history_store=store,
     )
     try:
@@ -135,7 +137,9 @@ async def fake_store():
     store = FakeConversationHistoryStore()
     previous_api_state = getattr(app.state, "api_state", None)
     app.state.api_state = ApiState(
-        agent_deps=getattr(previous_api_state, "agent_deps", TuviAgentDeps(book_root="")),
+        agent_deps=getattr(
+            previous_api_state, "agent_deps", TuviAgentDeps(book_root="")
+        ),
         conversation_history_store=store,
     )
     try:
@@ -206,9 +210,9 @@ async def test_chart_profile_endpoints_use_store(api_client, fake_store) -> None
 
     assert create_response.status_code == 200
     assert create_response.json()["chart_profile"]["display_name"] == "Me"
-    assert [profile["display_name"] for profile in list_response.json()["chart_profiles"]] == [
-        "Me"
-    ]
+    assert [
+        profile["display_name"] for profile in list_response.json()["chart_profiles"]
+    ] == ["Me"]
 
 
 async def test_create_chart_profile_requires_authentication(
@@ -558,8 +562,13 @@ async def test_stale_pending_message_is_failed_and_allows_new_reservation(
     assert final_context.session.messages[-1].id == new_pair.assistant_message.id
     assert final_context.session.messages[-1].status == ChatMessageStatus.PENDING
     assert updated_document is not None
-    assert updated_document.message_operations[0].status == MessageOperationStatus.FAILED
-    assert updated_document.message_operations[1].status == MessageOperationStatus.IN_PROGRESS
+    assert (
+        updated_document.message_operations[0].status == MessageOperationStatus.FAILED
+    )
+    assert (
+        updated_document.message_operations[1].status
+        == MessageOperationStatus.IN_PROGRESS
+    )
 
 
 async def test_stale_pending_message_is_cleaned_before_reservation(
@@ -647,7 +656,10 @@ async def test_reserve_message_pair_concurrent_different_keys_allows_one_stream(
     context = await mongo_store.load_session_context("anon_owner", session.id)
 
     assert sum(isinstance(result, ReservedMessagePair) for result in results) == 1
-    assert sum(isinstance(result, DuplicateStreamInProgressError) for result in results) == 1
+    assert (
+        sum(isinstance(result, DuplicateStreamInProgressError) for result in results)
+        == 1
+    )
     assert len(context.session.messages) == 2
     assert context.session.messages[-1].status == ChatMessageStatus.PENDING
 
@@ -779,7 +791,9 @@ async def test_session_chat_stream_default_runner_reconstructs_agent_context(
             yield PartStartEvent(index=0, part=TextPart(content="New answer."))
 
     class FakeAgent:
-        def run_stream_events(self, user_prompt, *, deps, message_history=None, **kwargs):
+        def run_stream_events(
+            self, user_prompt, *, deps, message_history=None, **kwargs
+        ):
             self.user_prompt = user_prompt
             self.deps = deps
             self.message_history = message_history
@@ -938,7 +952,10 @@ async def test_create_chart_profile_endpoint_returns_conflict_for_idempotency_mi
     assert first_response.status_code == 200
     assert second_response.status_code == 409
     assert second_response.json()["detail"] == "Idempotency key conflict."
-    assert "HTTP exception: method=POST path=/api/v1/chart-profiles status_code=409" in caplog.text
+    assert (
+        "HTTP exception: method=POST path=/api/v1/chart-profiles status_code=409"
+        in caplog.text
+    )
     assert "Idempotency key conflict." in caplog.text
 
 
@@ -1037,7 +1054,9 @@ class FakeConversationHistoryStore:
 
     async def list_chart_profiles(self, owner_id: str) -> list[ChartProfile]:
         return [
-            profile for profile in self.profiles.values() if profile.owner_id == owner_id
+            profile
+            for profile in self.profiles.values()
+            if profile.owner_id == owner_id
         ]
 
     async def delete_chart_profile(self, owner_id: str, chart_profile_id: str) -> None:
@@ -1075,7 +1094,9 @@ class FakeConversationHistoryStore:
             if session.chart_profile_id == chart_profile_id
         ]
 
-    async def load_session_context(self, owner_id: str, session_id: str) -> SessionContext:
+    async def load_session_context(
+        self, owner_id: str, session_id: str
+    ) -> SessionContext:
         session = self._get_session(session_id)
         profile = await self._require_profile(owner_id, session.chart_profile_id)
         return SessionContext(chart_profile=profile, session=session)

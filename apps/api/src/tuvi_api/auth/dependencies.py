@@ -44,7 +44,9 @@ def get_rate_limiter(request: Request) -> RateLimiter:
 
 
 def _unauthorized() -> HTTPException:
-    return HTTPException(status_code=401, detail="Authentication required or session expired.")
+    return HTTPException(
+        status_code=401, detail="Authentication required or session expired."
+    )
 
 
 async def current_user_id(request: Request) -> str | None:
@@ -70,7 +72,9 @@ async def require_user(
     # in as someone else since, and this request must not run as them.
     expected = request.headers.get("X-Expected-User-Id")
     if expected is not None and expected != user_id:
-        raise HTTPException(status_code=401, detail="Account changed. Reload to continue.")
+        raise HTTPException(
+            status_code=401, detail="Account changed. Reload to continue."
+        )
     database = request.app.state.auth_database
     try:
         user = await database["user"].find_one(

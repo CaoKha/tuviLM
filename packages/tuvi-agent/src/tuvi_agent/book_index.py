@@ -11,12 +11,15 @@ from pydantic import BaseModel, Field
 try:
     from unidecode import unidecode
 except ImportError:  # pragma: no cover - dependency exists in this project.
+
     def unidecode(value: str) -> str:
         return value
 
 
 SECTION_FILE_RE = re.compile(r"^(?P<raw_id>\d+(?:_\d+)*)_(?P<slug>.+)\.md$")
-NUMBERED_TITLE_RE = re.compile(r"^(?P<section_id>\d+(?:\.\d+)*)(?:\.)?\s+(?P<title>.+)$")
+NUMBERED_TITLE_RE = re.compile(
+    r"^(?P<section_id>\d+(?:\.\d+)*)(?:\.)?\s+(?P<title>.+)$"
+)
 SECTION_ID_RE = re.compile(r"^\d+(?:\.\d+)*$")
 
 
@@ -184,10 +187,14 @@ class BookIndex:
         self._build_index()
 
     def _iter_section_files(self) -> list[Path]:
-        direct = [p for p in self.root_dir.glob("*.md") if SECTION_FILE_RE.match(p.name)]
+        direct = [
+            p for p in self.root_dir.glob("*.md") if SECTION_FILE_RE.match(p.name)
+        ]
         if direct:
             return direct
-        return [p for p in self.root_dir.glob("*/*.md") if SECTION_FILE_RE.match(p.name)]
+        return [
+            p for p in self.root_dir.glob("*/*.md") if SECTION_FILE_RE.match(p.name)
+        ]
 
     def _build_index(self) -> None:
         if not self.root_dir.exists():
@@ -288,7 +295,9 @@ class BookIndex:
 
     def list_sections(self, parent_id: str | None = None) -> list[SectionRecord]:
         if parent_id is None:
-            top_level = [r for r in self._sections_by_id.values() if r.parent_id is None]
+            top_level = [
+                r for r in self._sections_by_id.values() if r.parent_id is None
+            ]
             return sorted(top_level, key=lambda r: _display_sort_key(r.id))
 
         parent = self.get_record(parent_id)
@@ -410,8 +419,15 @@ class BookIndex:
             content=content,
         )
 
-    def get_catalog(self, section_id: str | None = None, depth: int | None = None) -> str:
-        def render_node(record: SectionRecord, prefix: str, is_last: bool, remaining_depth: int | None) -> list[str]:
+    def get_catalog(
+        self, section_id: str | None = None, depth: int | None = None
+    ) -> str:
+        def render_node(
+            record: SectionRecord,
+            prefix: str,
+            is_last: bool,
+            remaining_depth: int | None,
+        ) -> list[str]:
             connector = "└── " if is_last else "├── "
             lines = [f"{prefix}{connector}{record.id} {record.title}"]
             if remaining_depth is not None and remaining_depth <= 0:
@@ -420,7 +436,14 @@ class BookIndex:
             next_depth = None if remaining_depth is None else remaining_depth - 1
             for i, child_id in enumerate(record.children_ids):
                 child = self.get_record(child_id)
-                lines.extend(render_node(child, child_prefix, i == len(record.children_ids) - 1, next_depth))
+                lines.extend(
+                    render_node(
+                        child,
+                        child_prefix,
+                        i == len(record.children_ids) - 1,
+                        next_depth,
+                    )
+                )
             return lines
 
         if section_id is None:
@@ -436,7 +459,14 @@ class BookIndex:
                     child_next_depth = None if next_depth is None else next_depth - 1
                     for j, child_id in enumerate(record.children_ids):
                         child = self.get_record(child_id)
-                        lines.extend(render_node(child, child_prefix, j == len(record.children_ids) - 1, child_next_depth))
+                        lines.extend(
+                            render_node(
+                                child,
+                                child_prefix,
+                                j == len(record.children_ids) - 1,
+                                child_next_depth,
+                            )
+                        )
             return "\n".join(lines)
 
         record = self.get_record(section_id)
@@ -445,7 +475,11 @@ class BookIndex:
             next_depth = None if depth is None else depth - 1
             for i, child_id in enumerate(record.children_ids):
                 child = self.get_record(child_id)
-                lines.extend(render_node(child, "", i == len(record.children_ids) - 1, next_depth))
+                lines.extend(
+                    render_node(
+                        child, "", i == len(record.children_ids) - 1, next_depth
+                    )
+                )
         return "\n".join(lines)
 
     def search_sections(self, query: str, top_k: int = 5) -> list[SectionSearchHit]:
@@ -480,7 +514,9 @@ class BookIndex:
             score += 0.4 * len(query_tokens & content_tokens)
 
             if query_norm:
-                fuzzy_title = difflib.SequenceMatcher(None, query_norm, hay_title).ratio()
+                fuzzy_title = difflib.SequenceMatcher(
+                    None, query_norm, hay_title
+                ).ratio()
                 score += fuzzy_title * 2.0
 
             if score > 0:

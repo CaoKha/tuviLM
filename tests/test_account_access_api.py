@@ -80,7 +80,9 @@ def test_access_update_requires_an_administrator(account_app, headers, status) -
 
 def test_negative_balance_is_rejected_without_writing(account_app) -> None:
     with TestClient(account_app) as client:
-        response = client.patch(ACCESS_PATH, headers=ADMIN_HEADERS, json={"balance": -1})
+        response = client.patch(
+            ACCESS_PATH, headers=ADMIN_HEADERS, json={"balance": -1}
+        )
 
     assert response.status_code == 422
     account_app.state.auth_database["user"].find_one_and_update.assert_not_awaited()
@@ -99,7 +101,9 @@ async def test_partial_updates_preserve_other_account_fields(account_client) -> 
     assert response.status_code == 200
     assert response.json() == {"plan": "full_unlock", "balance": 20}
 
-    response = await client.patch(ACCESS_PATH, headers=ADMIN_HEADERS, json={"balance": 5})
+    response = await client.patch(
+        ACCESS_PATH, headers=ADMIN_HEADERS, json={"balance": 5}
+    )
     assert response.status_code == 200
     assert response.json() == {"plan": "full_unlock", "balance": 5}
     assert await database["user"].find_one({"_id": USER_ID}) == {
@@ -112,7 +116,9 @@ async def test_partial_updates_preserve_other_account_fields(account_client) -> 
 
 
 @pytest.mark.anyio
-async def test_repeating_an_absolute_update_does_not_add_balance(account_client) -> None:
+async def test_repeating_an_absolute_update_does_not_add_balance(
+    account_client,
+) -> None:
     client, database = account_client
     await database["user"].insert_one({"_id": USER_ID, "plan": "normal", "balance": 2})
 
@@ -161,7 +167,9 @@ async def test_balance_update_is_allowed_after_chat_holds_are_cleared(
     client, database = account_client
     await database["user"].insert_one({"_id": USER_ID, "balance": 7, "chat_holds": {}})
 
-    response = await client.patch(ACCESS_PATH, headers=ADMIN_HEADERS, json={"balance": 10})
+    response = await client.patch(
+        ACCESS_PATH, headers=ADMIN_HEADERS, json={"balance": 10}
+    )
 
     assert response.status_code == 200
     assert response.json() == {"plan": "normal", "balance": 10}

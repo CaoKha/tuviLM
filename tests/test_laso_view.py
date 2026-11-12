@@ -44,15 +44,12 @@ def test_build_laso_view_materializes_catalog_enriched_period_snapshot():
     assert view.dai_han_focus_map[0].end_age == la_so.natal_context.cuc.number + 9
 
     ty_cung = next(
-        cung
-        for cung in view.cungs
-        if cung.dia_chi_entity.value == DiaChi.TY
+        cung for cung in view.cungs if cung.dia_chi_entity.value == DiaChi.TY
     )
     assert ty_cung.role.id
     assert ty_cung.thien_can_entity.id
     assert any(
-        component.layer_kind == LayerKind.NATAL
-        for component in ty_cung.components
+        component.layer_kind == LayerKind.NATAL for component in ty_cung.components
     )
     assert any(
         component.layer_kind == LayerKind.TIEU_HAN

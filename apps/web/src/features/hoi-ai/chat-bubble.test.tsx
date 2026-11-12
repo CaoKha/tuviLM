@@ -6,7 +6,12 @@ import { ChatBubble } from "./chat-bubble";
 describe("ChatBubble", () => {
   it("shows the current activity while the assistant is thinking", () => {
     render(
-      <ChatBubble role="assistant" status="streaming" content="" activity="Đang tra cứu cách cục" />,
+      <ChatBubble
+        role="assistant"
+        status="streaming"
+        content=""
+        activity="Đang tra cứu cách cục"
+      />,
     );
 
     expect(screen.getByText("Đang tra cứu cách cục…")).toBeTruthy();

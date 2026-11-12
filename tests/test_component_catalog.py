@@ -148,7 +148,10 @@ def test_default_catalog_loads_ban_menh_entries():
     assert bach_lap_kim.id == "bach_lap_kim"
     assert bach_lap_kim.name == "Bạch Lạp Kim"
     assert bach_lap_kim.ngu_hanh == NguHanh.KIM
-    assert bach_lap_kim.description == "Vàng trong nến trắng: Tinh khiết, thanh cao, nhưng dễ tan chảy trước nghịch cảnh"
+    assert (
+        bach_lap_kim.description
+        == "Vàng trong nến trắng: Tinh khiết, thanh cao, nhưng dễ tan chảy trước nghịch cảnh"
+    )
 
     sa_trung_kim = catalog.get("sa_trung_kim")
     assert isinstance(sa_trung_kim, BanMenh)

@@ -111,9 +111,7 @@ def build_transform(
 
 def build_circle_offset_transform(direction: str, offset: int) -> PositionTransform:
     if direction == "van":
-        return relative.move_by_van_direction(
-            lambda _context, step=offset: step
-        )
+        return relative.move_by_van_direction(lambda _context, step=offset: step)
     return relative.move_with(
         lambda _context, step=offset: step,
         direction=DIRECTIONS[direction],

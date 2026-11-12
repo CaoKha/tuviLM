@@ -86,7 +86,10 @@ export function WheelPicker({ label, min, max, value, onChange, pad = false }: W
               "flex snap-center items-center justify-center font-display text-[24px] font-medium",
               "cursor-pointer text-muted transition-[color,transform] duration-200",
               option === value &&
-                cn("bg-[linear-gradient(115deg,var(--accent),var(--accent-2))] bg-clip-text text-transparent", "scale-[1.06]"),
+                cn(
+                  "bg-[linear-gradient(115deg,var(--accent),var(--accent-2))] bg-clip-text text-transparent",
+                  "scale-[1.06]",
+                ),
             )}
             style={{ height: ROW_PX }}
           >

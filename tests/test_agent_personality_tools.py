@@ -52,7 +52,9 @@ def test_get_tinh_cach_b3_b4_context_runs_on_laso():
         )
     )
 
-    content = get_tinh_cach_b3_b4_context(SimpleNamespace(deps=TuviAgentDeps(la_so=la_so)))
+    content = get_tinh_cach_b3_b4_context(
+        SimpleNamespace(deps=TuviAgentDeps(la_so=la_so))
+    )
 
     assert "Bản Mệnh:" in content
     assert "Cung Mệnh:" in content

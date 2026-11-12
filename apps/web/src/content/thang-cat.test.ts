@@ -22,7 +22,7 @@ const INDEX: Record<string, number> = {
 
 /** Lunar month of a chi — tháng Giêng is Dần. */
 function lunarMonth(chiIndex: number): number {
-  return (((chiIndex - 2) % 12) + 12) % 12 + 1;
+  return ((((chiIndex - 2) % 12) + 12) % 12) + 1;
 }
 
 describe("THANG_CAT", () => {
