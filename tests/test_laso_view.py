@@ -1,11 +1,11 @@
 import pytest
 from pydantic import ValidationError
 
-from tuvi_engine.model.elementary import DiaChi
-from tuvi_engine.model.prior import Gender, LaSoPrior
 from tuvi_engine.la_so import LaSo
+from tuvi_engine.model.elementary import DiaChi
 from tuvi_engine.model.layer import LayerKind
 from tuvi_engine.model.menh_cuc_relation import MenhCucRelationType
+from tuvi_engine.model.prior import Gender, LaSoPrior
 from tuvi_engine.view.builder import build_laso_view
 from tuvi_engine.view.streamlit_adapter import (
     laso_view_to_streamlit_payload,

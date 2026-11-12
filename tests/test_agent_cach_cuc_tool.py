@@ -13,12 +13,12 @@ from pydantic_ai.messages import (
 )
 from pydantic_ai.models.function import AgentInfo, FunctionModel
 
+from tests.fixtures.laso_priors import FIXTURE_PRIOR_A
 from tuvi_agent.deps import TuviAgentDeps
 from tuvi_agent.tool.cach_cuc.tool import get_list_cach_cuc
 from tuvi_agent.tool.json_compatible import JsonCompatible
 from tuvi_engine.components.definitions.cung_role import Role
 from tuvi_engine.la_so import LaSo
-from tests.fixtures.laso_priors import FIXTURE_PRIOR_A
 
 
 class _StructuredToolInput(BaseModel):

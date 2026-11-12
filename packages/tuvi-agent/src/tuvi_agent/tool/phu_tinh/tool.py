@@ -12,7 +12,6 @@ from tuvi_agent.tool.phu_tinh.groups import (
     build_group_of_star,
     load_phu_tinh_groups,
 )
-from tuvi_engine.la_so import LaSo
 from tuvi_engine.components.definitions.cung_role import Role
 from tuvi_engine.components.definitions.map_sao_status import MAP_SAO_STATUS
 from tuvi_engine.components.definitions.sao import (
@@ -20,6 +19,7 @@ from tuvi_engine.components.definitions.sao import (
     TuHoa,
     VongTrangSinh,
 )
+from tuvi_engine.la_so import LaSo
 from tuvi_engine.model.elementary import DiaChi
 from tuvi_engine.model.layer import NATAL_LAYER_ID
 

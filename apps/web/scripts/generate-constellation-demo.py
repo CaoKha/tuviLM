@@ -12,7 +12,6 @@ from pathlib import Path
 
 from PIL import Image, ImageDraw, ImageFilter, ImageFont
 
-
 ROOT = Path(__file__).resolve().parents[1]
 OUTPUT = ROOT / "public/assets/god-ghosts/constellation-demo.gif"
 SIZE = 480

@@ -20,7 +20,6 @@ from tuvi_api.chat.storage import store as store_module
 from tuvi_api.chat.storage.store import MongoConversationHistoryStore
 from tuvi_api.main import conversation_history_exception_handler
 
-
 pytestmark = pytest.mark.anyio
 HEADERS = {"Authorization": "Bearer owner", "Idempotency-Key": "birth-profile"}
 CREATE_BODY = {

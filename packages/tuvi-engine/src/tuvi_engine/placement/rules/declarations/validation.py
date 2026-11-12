@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Sequence
+from collections.abc import Sequence
 
 from tuvi_engine.placement.component_groups import TU_HOA_IDS
 from tuvi_engine.placement.registry import ComponentId
@@ -9,8 +9,8 @@ from tuvi_engine.placement.rules.declarations.models import (
     OffsetGroupDeclaration,
     PlacementRuleDeclaration,
     SamePositionMemberDeclaration,
-    TuHoaDeclaration,
     TuanTrietPairDeclaration,
+    TuHoaDeclaration,
 )
 
 

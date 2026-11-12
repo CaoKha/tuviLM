@@ -3,10 +3,9 @@ from __future__ import annotations
 import httpx
 import pytest
 
-from tuvi_api.main import ApiState, app
-from tuvi_agent.deps import TuviAgentDeps
 from tests.test_conversation_history_api import FakeConversationHistoryStore
-
+from tuvi_agent.deps import TuviAgentDeps
+from tuvi_api.main import ApiState, app
 
 pytestmark = pytest.mark.anyio
 

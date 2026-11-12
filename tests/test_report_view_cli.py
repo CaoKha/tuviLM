@@ -3,14 +3,18 @@ from __future__ import annotations
 from pathlib import Path
 
 import pytest
-from streamlit.testing.v1 import AppTest
 import yaml
+from streamlit.testing.v1 import AppTest
 
 from tuvi_tools.workflow_cli.strength_weakness_report import (
-    common_profiles, complete_total, diversity, read_report, reviewed_weaknesses,
+    common_profiles,
+    complete_total,
+    diversity,
+    parse_report_yaml,
+    read_report,
+    reviewed_weaknesses,
 )
-from tuvi_tools.workflow_cli.view import build_streamlit_command, parse_report_yaml
-
+from tuvi_tools.workflow_cli.view import build_streamlit_command
 
 IDS = ['lap_luan_logic', 'nghien_cuu_chuyen_sau']
 
@@ -35,6 +39,7 @@ def report(doc=None):
 
 def _run_app(directory, annotation):
     from pathlib import Path
+
     from tuvi_tools.workflow_cli.view import streamlit_main
     streamlit_main((), report_dir=Path(directory), annotation_path=Path(annotation))
 
@@ -161,6 +166,7 @@ def test_app_handles_checkpoint_without_results(tmp_path):
 
 def _run_path_app(path):
     from pathlib import Path
+
     from tuvi_tools.workflow_cli.view import streamlit_main
     streamlit_main((path,), report_dir=Path(path).parent)
 

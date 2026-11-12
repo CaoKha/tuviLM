@@ -1,5 +1,5 @@
 from enum import StrEnum
-from typing import Optional, TypeAlias
+from typing import TypeAlias
 
 from pydantic import Field
 
@@ -16,7 +16,7 @@ class Status(StrEnum):
     NONE = "Không xác định"
 
     @classmethod
-    def _missing_(cls, value: Optional[str]) -> "Status | None":
+    def _missing_(cls, value: str | None) -> "Status | None":
         if value is None:
             return cls.NONE
         return None

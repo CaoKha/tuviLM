@@ -5,8 +5,8 @@ import datetime as dt
 from pathlib import Path
 from typing import Any
 
-import yaml
 import pytest
+import yaml
 from pydantic import BaseModel, ValidationError
 from pydantic_ai.usage import RunUsage
 

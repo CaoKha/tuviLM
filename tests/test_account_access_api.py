@@ -15,7 +15,6 @@ from pymongo.errors import ServerSelectionTimeoutError
 from tuvi_api.accounts.routes import router
 from tuvi_api.auth.dependencies import Principal, require_user
 
-
 ADMIN_HEADERS = {"Authorization": "Bearer admin"}
 USER_ID = ObjectId()
 ACCESS_PATH = f"/api/v1/admin/users/{USER_ID}/access"

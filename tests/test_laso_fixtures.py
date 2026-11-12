@@ -1,8 +1,5 @@
 """Regression checks for shared ``tests/fixtures/laso_priors`` data."""
 
-from tuvi_engine.assembly.natal import resolve_natal_placement
-from tuvi_engine.components.definitions.cung_role import Role
-from tuvi_engine.context.natal import NatalContext
 from tests.fixtures.laso_priors import (
     EXPECTED_A,
     EXPECTED_FEMALE_AM,
@@ -11,6 +8,9 @@ from tests.fixtures.laso_priors import (
     FIXTURE_PRIOR_FEMALE_AM,
     FIXTURE_PRIOR_MALE_DUONG,
 )
+from tuvi_engine.assembly.natal import resolve_natal_placement
+from tuvi_engine.components.definitions.cung_role import Role
+from tuvi_engine.context.natal import NatalContext
 
 
 def test_fixture_prior_a_matches_expected_positions():

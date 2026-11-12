@@ -2,13 +2,12 @@ from __future__ import annotations
 
 import re
 from typing import Annotated, Literal
-import annotated_types as at
 
+import annotated_types as at
 from pydantic import AliasChoices, BaseModel, Field, field_validator, model_validator
 
 from tuvi_engine.components.definitions.cung_role import Role
 from tuvi_engine.model.elementary import DiaChi, ThienCan
-
 
 _BLANK_LINE_RE = re.compile(r"\n\s*\n+")
 

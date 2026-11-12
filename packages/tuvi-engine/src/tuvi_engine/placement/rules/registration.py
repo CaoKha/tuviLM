@@ -1,6 +1,7 @@
 from __future__ import annotations
 
-from typing import Callable, Sequence, TypeAlias
+from collections.abc import Callable, Sequence
+from typing import TypeAlias
 
 from tuvi_engine.context.protocol import PlacementContext
 from tuvi_engine.model.elementary import DiaChi, ThienCan

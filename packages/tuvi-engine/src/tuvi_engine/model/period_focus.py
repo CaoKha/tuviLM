@@ -1,7 +1,8 @@
 from __future__ import annotations
 
+from collections.abc import Mapping
 from dataclasses import dataclass
-from typing import Mapping, TypeAlias
+from typing import TypeAlias
 
 from tuvi_engine.model.elementary import CircleDirection, DiaChi
 

@@ -6,13 +6,15 @@ from pydantic_ai import ModelRetry, RunContext
 
 from tuvi_agent.deps import TuviAgentDeps
 from tuvi_agent.tool.chart import _format_cung_at
-from tuvi_engine.la_so import LaSo
 from tuvi_engine.components.definitions.cung_role import Role
 from tuvi_engine.components.definitions.sao import ChinhPhuTinh, TuanTriet
+from tuvi_engine.la_so import LaSo
 from tuvi_engine.model.elementary import CircleDirection, DiaChi, NguHanh
 from tuvi_engine.model.layer import NATAL_LAYER_ID
 from tuvi_engine.placement.transforms import (
     get_tam_hop as transform_tam_hop,
+)
+from tuvi_engine.placement.transforms import (
     get_xung_chieu as transform_xung_chieu,
 )
 
@@ -104,8 +106,10 @@ def build_tinh_cach_b3_b4_context(la_so: LaSo) -> str:
     main_star_lines = _main_star_lines(la_so, menh_position)
     if not main_star_lines:
         main_star_lines = [
-            "- Mệnh Vô Chính Diệu: dùng chính tinh cung xung chiếu làm nền, "
-            "rồi kiểm tam hợp và phụ tinh tại Mệnh."
+            (
+                "- Mệnh Vô Chính Diệu: dùng chính tinh cung xung chiếu làm nền, "
+                "rồi kiểm tam hợp và phụ tinh tại Mệnh."
+            )
         ]
 
     return "\n\n".join(

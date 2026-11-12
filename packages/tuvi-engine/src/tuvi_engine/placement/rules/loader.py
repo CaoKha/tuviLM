@@ -8,18 +8,18 @@ from pydantic import TypeAdapter
 
 from tuvi_engine.model.elementary import ThienCan
 from tuvi_engine.placement.registry import ComponentId, PlacementRegistry
+from tuvi_engine.placement.rules.declarations.models import (
+    PlacementRuleDeclaration,
+    PlacementRuleGroup,
+)
+from tuvi_engine.placement.rules.declarations.validation import (
+    validate_declaration_group,
+)
 from tuvi_engine.placement.rules.registration import (
     DeclarationRule,
     as_rule_adapters,
     build_tu_hoa_target_mapping,
     register_declarations,
-)
-from tuvi_engine.placement.rules.declarations.validation import (
-    validate_declaration_group,
-)
-from tuvi_engine.placement.rules.declarations.models import (
-    PlacementRuleDeclaration,
-    PlacementRuleGroup,
 )
 
 RuleGroupName = str

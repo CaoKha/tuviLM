@@ -10,7 +10,12 @@ from tuvi_engine.components.definitions.ban_menh import BanMenh
 from tuvi_engine.components.definitions.cuc import LIST_CUC
 from tuvi_engine.components.definitions.cung_role import CungRole
 from tuvi_engine.components.definitions.elementary import DiaChiEntity, ThienCanEntity
-from tuvi_engine.components.definitions.sao import ChinhPhuTinh, TuanTriet, TuHoa, VongTrangSinh
+from tuvi_engine.components.definitions.sao import (
+    ChinhPhuTinh,
+    TuanTriet,
+    TuHoa,
+    VongTrangSinh,
+)
 from tuvi_engine.model.elementary import DiaChi, ThienCan
 
 

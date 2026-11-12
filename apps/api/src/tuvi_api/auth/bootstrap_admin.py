@@ -56,7 +56,7 @@ def main(argv: list[str] | None = None) -> None:
                 raise SystemExit("Confirmation did not match. Nothing changed.")
 
             revoked = database[SESSIONS].delete_many({"user_id": user_id})
-            expected_role = user["role"] if "role" in user else {"$exists": False}
+            expected_role = user.get("role", {"$exists": False})
             updated = database["user"].update_one(
                 {"_id": user_id, "email": email, "role": expected_role},
                 {"$set": {"role": "admin", "updatedAt": datetime.now(UTC)}},

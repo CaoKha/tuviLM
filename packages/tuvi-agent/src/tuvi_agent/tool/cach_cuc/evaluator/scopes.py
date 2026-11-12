@@ -4,7 +4,6 @@ from __future__ import annotations
 
 from tuvi_engine.model.elementary import DiaChi
 
-
 NHI_HOP_PAIRS: dict[DiaChi, DiaChi] = {
     DiaChi.TY: DiaChi.SUU,
     DiaChi.SUU: DiaChi.TY,

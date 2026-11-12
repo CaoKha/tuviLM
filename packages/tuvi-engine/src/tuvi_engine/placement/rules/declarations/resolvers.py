@@ -1,6 +1,7 @@
 from __future__ import annotations
 
-from typing import Callable, TypeAlias
+from collections.abc import Callable
+from typing import TypeAlias
 
 from tuvi_engine.context.protocol import PlacementContext
 from tuvi_engine.model.elementary import CircleDirection, DiaChi

@@ -7,7 +7,6 @@ from pydantic_ai import ModelRetry, RunContext
 from tuvi_agent.book_index import SectionContent
 from tuvi_agent.deps import TuviAgentDeps
 
-
 _logger = logging.getLogger(__name__)
 
 

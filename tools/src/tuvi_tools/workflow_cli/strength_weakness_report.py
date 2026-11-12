@@ -12,7 +12,9 @@ from typing import Any
 import yaml
 
 from tuvi_agent.workflow.strength_weakness.ontology import get_capability_definition
-from tuvi_agent.workflow.strength_weakness.output.capability_profile import CapabilityProfile
+from tuvi_agent.workflow.strength_weakness.output.capability_profile import (
+    CapabilityProfile,
+)
 
 ProfileKey = tuple[str, str, str, str]
 

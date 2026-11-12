@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from enum import StrEnum
 
-from pydantic import model_validator
+from pydantic import ConfigDict, model_validator
 
 from tuvi_engine.components.definitions.elementary import ComponentBase
 
@@ -24,7 +24,7 @@ class Role(StrEnum):
 
 
 class CungRole(ComponentBase):
-    model_config = {"frozen": True}
+    model_config = ConfigDict(frozen=True)
 
     role: Role
 

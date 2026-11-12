@@ -8,7 +8,6 @@ from pymongo.errors import PyMongoError
 
 from tuvi_api.auth import bootstrap_admin
 
-
 USER_ID = ObjectId("64b000000000000000000001")
 EMAIL = "admin@example.test"
 URI = "mongodb://operator:secret@localhost:27017"

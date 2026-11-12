@@ -1,8 +1,14 @@
 import datetime as dt
+from itertools import pairwise
 
 import pytest
 
+from tests.fixtures.laso_priors import FIXTURE_PRIOR_A
 from tuvi_engine.assembly.natal import resolve_natal_placement
+from tuvi_engine.components.definitions.cung_role import Role
+from tuvi_engine.context.natal import NatalContext
+from tuvi_engine.model.elementary import DiaChi
+from tuvi_engine.model.prior import Gender, LaSoPrior
 from tuvi_engine.placement.bundle import get_default_placement_rule_compiler
 from tuvi_engine.placement.compiler import (
     PlacementRuleCompiler,
@@ -11,13 +17,9 @@ from tuvi_engine.placement.compiler import (
     SpecializedRelativeSpec,
 )
 from tuvi_engine.placement.engine import PlacementEngine
-from tuvi_engine.placement.rules.registration import (
-    build_tu_hoa_target_mapping,
-)
-from tuvi_engine.placement.rules.loader import (
-    DeclarationRule,
-    load_rule_group,
-    load_tu_hoa_target_mapping,
+from tuvi_engine.placement.registry import (
+    AbsolutePositionSpec,
+    RelativePositionSpec,
 )
 from tuvi_engine.placement.rules.declarations.models import (
     CircleDeclaration,
@@ -25,19 +27,18 @@ from tuvi_engine.placement.rules.declarations.models import (
     SamePositionMemberDeclaration,
     TuHoaDeclaration,
 )
+from tuvi_engine.placement.rules.loader import (
+    DeclarationRule,
+    load_rule_group,
+    load_tu_hoa_target_mapping,
+)
 from tuvi_engine.placement.rules.positions.absolute import (
     triet_positions_fn,
     tuan_positions_fn,
 )
-from tuvi_engine.placement.registry import (
-    AbsolutePositionSpec,
-    RelativePositionSpec,
+from tuvi_engine.placement.rules.registration import (
+    build_tu_hoa_target_mapping,
 )
-from tuvi_engine.components.definitions.cung_role import Role
-from tuvi_engine.model.elementary import DiaChi
-from tuvi_engine.model.prior import Gender, LaSoPrior
-from tuvi_engine.context.natal import NatalContext
-from tests.fixtures.laso_priors import FIXTURE_PRIOR_A
 
 ROLE_RULES = list(load_rule_group("cung_roles"))
 CHINH_TINH_RULES = list(load_rule_group("chinh_tinh"))
@@ -402,7 +403,7 @@ def test_rule_group_resolves_trang_sinh_circle_properties():
 
     assert set(ordered_ids).issubset(positions)
     assert {positions[component_id] for component_id in ordered_ids} == set(DiaChi)
-    for previous_id, next_id in zip(ordered_ids, ordered_ids[1:]):
+    for previous_id, next_id in pairwise(ordered_ids):
         assert positions[next_id] == positions[previous_id] + 1
 
 

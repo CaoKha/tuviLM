@@ -1,6 +1,5 @@
 from tuvi_engine.assembly.natal import build_natal_tinh_ban
 from tuvi_engine.assembly.period import build_period_layer, build_period_layer_id
-from tuvi_engine.model.elementary import CircleDirection, DiaChi
 from tuvi_engine.context.natal import NatalContext
 from tuvi_engine.context.period import (
     DaiHanContext,
@@ -9,6 +8,13 @@ from tuvi_engine.context.period import (
     TieuHanContext,
     build_period_context,
 )
+from tuvi_engine.la_so import LaSo
+from tuvi_engine.model.elementary import CircleDirection, DiaChi
+from tuvi_engine.model.layer import (
+    DaiHanLayerId,
+    LuuNienDaiHanLayerId,
+    TieuHanLayerId,
+)
 from tuvi_engine.model.period_focus import (
     TenYearRange,
     build_dai_han_focus_map,
@@ -16,12 +22,6 @@ from tuvi_engine.model.period_focus import (
     luu_nien_dai_han_focus_position,
 )
 from tuvi_engine.model.prior import Gender, LaSoPrior
-from tuvi_engine.la_so import LaSo
-from tuvi_engine.model.layer import (
-    DaiHanLayerId,
-    LuuNienDaiHanLayerId,
-    TieuHanLayerId,
-)
 from tuvi_engine.placement.transforms import get_xung_chieu
 
 

@@ -1,13 +1,13 @@
 from __future__ import annotations
 
 from collections import OrderedDict
+from collections.abc import Callable
 from dataclasses import dataclass, field
-from typing import Callable
 
 from tuvi_engine.model.layer import (
+    PERIOD_LAYER_KINDS,
     LayerId,
     LayerKind,
-    PERIOD_LAYER_KINDS,
     PeriodLayerId,
     PlacementLayer,
 )

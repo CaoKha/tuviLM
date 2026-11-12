@@ -12,7 +12,6 @@ from tuvi_api.accounts.models import AccountAccess
 from tuvi_api.chat.contracts import ConversationHistoryStore, NotFoundError
 from tuvi_api.chat.models import ChatMessageStatus
 
-
 CHAT_MESSAGE_COST = 3
 
 

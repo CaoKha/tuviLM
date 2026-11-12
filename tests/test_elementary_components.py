@@ -1,4 +1,5 @@
 import pytest
+from pydantic import ValidationError
 
 from tuvi_engine.components.definitions.elementary import (
     DiaChiEntity,
@@ -94,20 +95,20 @@ def test_ngu_hanh_directional_relationships():
 
 
 def test_thien_can_entity_missing_id_raises():
-    with pytest.raises(Exception):
+    with pytest.raises(KeyError):
         ThienCanEntity(name="Giáp", ngu_hanh=NguHanh.MOC)
 
 
 def test_thien_can_entity_missing_name_raises():
-    with pytest.raises(Exception):
+    with pytest.raises(ValidationError):
         ThienCanEntity(id="giap", ngu_hanh=NguHanh.MOC)
 
 
 def test_dia_chi_entity_missing_id_raises():
-    with pytest.raises(Exception):
+    with pytest.raises(KeyError):
         DiaChiEntity(name="Tý", ngu_hanh=NguHanh.THUY)
 
 
 def test_dia_chi_entity_missing_name_raises():
-    with pytest.raises(Exception):
+    with pytest.raises(ValidationError):
         DiaChiEntity(id="ty", ngu_hanh=NguHanh.THUY)

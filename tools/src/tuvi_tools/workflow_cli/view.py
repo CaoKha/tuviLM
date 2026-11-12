@@ -2,12 +2,12 @@
 from __future__ import annotations
 
 import argparse
-from collections.abc import Sequence
 import json
-from pathlib import Path
-from statistics import median
 import subprocess
 import sys
+from collections.abc import Sequence
+from pathlib import Path
+from statistics import median
 
 # Repo root, so reports/ and data/ are found from any working directory.
 ROOT = Path(__file__).resolve().parents[4]
@@ -15,10 +15,21 @@ ROOT = Path(__file__).resolve().parents[4]
 import pandas as pd
 import streamlit as st
 
-from tuvi_agent.workflow.strength_weakness.ontology import GROUP_LABELS, get_capability_definition
+from tuvi_agent.workflow.strength_weakness.ontology import (
+    GROUP_LABELS,
+    get_capability_definition,
+)
 from tuvi_tools.workflow_cli.strength_weakness_report import (
-    Report, common_profiles, complete_total, diversity, number, overlap,
-    parse_report_yaml, profile_label, read_report, reviewed_weaknesses, strength_labels,
+    Report,
+    common_profiles,
+    complete_total,
+    diversity,
+    number,
+    overlap,
+    profile_label,
+    read_report,
+    reviewed_weaknesses,
+    strength_labels,
 )
 
 LEVELS = {'Năng lực cụ thể': 'id', 'Họ năng lực': 'category', 'Nhóm năng lực': 'group'}

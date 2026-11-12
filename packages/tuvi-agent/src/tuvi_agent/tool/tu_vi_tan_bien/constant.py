@@ -1,6 +1,5 @@
 from types import MappingProxyType
 
-
 SAO_SECTION_ID_MAP = MappingProxyType(
     {
         "Tử Vi": "3.1",
@@ -475,7 +474,6 @@ def get_thien_di_section_id(name: str) -> str | None:
 
 TAT_ACH_SECTION_ID_MAP = MappingProxyType(
     {
-        "Tử Vi": "11.1.1",
         "Tử Vi": "11.1.1",
         "Hóa Khoa": "11.1.2",
         "Thiên Giải": "11.1.3",

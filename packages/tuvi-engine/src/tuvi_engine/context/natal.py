@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from tuvi_engine.components.definitions.cuc import Cuc, LIST_CUC
+from tuvi_engine.components.definitions.cuc import LIST_CUC, Cuc
 from tuvi_engine.model.elementary import CircleDirection, DiaChi, LuongNghi, ThienCan
 from tuvi_engine.model.prior import Gender, LaSoPrior
 

@@ -3,6 +3,7 @@ from __future__ import annotations
 from enum import StrEnum
 
 from pydantic import BaseModel
+
 from tuvi_engine.model.elementary import NguHanh
 
 
@@ -25,7 +26,7 @@ class MenhCucRelation(BaseModel):
     description: str
 
     @classmethod
-    def compute(cls, ngu_hanh_menh: NguHanh, ngu_hanh_cuc: NguHanh) -> "MenhCucRelation":
+    def compute(cls, ngu_hanh_menh: NguHanh, ngu_hanh_cuc: NguHanh) -> MenhCucRelation:
 
         if ngu_hanh_menh.sinh_xuat(ngu_hanh_cuc):
             return cls(

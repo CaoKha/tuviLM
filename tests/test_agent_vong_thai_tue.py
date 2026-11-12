@@ -1,3 +1,4 @@
+from tests.fixtures.laso_priors import FIXTURE_PRIOR_A
 from tuvi_agent.tool.thai_tue import (
     THAI_TUE_RING_STAR_IDS,
     build_vong_thai_tue_payload,
@@ -5,7 +6,6 @@ from tuvi_agent.tool.thai_tue import (
 from tuvi_engine.la_so import LaSo
 from tuvi_engine.model.elementary import DiaChi
 from tuvi_engine.model.prior import Gender, LaSoPrior
-from tests.fixtures.laso_priors import FIXTURE_PRIOR_A
 
 
 def test_vong_thai_tue_identifies_star_and_group_at_menh():

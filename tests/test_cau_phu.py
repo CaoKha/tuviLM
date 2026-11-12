@@ -6,6 +6,7 @@ from datetime import datetime
 import pytest
 from fastapi import HTTPException
 
+from tests.fixtures.laso_priors import FIXTURE_PRIOR_A
 from tuvi_api.main import read_cau_phu
 from tuvi_api.schemas import BuildLasoRequest
 from tuvi_engine.cau_phu import (
@@ -18,7 +19,6 @@ from tuvi_engine.cau_phu import (
 )
 from tuvi_engine.la_so import LaSo
 from tuvi_engine.model.prior import Gender, LaSoPrior
-from tests.fixtures.laso_priors import FIXTURE_PRIOR_A
 
 
 def test_catalog_indexes_every_case_without_changing_phu_text() -> None:

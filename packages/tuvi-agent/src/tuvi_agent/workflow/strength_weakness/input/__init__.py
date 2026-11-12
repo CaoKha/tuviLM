@@ -2,9 +2,9 @@
 
 from .tanbien import (
     STRENGTH_WEAKNESS_REASONING_INSTRUCTION,
+    CachCucEvidence,
     CapabilityEvidence,
     CapabilityInput,
-    CachCucEvidence,
     PalaceEvidence,
     build_strength_weakness_evidence,
     prepare_capability_input,
@@ -12,9 +12,9 @@ from .tanbien import (
 
 __all__ = [
     "STRENGTH_WEAKNESS_REASONING_INSTRUCTION",
+    "CachCucEvidence",
     "CapabilityEvidence",
     "CapabilityInput",
-    "CachCucEvidence",
     "PalaceEvidence",
     "build_strength_weakness_evidence",
     "prepare_capability_input",
