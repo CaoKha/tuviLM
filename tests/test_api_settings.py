@@ -5,6 +5,7 @@ from types import SimpleNamespace
 from unittest.mock import AsyncMock
 
 import pytest
+from pydantic_ai.models import infer_model
 
 from tuvi_api.settings import ApiSettings
 
@@ -114,7 +115,9 @@ def test_api_uses_strength_weakness_routing_settings(
         async with main.lifespan(app):
             deps = app.state.api_state.agent_deps
             agent = deps.require_strength_weakness_agent()
-            model = agent.model
+            # Agents defer the model check, so agent.model is still the model
+            # string. Resolve it the way pydantic-ai does on the first run.
+            model = infer_model(agent.model)
             assert model.system == "openrouter"
             assert model.model_name == model_name
             assert model.base_url == "https://openrouter.ai/api/v1/"
@@ -124,8 +127,9 @@ def test_api_uses_strength_weakness_routing_settings(
                 "sort": sort,
             }
             assert agent.model_settings["openrouter_reasoning"] == {"effort": effort}
-            assert deps.require_agent().model.system == "openrouter"
-            assert deps.require_personality_agent().model.system == "openrouter"
+            assert infer_model(deps.require_agent().model).system == "openrouter"
+            personality_model = infer_model(deps.require_personality_agent().model)
+            assert personality_model.system == "openrouter"
             assert not deps.require_agent().model_settings
             assert not deps.require_personality_agent().model_settings
 
