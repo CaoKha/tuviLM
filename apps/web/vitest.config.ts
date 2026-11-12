@@ -19,5 +19,8 @@ export default defineConfig({
     setupFiles: ["./vitest.setup.ts"],
     include: ["src/**/*.test.{ts,tsx}"],
     passWithNoTests: true,
+    // Node 25+ has a global localStorage that hides the jsdom one. Without a
+    // --localstorage-file it is undefined, so tests that use storage fail.
+    execArgv: ["--no-experimental-webstorage"],
   },
 });
